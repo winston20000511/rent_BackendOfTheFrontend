@@ -18,7 +18,7 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 
-import demo.model.House;
+import demo.model.Address;
 import demo.repository.SearchRepository;
 
 @Service
@@ -30,28 +30,15 @@ public class SearchService {
 	@Value("${google.api.key}")
 	private String apiKey;
 	
-	public List<House> findAll() {
+	public List<Address> findAll() {
 		return searchRepo.findAll();
 	}
 	
-	public List<House> houseUpdateFakeAdress(List<House> houseList , List<String> fakeAddress) {
-		for (int i = 0; i < houseList.size(); i++) {
-			
-			String[] Parts = fakeAddress.get(i).split("市|區");
-			if (fakeAddress.get(i).indexOf("新市區") > -1) {
-				Parts[1] += "市";
-				Parts[2] = Parts[3];
-			}
-			
-			houseList.get(i).setCity(Parts[0] + "市");
-			houseList.get(i).setTownship(Parts[1] + "區");
-			houseList.get(i).setStreet(Parts[2]);
-		}
-		
-		return searchRepo.saveAll(houseList);
+	public List<Address> addressUpdateAll(List<Address> addressList) {
+		return searchRepo.saveAll(addressList);
 	}
 	
-	public List<String> fakeAddress(String filePath){
+	public List<Address> updateFakeAddress(String filePath,List<Address> addressList){
 		
 		List<String> lists = new ArrayList<String>();
 		
@@ -68,16 +55,28 @@ public class SearchService {
 			// TODO: handle exception
 		}
 		
-		return lists;
+		for (int i = 0; i < addressList.size(); i++) {
+			
+			String[] Parts = lists.get(i).split("市|區");
+			if (lists.get(i).indexOf("新市區") > -1) {
+				Parts[1] += "市";
+				Parts[2] = Parts[3];
+			}
+			
+			addressList.get(i).setCity(Parts[0] + "市");
+			addressList.get(i).setTownship(Parts[1] + "區");
+			addressList.get(i).setStreet(Parts[2]);
+		}
+		
+		return addressList;
 	}
 	
 	
-	public List<double[]> getLatAndLonGoogleAPI(List<House> houseList) {
+	public List<Address> getLatAndLngGoogleAPI(List<Address> addressList) {
 		
-		List<double[]> posList = new ArrayList<>();
-		houseList.forEach(house->{
+		addressList.forEach(p->{
 			
-			String address = house.getCity() + house.getTownship() + house.getStreet();
+			String address = p.getCity() + p.getTownship() + p.getStreet();
 			try {
 				String encodedAddress = java.net.URLEncoder.encode(address,"UTF-8");
 				String urlString = "https://maps.googleapis.com/maps/api/geocode/json?address=" 
@@ -104,8 +103,9 @@ public class SearchService {
 											.getJSONObject(0)
 											.getJSONObject("geometry")
 											.getJSONObject("location");
-					double[] pos =  new double[] {location.getDouble("lat"),location.getDouble("lng")};
-					posList.add(pos);
+					
+					p.setLat(location.getDouble("lat"));
+					p.setLng(location.getDouble("lng"));
 				}else {
 					System.out.println("無法獲取經緯度資料，狀態：" + json.getString("status"));
 				}
@@ -128,7 +128,7 @@ public class SearchService {
 			
 		});
 		
-		return posList;
+		return addressList;
 	}
 	
 }

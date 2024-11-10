@@ -1,8 +1,12 @@
 const link = document.querySelector('.link');
 const list = document.getElementById('list-left-1');
+const header = document.getElementById('header');
 
 link.addEventListener('mouseenter', ()=>{
-    list.style.display='block';
+    
+	const rect = window.getComputedStyle(header);
+	list.style.top = rect.height;
+	list.style.display='block';
 })
 link.addEventListener('mouseleave', ()=>{
     setTimeout(()=>{

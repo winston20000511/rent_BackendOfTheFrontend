@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
     function handleScroll() {
       const { scrollTop, scrollHeight, clientHeight } = mainRight;
-      console.log({ scrollTop, scrollHeight, clientHeight });
+      /*console.log({ scrollTop, scrollHeight, clientHeight });*/
 
       if (scrollTop + clientHeight >= scrollHeight-5) {
         loadMoreCards();

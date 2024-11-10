@@ -30,14 +30,8 @@ public class House {
 	@Column(name="size")
 	private int size;
 	
-	@Column(name="city")
-	private String city;
-			
-	@Column(name="township")
-	private String township;
-	
-	@Column(name="street")
-	private String street;
+	@Column(name="address_id")
+	private long address_id;
 	
 	@Column(name="room")
 	private short room;
@@ -111,28 +105,12 @@ public class House {
 		this.size = size;
 	}
 
-	public String getCity() {
-		return city;
+	public long getAddress_id() {
+		return address_id;
 	}
 
-	public void setCity(String city) {
-		this.city = city;
-	}
-
-	public String getTownship() {
-		return township;
-	}
-
-	public void setTownship(String township) {
-		this.township = township;
-	}
-
-	public String getStreet() {
-		return street;
-	}
-
-	public void setStreet(String street) {
-		this.street = street;
+	public void setAddress_id(long address_id) {
+		this.address_id = address_id;
 	}
 
 	public short getRoom() {

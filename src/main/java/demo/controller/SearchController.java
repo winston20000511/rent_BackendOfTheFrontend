@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import demo.model.House;
+import demo.model.Address;
 import demo.service.SearchService;
 
 @RestController
@@ -17,20 +17,21 @@ public class SearchController {
 	private SearchService searchService;
 	
 	@GetMapping("/api/test")
-	public List<House> testupdate() {
-		List<House> houseList = searchService.findAll();
-		List<String> addressList = searchService.fakeAddress("C:\\Users\\User\\Desktop\\Rent_index\\Tainan.csv");
+	public List<Address> testupdate() {
+		List<Address> addressList = searchService.findAll();
+		addressList = searchService.updateFakeAddress("C:\\Users\\User\\Desktop\\Rent_index\\Tainan.csv",addressList);
+		addressList = searchService.getLatAndLngGoogleAPI(addressList);
 		
-		houseList = searchService.houseUpdateFakeAdress(houseList, addressList);
-		List<double[]> posList = searchService.getLatAndLonGoogleAPI(houseList);
+		addressList = searchService.addressUpdateAll(addressList);
 		
-		return houseList;
+
+		return addressList;
 	}
 	
 	@PostMapping("/api/Map")
 	public void searchShowMap() {
-		
-		
+		List<Address> addressList = searchService.findAll();
+		addressList = searchService.getLatAndLngGoogleAPI(addressList);
 	}
 	
 	
