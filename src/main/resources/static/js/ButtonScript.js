@@ -7,6 +7,7 @@ Array.from(filterBtn).forEach(btn => {
             i.className="fa-solid fa-angle-up";
         }else{
             i.className="fa-solid fa-angle-down";
+			SearchFetch();
         }
         
     })
