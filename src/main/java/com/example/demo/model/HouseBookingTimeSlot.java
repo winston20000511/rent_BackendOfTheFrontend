@@ -11,4 +11,5 @@ public class HouseBookingTimeSlot {
 	private Time toTime;
 	private Integer duration;
 	private boolean flag;
+	private boolean status;
 }
