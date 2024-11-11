@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <h3 class="text-lg font-semibold mb-2">Price ${cardCount + 1}</h3>
           <p class="text-gray-600 mb-4">This is card number ${cardCount + 1}. It contains some descriptive content.</p>
           <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">View</button>
+		  <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="bookingPage">預約</a>
         `;
         cardContainer.appendChild(card);
         cardCount++;

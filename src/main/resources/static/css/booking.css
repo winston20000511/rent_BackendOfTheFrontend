@@ -11,7 +11,7 @@
     padding: 0 10% 10% 10%;
     
     .timepicker-cf{
-      height:60px;
+      height:160px;
       width:100%;
     }
     .timepicker{
@@ -206,7 +206,7 @@
       .header{
         width:100%;
         height:160px;
-        background-image:url('/src/main/resources/static/img/space.jpg');
+        background-image:url('/img/space.jpg');
         background-size:100% auto;
         .overlay{
           width:100%;

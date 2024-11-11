@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="https://www.thymeleaf.org/" lang="zh-hant-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,6 +16,8 @@
         <ul class="nav-left">
             <li><a href="#">Buy</a></li>
             <li class="link"><a href="#">Rent</a></li>
+            <li><a th:href="@{/booking/page}">預約</a></li>
+            <li><button id="bookingButton">預約</button></li>
         </ul>
 
         <ul class="list" id="list-left-1">
@@ -70,11 +72,17 @@
     <footer>
 
     </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=YOURAPI&callback=initMap&v=weekly&libraries=marker,places"defer></script>
     <script src="scriptCard.js"></script>
     <script src="scriptList.js"></script>
     <script src="scriptButton.js"></script>
     <script src="scriptGoogle.js"></script>
-
+	<script>
+		document.getElementById("bookingButton").onclick=function(){
+            window.location.href="/booking/page";
+        };
+	
+	</script>
 </body>
 </html>
