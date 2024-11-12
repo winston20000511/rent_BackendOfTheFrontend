@@ -1,8 +1,9 @@
 
-const apiUrl = 'http://localhost:8080/api/test';
-async function SearchFetch(){
+const apiUrltest = 'http://localhost:8080/api/test';
+
+async function testFetch(){
 	
-	fetch(apiUrl).then(response =>{
+	fetch(apiUrltest).then(response =>{
 		if (!response.ok){
 			throw new Error('Network response');	
 		}

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import demo.model.Address;
 import demo.repository.SearchRepository;
+import helper.SearchHelper;
 
 @Service
 public class SearchService {
@@ -32,6 +33,10 @@ public class SearchService {
 	
 	public List<Address> findAll() {
 		return searchRepo.findAll();
+	}
+	
+	public List<Address> findByCity(String city){
+		return searchRepo.findByCity(city);
 	}
 	
 	public List<Address> addressUpdateAll(List<Address> addressList) {
@@ -57,78 +62,110 @@ public class SearchService {
 		
 		for (int i = 0; i < addressList.size(); i++) {
 			
-			String[] Parts = lists.get(i).split("市|區");
-			if (lists.get(i).indexOf("新市區") > -1) {
-				Parts[1] += "市";
-				Parts[2] = Parts[3];
-			}
-			
-			addressList.get(i).setCity(Parts[0] + "市");
-			addressList.get(i).setTownship(Parts[1] + "區");
+			String[] Parts = SearchHelper.splitCityTownStreet(lists.get(i));
+			addressList.get(i).setCity(Parts[0]);
+			addressList.get(i).setTownship(Parts[1]);
 			addressList.get(i).setStreet(Parts[2]);
 		}
 		
 		return addressList;
 	}
 	
-	
 	public List<Address> getLatAndLngGoogleAPI(List<Address> addressList) {
 		
 		addressList.forEach(p->{
-			
-			String address = p.getCity() + p.getTownship() + p.getStreet();
-			try {
-				String encodedAddress = java.net.URLEncoder.encode(address,"UTF-8");
-				String urlString = "https://maps.googleapis.com/maps/api/geocode/json?address=" 
-                        + encodedAddress + "&key=" + apiKey;
+			if (p.getLat() == null) {
 				
-				URL url = new URL(urlString);
-				HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-				conn.setRequestMethod("GET");
-				
-				BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-				String inputLine;
-				StringBuilder content = new StringBuilder();
-				
-				while((inputLine = in.readLine())!= null) {
-					content.append(inputLine);
-				}
-				
-				in.close();
-				conn.disconnect();
-				
-				JSONObject json = new JSONObject(content.toString());
-				if("OK".equals(json.getString("status"))) {
-					JSONObject location = json.getJSONArray("results")
-											.getJSONObject(0)
-											.getJSONObject("geometry")
-											.getJSONObject("location");
+				String address = p.getCity() + p.getTownship() + p.getStreet();
+				try {
+					String encodedAddress = java.net.URLEncoder.encode(address,"UTF-8");
+					String urlString = "https://maps.googleapis.com/maps/api/geocode/json?address=" 
+	                        + encodedAddress + "&key=" + apiKey;
+
+					StringBuilder content = SearchHelper.urlConnection(urlString);
 					
-					p.setLat(location.getDouble("lat"));
-					p.setLng(location.getDouble("lng"));
-				}else {
-					System.out.println("無法獲取經緯度資料，狀態：" + json.getString("status"));
-				}
+					JSONObject json = new JSONObject(content.toString());
+					if("OK".equals(json.getString("status"))) {
+						JSONObject location = json.getJSONArray("results")
+												.getJSONObject(0)
+												.getJSONObject("geometry")
+												.getJSONObject("location");
+						
+						p.setLat(location.getDouble("lat"));
+						p.setLng(location.getDouble("lng"));
+					}else {
+						System.out.println("無法獲取經緯度資料，狀態：" + json.getString("status"));
+					}
+					
+					
+				} catch (UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (MalformedURLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}	
 				
-				
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
-			
+
 			
 		});
 		
 		return addressList;
 	}
 	
+	public Address placeConvertToAdress(String origin) {
+		
+		String encodedAddress;
+		Address address = new Address();
+		try {
+			encodedAddress = java.net.URLEncoder.encode(origin,"UTF-8");
+			String urlString = "https://maps.googleapis.com/maps/api/geocode/json?address=" 
+	                + encodedAddress + "&language=zh-TW&key=" + apiKey;
+			StringBuilder content = SearchHelper.urlConnection(urlString);
+			
+			JSONObject json = new JSONObject(content.toString());
+			if("OK".equals(json.getString("status"))) {
+				JSONObject location = json.getJSONArray("results")
+										.getJSONObject(0);
+										
+				
+				String[] Parts = SearchHelper.splitCityTownStreet(location.getString("formatted_address"));
+				address.setCity(Parts[0]);
+				address.setTownship(Parts[1]);
+				address.setStreet(Parts[2]);
+				
+				location = json.getJSONArray("results")
+						.getJSONObject(0)
+						.getJSONObject("geometry")
+						.getJSONObject("location");
+				
+				address.setLat(location.getDouble("lat"));
+				address.setLng(location.getDouble("lng"));
+				
+			}
+			
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return address;
+		
+	}
 }

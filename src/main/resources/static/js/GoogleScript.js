@@ -1,17 +1,46 @@
 var map;
+const apiUrl='http://localhost:8080/api/map'
 const search = document.getElementById('origin');
 const iconButton = document.querySelector('.fa-solid');
 
+
 search.addEventListener('keydown',(event)=>{
     if (event.key === 'Enter'){
-        addMarkerByAddress();
+        mapFetch();
     }
 })
 iconButton.addEventListener('click',()=>{
-    addMarkerByAddress();
+    mapFetch();
 })
 
 
+async function mapFetch(){
+	const origin = document.getElementById('origin').value;
+	const inputData = {
+		origin: origin
+	};
+	
+	try{
+		const response = await fetch(apiUrl,{
+			method: "POST",
+			headers:{'Content-Type': 'application/json'},
+			body: JSON.stringify(inputData)
+		});
+		
+		if (!response.ok){
+			throw new Error('Neetwork response was not ok')
+		}
+		
+		const data = await response.json();
+		console.log('Data received:' , data)
+	}catch (error){
+		console.error('There has been a problem with your fetch operation', error);
+	}
+
+}
+
+
+//Google Map
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
         center: { lat: 23.023535, lng: 120.222776 }, // 台灣的中心點 緯度 經度
@@ -19,7 +48,6 @@ function initMap() {
         mapId: "DEMO_MAP_ID",
     });
 }
-
 
 async function addMarkerByAddress() {
     var origin = document.getElementById('origin').value;
