@@ -10,9 +10,7 @@ import jakarta.persistence.Embeddable;
 public class BookingId implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	@Column(name = "user_id")
 	private Integer userId;
-	@Column(name = "house_id")
 	private Integer houseId;
 	
 	public BookingId(Integer userId, Integer houseId) {

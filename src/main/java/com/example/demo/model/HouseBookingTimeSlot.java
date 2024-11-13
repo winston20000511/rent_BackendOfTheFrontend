@@ -15,7 +15,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "houseBookingTimeSlot_tabel")
 public class HouseBookingTimeSlot {
-
+	
 	@Id
 	@Column(name = "id")
 	private Integer houseId;
@@ -29,11 +29,14 @@ public class HouseBookingTimeSlot {
 	private Time to_date;
 	@Column(name = "duration")
 	private Integer duration;
+	@Column(name = "week_day")
+	private String weekDay;
 
 	@MapsId
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "house_id")
-	private Houses Houses;
+	private House Houses;
+	
 
 	public HouseBookingTimeSlot() {
 	}
@@ -86,11 +89,11 @@ public class HouseBookingTimeSlot {
 		this.duration = duration;
 	}
 
-	public Houses getHouses() {
+	public House getHouses() {
 		return Houses;
 	}
 
-	public void setHouses(Houses houses) {
+	public void setHouses(House houses) {
 		Houses = houses;
 	}
 	

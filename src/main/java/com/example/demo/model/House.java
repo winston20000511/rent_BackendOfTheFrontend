@@ -8,46 +8,44 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "house_table")
-public class Houses {
+public class House {
 	@Id
 	@Column(name = "house_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer houseId;
 	
-	@Column(name = "user_id" , insertable = false, updatable = false)
-	private Integer	userId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "use_id")
+	private User user;
+	
+	@JoinColumn(name = "address_id")
+	private Integer addressId;
 	private String	title;
 	private Integer	price;
 	private String	description;
 	private Integer	size;
-	private String	city;
 	private String	township;
 	private String	street;
 	private Byte	room;
 	private Byte	bathroom;
 	private Byte	livingroom;
 	private Byte	kitchen;
-	private Byte	housetype;
 	private Byte	floor;
 	private Boolean	atticAddition;
 	private Byte status;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "userId")
-	private User user;
+	private Integer clickCount;
 	
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "Houses", cascade = CascadeType.ALL)
 	@PrimaryKeyJoinColumn
 	private HouseBookingTimeSlot bookingTimeSlot;
 
-	public Houses() {
+	public House() {
 		
 	}
 
@@ -59,12 +57,20 @@ public class Houses {
 		this.houseId = houseId;
 	}
 
-	public Integer getUserId() {
-		return userId;
+	public User getUser() {
+		return user;
 	}
 
-	public void setUserId(Integer userId) {
-		this.userId = userId;
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public Integer getAddressId() {
+		return addressId;
+	}
+
+	public void setAddressId(Integer addressId) {
+		this.addressId = addressId;
 	}
 
 	public String getTitle() {
@@ -97,14 +103,6 @@ public class Houses {
 
 	public void setSize(Integer size) {
 		this.size = size;
-	}
-
-	public String getCity() {
-		return city;
-	}
-
-	public void setCity(String city) {
-		this.city = city;
 	}
 
 	public String getTownship() {
@@ -155,14 +153,6 @@ public class Houses {
 		this.kitchen = kitchen;
 	}
 
-	public Byte getHousetype() {
-		return housetype;
-	}
-
-	public void setHousetype(Byte housetype) {
-		this.housetype = housetype;
-	}
-
 	public Byte getFloor() {
 		return floor;
 	}
@@ -187,6 +177,14 @@ public class Houses {
 		this.status = status;
 	}
 
+	public Integer getClickCount() {
+		return clickCount;
+	}
+
+	public void setClickCount(Integer clickCount) {
+		this.clickCount = clickCount;
+	}
+
 	public HouseBookingTimeSlot getBookingTimeSlot() {
 		return bookingTimeSlot;
 	}
@@ -195,12 +193,4 @@ public class Houses {
 		this.bookingTimeSlot = bookingTimeSlot;
 	}
 
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-	
 }

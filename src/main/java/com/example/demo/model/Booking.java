@@ -3,9 +3,11 @@ package com.example.demo.model;
 import java.sql.Date;
 import java.sql.Time;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
@@ -14,6 +16,16 @@ import jakarta.persistence.Table;
 @Table(name = "booking_table")
 public class Booking {
 	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@MapsId("houseId")
+	@JoinColumn(name = "house_id")
+	private House houses;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@MapsId("userId")
+	@JoinColumn(name = "rentUser_id")
+	private User rentUser;	
+	
 	@EmbeddedId
 	private BookingId id;
 	private Date date;
@@ -21,21 +33,13 @@ public class Booking {
 	private Time toTime;
 	private String status;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@MapsId("userId")
-	private User user;	
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@MapsId("houseId")
-	private Houses houses;
-
 	public Booking() {
 		
 	}
 	
 	public boolean isOwner() {
 		
-		return user.getUserId().equals(houses.getUser().getUserId());
+		return rentUser.getUserId().equals(houses.getUser().getUserId());
 	}
 
 	public BookingId getId() {
@@ -79,18 +83,18 @@ public class Booking {
 	}
 
 	public User getUser() {
-		return user;
+		return rentUser;
 	}
 
 	public void setUser(User user) {
-		this.user = user;
+		this.rentUser = user;
 	}
 
-	public Houses getHouses() {
+	public House getHouses() {
 		return houses;
 	}
 
-	public void setHouses(Houses houses) {
+	public void setHouses(House houses) {
 		this.houses = houses;
 	}
 	
