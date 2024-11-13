@@ -39,6 +39,10 @@ public class SearchService {
 		return searchRepo.findByCity(city);
 	}
 	
+	public List<Address> findByCityAndTownship(String cityTownship){
+		return searchRepo.findByCityAndTownship(cityTownship);
+	}
+	
 	public List<Address> findByKeyWord(String name){
 		return searchRepo.findByKeyWord(name);
 	}
@@ -58,55 +62,6 @@ public class SearchService {
 			addressList.get(i).setTownship(Parts[1]);
 			addressList.get(i).setStreet(Parts[2]);
 		}
-		
-		return addressList;
-	}
-	
-	public List<Address> getLatAndLngGoogleAPI(List<Address> addressList) {
-		
-		addressList.forEach(p->{
-			if (p.getLat() == null) {
-				
-				String address = p.getCity() + p.getTownship() + p.getStreet();
-				try {
-					String encodedAddress = java.net.URLEncoder.encode(address,"UTF-8");
-					String urlString = "https://maps.googleapis.com/maps/api/geocode/json?address=" 
-	                        + encodedAddress + "&key=" + apiKey;
-
-					StringBuilder content = SearchHelper.urlConnection(urlString);
-					
-					JSONObject json = new JSONObject(content.toString());
-					if("OK".equals(json.getString("status"))) {
-						JSONObject location = json.getJSONArray("results")
-												.getJSONObject(0)
-												.getJSONObject("geometry")
-												.getJSONObject("location");
-						
-						p.setLat(location.getDouble("lat"));
-						p.setLng(location.getDouble("lng"));
-					}else {
-						System.out.println("無法獲取經緯度資料，狀態：" + json.getString("status"));
-					}
-					
-					
-				} catch (UnsupportedEncodingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}	
-				
-			}
-
-			
-		});
 		
 		return addressList;
 	}
@@ -159,4 +114,111 @@ public class SearchService {
 		return address;
 		
 	}
+	
+	public List<Address> getLatAndLngGoogleAPI(List<Address> addressList) {
+		
+		addressList.forEach(p->{
+			if (p.getLat() == null) {
+				
+				String address = p.getCity() + p.getTownship() + p.getStreet();
+				try {
+					String encodedAddress = java.net.URLEncoder.encode(address,"UTF-8");
+					String urlString = "https://maps.googleapis.com/maps/api/geocode/json?address=" 
+	                        + encodedAddress + "&key=" + apiKey;
+
+					StringBuilder content = SearchHelper.urlConnection(urlString);
+					
+					JSONObject json = new JSONObject(content.toString());
+					if("OK".equals(json.getString("status"))) {
+						JSONObject location = json.getJSONArray("results")
+												.getJSONObject(0)
+												.getJSONObject("geometry")
+												.getJSONObject("location");
+						
+						p.setLat(location.getDouble("lat"));
+						p.setLng(location.getDouble("lng"));
+					}else {
+						System.out.println("無法獲取經緯度資料，狀態：" + json.getString("status"));
+					}
+					
+					
+				} catch (UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (MalformedURLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}	
+				
+			}
+
+			
+		});
+		
+		return addressList;
+	}
+	
+	
+	public List<Address> GetDurationAndDistanceGoogleAPI(List<Address> addressList) {
+		
+		String encodedOrigin;
+		List<Address> newAddressList = new ArrayList<>();
+		
+		try {
+			String address = addressList.get(0).getCity()+addressList.get(0).getTownship()+addressList.get(0).getStreet();
+			encodedOrigin = java.net.URLEncoder.encode( address ,"UTF-8");
+			
+			for(int i = 1 ; i < addressList.size() ; i++) {
+				
+				address = addressList.get(i).getCity()+addressList.get(i).getTownship()+addressList.get(i).getStreet();
+				String encodeDestination= java.net.URLEncoder.encode(address,"UTF-8");
+				String urlString = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" 
+		                + encodedOrigin + "&destinations=" + encodeDestination + "&mode=driving&language=zh-TW&key=" + apiKey;
+				StringBuilder content = SearchHelper.urlConnection(urlString);
+				
+				JSONObject json = new JSONObject(content.toString());
+				if("OK".equals(json.getString("status"))) {
+					JSONObject distance = json.getJSONArray("rows")
+											.getJSONObject(0)
+											.getJSONArray("elements")
+											.getJSONObject(0)
+											.getJSONObject("distance");
+					
+					JSONObject duration = json.getJSONArray("rows")
+											.getJSONObject(0)
+											.getJSONArray("elements")
+											.getJSONObject(0)
+											.getJSONObject("duration");		
+					
+					if (distance.getInt("value") <1500 && duration.getInt("value") < 3600) {
+						newAddressList.add(addressList.get(i));
+					}
+//					System.out.println(distance.getInt("value"));
+//					System.out.println(duration.getInt("value"));						
+					
+				}
+			}
+			
+
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return newAddressList;
+
+	}
+	
 }

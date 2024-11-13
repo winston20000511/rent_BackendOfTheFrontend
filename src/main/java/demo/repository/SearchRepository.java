@@ -17,4 +17,7 @@ public interface SearchRepository extends JpaRepository<Address, Long>{
 	
 	@Query("from Address where concat(city ,concat(township,street)) like %:n%")
 	List<Address> findByKeyWord(@Param("n") String name);
+	
+	@Query("from Address where concat(city,township) = :n")
+	List<Address> findByCityAndTownship(@Param("n") String name);
 }

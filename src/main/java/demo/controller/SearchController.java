@@ -34,30 +34,28 @@ public class SearchController {
 	@PostMapping("/api/map")
 	public List<Address> searchShowMap(@RequestBody OriginRequest request) {
 		Address origin = searchService.placeConvertToAdress(request.getOrigin());
-		List<Address> addressList = searchService.findByCity(origin.getCity());
+		List<Address> addressList = searchService.findByCityAndTownship(origin.getCity()+origin.getTownship());
 		addressList.add(0,origin);
-		
-		
-		
+		long startTime = System.currentTimeMillis();
+		addressList = searchService.GetDurationAndDistanceGoogleAPI(addressList);
+		long endTime = System.currentTimeMillis();
+		System.out.println("執行時間：" + (endTime - startTime) + " 毫秒");
 		return addressList;
 	}
 	
 	@CrossOrigin(origins="*")
 	@PostMapping("/api/keyword")
 	public List<Address> searchShowText(@RequestBody String srhReq){
-//		Address address = searchService.placeConvertToAdress(srhReq);
-//		List<Address> addressList = searchService.findByKeyWord(address.getCity()+address.getTownship()+address.getStreet());
-//		if (addressList.size() == 0 ) {
-//			addressList.add(address);
-//			return addressList;
-//		}else if(addressList.size() < 8) {
-//			return addressList.subList(0, addressList.size());
-//		}else {
-//			return addressList.subList(0, 10);
-//		}
 		List<Address> addressList = searchService.findByKeyWord(srhReq);
-		return addressList.subList(0, 10);
-		
+		if (addressList.size() == 0 ) {
+			Address address = searchService.placeConvertToAdress(srhReq);
+			addressList.add(address);
+			return addressList;
+		}else if(addressList.size() < 8) {
+			return addressList.subList(0, addressList.size());
+		}else {
+			return addressList.subList(0, 10);
+		}
 	}
 	
 	
