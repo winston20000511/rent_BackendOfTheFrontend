@@ -18,7 +18,7 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 
-import demo.model.Address;
+import demo.model.AddressTableBean;
 import demo.repository.SearchRepository;
 import helper.SearchHelper;
 
@@ -31,23 +31,23 @@ public class SearchService {
 	@Value("${google.api.key}")
 	private String apiKey;
 	
-	public List<Address> findAll() {
+	public List<AddressTableBean> findAll() {
 		return searchRepo.findAll();
 	}
 	
-	public List<Address> findByCity(String city){
+	public List<AddressTableBean> findByCity(String city){
 		return searchRepo.findByCity(city);
 	}
 	
-	public List<Address> findByKeyWord(String name){
+	public List<AddressTableBean> findByKeyWord(String name){
 		return searchRepo.findByKeyWord(name);
 	}
 	
-	public List<Address> addressUpdateAll(List<Address> addressList) {
+	public List<AddressTableBean> addressUpdateAll(List<AddressTableBean> addressList) {
 		return searchRepo.saveAll(addressList);
 	}
 	
-	public List<Address> updateFakeAddress(String filePath,List<Address> addressList){
+	public List<AddressTableBean> updateFakeAddress(String filePath,List<AddressTableBean> addressList){
 		
 		List<String> lists = SearchHelper.openfileRead(filePath);
 		
@@ -62,7 +62,7 @@ public class SearchService {
 		return addressList;
 	}
 	
-	public List<Address> getLatAndLngGoogleAPI(List<Address> addressList) {
+	public List<AddressTableBean> getLatAndLngGoogleAPI(List<AddressTableBean> addressList) {
 		
 		addressList.forEach(p->{
 			if (p.getLat() == null) {
@@ -111,10 +111,10 @@ public class SearchService {
 		return addressList;
 	}
 	
-	public Address placeConvertToAdress(String origin) {
+	public AddressTableBean placeConvertToAdress(String origin) {
 		
 		String encodedAddress;
-		Address address = new Address();
+		AddressTableBean address = new AddressTableBean();
 		try {
 			encodedAddress = java.net.URLEncoder.encode(origin,"UTF-8");
 			String urlString = "https://maps.googleapis.com/maps/api/geocode/json?address=" 

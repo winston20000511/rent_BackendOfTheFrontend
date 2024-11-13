@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name="address_table")
-public class Address {
+public class AddressTableBean {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

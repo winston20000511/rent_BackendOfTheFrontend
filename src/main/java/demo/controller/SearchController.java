@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import demo.dto.OriginRequest;
-import demo.model.Address;
+import demo.model.AddressTableBean;
 import demo.service.SearchService;
 
 @RestController
@@ -20,8 +20,8 @@ public class SearchController {
 	private SearchService searchService;
 	
 	@GetMapping("/api/test")
-	public List<Address> testupdate() {
-		List<Address> addressList = searchService.findAll();
+	public List<AddressTableBean> testupdate() {
+		List<AddressTableBean> addressList = searchService.findAll();
 		addressList = searchService.updateFakeAddress("C:\\Users\\User\\Desktop\\Rent_index\\address.csv",addressList);
 		addressList = searchService.getLatAndLngGoogleAPI(addressList);
 		addressList = searchService.addressUpdateAll(addressList);
@@ -32,9 +32,9 @@ public class SearchController {
 	// TODO
 	@CrossOrigin(origins = "*")
 	@PostMapping("/api/map")
-	public List<Address> searchShowMap(@RequestBody OriginRequest request) {
-		Address origin = searchService.placeConvertToAdress(request.getOrigin());
-		List<Address> addressList = searchService.findByCity(origin.getCity());
+	public List<AddressTableBean> searchShowMap(@RequestBody OriginRequest request) {
+		AddressTableBean origin = searchService.placeConvertToAdress(request.getOrigin());
+		List<AddressTableBean> addressList = searchService.findByCity(origin.getCity());
 		addressList.add(0,origin);
 		
 		
@@ -44,7 +44,7 @@ public class SearchController {
 	
 	@CrossOrigin(origins="*")
 	@PostMapping("/api/keyword")
-	public List<Address> searchShowText(@RequestBody String srhReq){
+	public List<AddressTableBean> searchShowText(@RequestBody String srhReq){
 //		Address address = searchService.placeConvertToAdress(srhReq);
 //		List<Address> addressList = searchService.findByKeyWord(address.getCity()+address.getTownship()+address.getStreet());
 //		if (addressList.size() == 0 ) {
@@ -55,7 +55,7 @@ public class SearchController {
 //		}else {
 //			return addressList.subList(0, 10);
 //		}
-		List<Address> addressList = searchService.findByKeyWord(srhReq);
+		List<AddressTableBean> addressList = searchService.findByKeyWord(srhReq);
 		return addressList.subList(0, 10);
 		
 	}

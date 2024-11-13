@@ -1,61 +1,101 @@
 package demo.model;
 
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="house_table")
-public class House {
+@Table(name = "house_table")
+public class HouseTableBean {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long house_id;
-	
-	@Column(name="user_id")
+
+	@Column(name = "user_id")
 	private long user_id;
-	
-	@Column(name="title")
+
+	@Column(name = "title")
 	private String title;
-	
-	@Column(name="price")
+
+	@Column(name = "price")
 	private long price;
-	
-	@Column(name="description")
+
+	@Column(name = "description")
 	private String description;
-	
-	@Column(name="size")
+
+	@Column(name = "size")
 	private int size;
-	
-	@Column(name="address_id")
+
+	@Column(name = "address_id")
 	private long address_id;
-	
-	@Column(name="room")
+
+	@Column(name = "room")
 	private short room;
-	
-	@Column(name="bathroom")
+
+	@Column(name = "bathroom")
 	private short bathroom;
-	
-	@Column(name="livingroom")
+
+	@Column(name = "livingroom")
 	private short livingroom;
-	
-	@Column(name="kitchen")
+
+	@Column(name = "kitchen")
 	private short kitchen;
-	
-	@Column(name="housetype")
+
+	@Column(name = "housetype")
 	private byte housetype;
-	
-	@Column(name="floor")
+
+	@Column(name = "floor")
 	private short floor;
-	
-	@Column(name="atticAddition")
+
+	@Column(name = "atticAddition")
 	private boolean atticAddition;
-	
-	@Column(name="status")
+
+	@Column(name = "status")
 	private short status;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "address_id", nullable = true)
+	private AddressTableBean address;
+
+	public AddressTableBean getAddress() {
+		return address;
+	}
+
+	public void setAddress(AddressTableBean address) {
+		this.address = address;
+	}
+
+	public List<FurnitureTableBean> getFurnitureList() {
+		return furnitureList;
+	}
+
+	public void setFurnitureList(List<FurnitureTableBean> furnitureList) {
+		this.furnitureList = furnitureList;
+	}
+
+	public List<ConditionTableBean> getHouseRestrictionsList() {
+		return houseRestrictionsList;
+	}
+
+	public void setHouseRestrictionsList(List<ConditionTableBean> houseRestrictionsList) {
+		this.houseRestrictionsList = houseRestrictionsList;
+	}
+
+	@OneToMany(mappedBy = "house", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<FurnitureTableBean> furnitureList;
+
+	@OneToMany(mappedBy = "house", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<ConditionTableBean> houseRestrictionsList;
 
 	public long getHouse_id() {
 		return house_id;
@@ -176,10 +216,5 @@ public class House {
 	public void setStatus(short status) {
 		this.status = status;
 	}
-	
-	
-	
-	
-	
-	
+
 }
