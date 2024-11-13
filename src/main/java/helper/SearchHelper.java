@@ -1,10 +1,13 @@
 package helper;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SearchHelper {
 	
@@ -62,5 +65,25 @@ public class SearchHelper {
 		conn.disconnect();
 		
 		return content;
+	}
+
+	public static List<String> openfileRead(String filePath){
+		
+		List<String> lists = new ArrayList<String>();
+		
+		try (FileInputStream fis = new FileInputStream(filePath);
+			InputStreamReader isr = new InputStreamReader(fis,"MS950");
+			BufferedReader br = new BufferedReader(isr);)
+		{
+			String line;
+			//line = br.readLine();
+			while((line =br.readLine()) != null) {
+				lists.add(line);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		return lists;
 	}
 }

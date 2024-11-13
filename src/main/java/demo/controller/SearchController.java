@@ -22,7 +22,7 @@ public class SearchController {
 	@GetMapping("/api/test")
 	public List<Address> testupdate() {
 		List<Address> addressList = searchService.findAll();
-		addressList = searchService.updateFakeAddress("C:\\Users\\User\\Desktop\\Rent_index\\address7.csv",addressList);
+		addressList = searchService.updateFakeAddress("C:\\Users\\User\\Desktop\\Rent_index\\address.csv",addressList);
 		addressList = searchService.getLatAndLngGoogleAPI(addressList);
 		addressList = searchService.addressUpdateAll(addressList);
 
@@ -37,7 +37,27 @@ public class SearchController {
 		List<Address> addressList = searchService.findByCity(origin.getCity());
 		addressList.add(0,origin);
 		
+		
+		
 		return addressList;
+	}
+	
+	@CrossOrigin(origins="*")
+	@PostMapping("/api/keyword")
+	public List<Address> searchShowText(@RequestBody String srhReq){
+//		Address address = searchService.placeConvertToAdress(srhReq);
+//		List<Address> addressList = searchService.findByKeyWord(address.getCity()+address.getTownship()+address.getStreet());
+//		if (addressList.size() == 0 ) {
+//			addressList.add(address);
+//			return addressList;
+//		}else if(addressList.size() < 8) {
+//			return addressList.subList(0, addressList.size());
+//		}else {
+//			return addressList.subList(0, 10);
+//		}
+		List<Address> addressList = searchService.findByKeyWord(srhReq);
+		return addressList.subList(0, 10);
+		
 	}
 	
 	

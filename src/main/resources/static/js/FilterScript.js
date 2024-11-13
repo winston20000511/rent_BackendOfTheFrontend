@@ -15,3 +15,11 @@ async function testFetch(){
 	})
 
 }
+
+// doSomething().then(function(result){
+// 	return doSomethingElse(result);})
+// 	.then(function(newResult){
+// 	return doThirdThing(newResult);})
+// 	.then(function(finalResult){
+// 	console.log('final result:' + finalResult)})
+

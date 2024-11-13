@@ -132,6 +132,10 @@ header{
     border: 5px solid blue;
     border-radius: 10px;
 }
+#searchList{
+    display: none;
+    z-index: 5;
+}
 
 
 .filter-right{

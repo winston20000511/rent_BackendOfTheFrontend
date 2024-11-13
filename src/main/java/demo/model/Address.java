@@ -30,9 +30,20 @@ public class Address {
 	@Column(name="lng")
 	private Double lng;
 	
+	@Column(name="searchCount")
+	private int searchCount;
+	
 
 	public long getAddress_id() {
 		return address_id;
+	}
+
+	public int getSearchCount() {
+		return searchCount;
+	}
+
+	public void setSearchCount(int searchCount) {
+		this.searchCount = searchCount;
 	}
 
 	public void setAddress_id(long address_id) {

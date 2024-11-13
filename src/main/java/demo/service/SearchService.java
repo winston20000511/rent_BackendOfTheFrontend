@@ -39,26 +39,17 @@ public class SearchService {
 		return searchRepo.findByCity(city);
 	}
 	
+	public List<Address> findByKeyWord(String name){
+		return searchRepo.findByKeyWord(name);
+	}
+	
 	public List<Address> addressUpdateAll(List<Address> addressList) {
 		return searchRepo.saveAll(addressList);
 	}
 	
 	public List<Address> updateFakeAddress(String filePath,List<Address> addressList){
 		
-		List<String> lists = new ArrayList<String>();
-		
-		try (FileInputStream fis = new FileInputStream(filePath);
-			InputStreamReader isr = new InputStreamReader(fis,"MS950");
-			BufferedReader br = new BufferedReader(isr);)
-		{
-			String line;
-			//line = br.readLine();
-			while((line =br.readLine()) != null) {
-				lists.add(line);
-			}
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
+		List<String> lists = SearchHelper.openfileRead(filePath);
 		
 		for (int i = 0; i < addressList.size(); i++) {
 			
