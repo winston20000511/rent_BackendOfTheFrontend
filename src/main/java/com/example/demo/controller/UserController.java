@@ -6,7 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import com.example.demo.model.User;
+import com.example.demo.model.UserBean;
 import com.example.demo.service.UserService;
 
 import jakarta.servlet.http.HttpSession;
@@ -26,7 +26,7 @@ public class UserController {
 	@PostMapping("/users/loginPost")
 	public String loginPost(String username, String password, Model model, HttpSession httpSession) {
 
-		User result = userService.checkLogin(username, password);
+		UserBean result = userService.checkLogin(username, password);
 		if (result != null) {
 			httpSession.setAttribute("loginUserId", result.getUserId());
 			httpSession.setAttribute("loginUserName", result.getName());

@@ -14,17 +14,17 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "booking_table")
-public class Booking {
+public class BookingBean {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@MapsId("houseId")
 	@JoinColumn(name = "house_id")
-	private House houses;
+	private HouseBean houses;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@MapsId("userId")
-	@JoinColumn(name = "rentUser_id")
-	private User rentUser;	
+	@JoinColumn(name = "user_id")
+	private UserBean rentUser;	
 	
 	@EmbeddedId
 	private BookingId id;
@@ -33,7 +33,7 @@ public class Booking {
 	private Time toTime;
 	private String status;
 	
-	public Booking() {
+	public BookingBean() {
 		
 	}
 	
@@ -82,19 +82,19 @@ public class Booking {
 		this.status = status;
 	}
 
-	public User getUser() {
+	public UserBean getUser() {
 		return rentUser;
 	}
 
-	public void setUser(User user) {
+	public void setUser(UserBean user) {
 		this.rentUser = user;
 	}
 
-	public House getHouses() {
+	public HouseBean getHouses() {
 		return houses;
 	}
 
-	public void setHouses(House houses) {
+	public void setHouses(HouseBean houses) {
 		this.houses = houses;
 	}
 	

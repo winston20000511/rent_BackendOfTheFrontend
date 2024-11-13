@@ -14,22 +14,23 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "house_table")
-public class House {
+public class HouseBean {
 	@Id
 	@Column(name = "house_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer houseId;
+	private int houseId;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "use_id")
-	private User user;
+	@JoinColumn(name = "user_id")
+	private UserBean user;
 	
-	@JoinColumn(name = "address_id")
-	private Integer addressId;
+//	@OneToOne(fetch = FetchType.LAZY)
+	@Column(name = "address_id")
+	private int addressId;
 	private String	title;
-	private Integer	price;
+	private int	price;
 	private String	description;
-	private Integer	size;
+	private int	size;
 	private String	township;
 	private String	street;
 	private Byte	room;
@@ -39,37 +40,37 @@ public class House {
 	private Byte	floor;
 	private Boolean	atticAddition;
 	private Byte status;
-	private Integer clickCount;
+	private int clickCount;
 	
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "Houses", cascade = CascadeType.ALL)
 	@PrimaryKeyJoinColumn
 	private HouseBookingTimeSlot bookingTimeSlot;
 
-	public House() {
+	public HouseBean() {
 		
 	}
 
-	public Integer getHouseId() {
+	public int getHouseId() {
 		return houseId;
 	}
 
-	public void setHouseId(Integer houseId) {
+	public void setHouseId(int houseId) {
 		this.houseId = houseId;
 	}
 
-	public User getUser() {
+	public UserBean getUser() {
 		return user;
 	}
 
-	public void setUser(User user) {
+	public void setUser(UserBean user) {
 		this.user = user;
 	}
 
-	public Integer getAddressId() {
+	public int getAddressId() {
 		return addressId;
 	}
 
-	public void setAddressId(Integer addressId) {
+	public void setAddressId(int addressId) {
 		this.addressId = addressId;
 	}
 
@@ -81,11 +82,11 @@ public class House {
 		this.title = title;
 	}
 
-	public Integer getPrice() {
+	public int getPrice() {
 		return price;
 	}
 
-	public void setPrice(Integer price) {
+	public void setPrice(int price) {
 		this.price = price;
 	}
 
@@ -97,11 +98,11 @@ public class House {
 		this.description = description;
 	}
 
-	public Integer getSize() {
+	public int getSize() {
 		return size;
 	}
 
-	public void setSize(Integer size) {
+	public void setSize(int size) {
 		this.size = size;
 	}
 
@@ -177,11 +178,11 @@ public class House {
 		this.status = status;
 	}
 
-	public Integer getClickCount() {
+	public int getClickCount() {
 		return clickCount;
 	}
 
-	public void setClickCount(Integer clickCount) {
+	public void setClickCount(int clickCount) {
 		this.clickCount = clickCount;
 	}
 
@@ -192,5 +193,7 @@ public class House {
 	public void setBookingTimeSlot(HouseBookingTimeSlot bookingTimeSlot) {
 		this.bookingTimeSlot = bookingTimeSlot;
 	}
+
+	
 
 }

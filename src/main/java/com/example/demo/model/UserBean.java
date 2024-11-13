@@ -10,13 +10,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "user_tabale")
-public class User {
+@Table(name = "user_table")
+public class UserBean {
 	
 	@Id @Column(name = "user_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer userId;
-	private String name;
+	
+	private String name;	
 	private String email;
 	private String password;
 	private String phone;
@@ -25,7 +26,7 @@ public class User {
 	private Integer gender;
 	private Integer status;
 	
-	public User() {
+	public UserBean() {
 		
 	}
 
