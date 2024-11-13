@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ORDER CONFIRMATION</title>
+    <link rel="stylesheet" href="../static/css/styles.css" />
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@^2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header>
+      <ul class="nav-left">
+        <li><a href="#">Buy</a></li>
+        <li class="link"><a href="#">Rent</a></li>
+      </ul>
+
+      <ul class="list" id="list-left-1">
+        <a href="#" class="list-item">item 1</a>
+        <a href="#" class="list-item">item 2</a>
+        <a href="#" class="list-item">item 3</a>
+        <a href="#" class="list-item">item 4</a>
+      </ul>
+
+      <div class="nav-middle">
+        <img src="../static/Logo3.jpg" alt="" />
+
+        <div class="nav-title">
+          <h1>house</h1>
+        </div>
+      </div>
+      <div class="nav-right">
+        <li><a href="#">Manage Rentals</a></li>
+        <li><a href="#">Advertise</a></li>
+        <li><a href="#">Help</a></li>
+        <li><a href="#">Sign In</a></li>
+      </div>
+    </header>
+
+    <div>訂單確認</div>
+    <hr />
+
+    <br/>
+      <h3>請確認訂單內容</h3>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th class="table-primary" scope="col">廣告編號</th>
+            <th class="table-primary" scope="col">房屋標題</th>
+            <th class="table-primary" scope="col">廣告類型</th>
+            <th class="table-primary" scope="col">廣告天期</th>
+            <th class="table-primary" scope="col">廣告金額</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">1</th>
+            <td><a href="#">房屋頁面</a></td>
+            <td>A類型</td>
+            <td>30天</td>
+            <td>10000</td>
+          </tr>
+          <tr>
+            <th colspan="3"></th>
+            <th>總計 10000</th>
+            <th><a class="btn btn-primary" href="#" role="button">前往付款</a></th>
+          </tr>
+        </tbody>
+      </table>
+      
+    </div>
+
+    <footer></footer>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=YOURAPI&callback=initMap&v=weekly&libraries=marker,places"
+      defer
+    ></script>
+    <script src="../static/js/bootstrap.bundle.min.js"></script>
+    <script src="../static/scriptCard.js"></script>
+    <script src="../static/scriptList.js"></script>
+    <script src="../static/scriptButton.js"></script>
+    <script src="../static/scriptGoogle.js"></script>
+  </body>
+</html>

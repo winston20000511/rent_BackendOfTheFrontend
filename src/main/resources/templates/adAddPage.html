@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ADD AD</title>
+    <link rel="stylesheet" href="../static/css/styles.css" />
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@^2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../static/css/adAndOrderFront.css" />
+  </head>
+  <body>
+    <header>
+      <ul class="nav-left">
+        <li><a href="#">Buy</a></li>
+        <li class="link"><a href="#">Rent</a></li>
+      </ul>
+
+      <ul class="list" id="list-left-1">
+        <a href="#" class="list-item">item 1</a>
+        <a href="#" class="list-item">item 2</a>
+        <a href="#" class="list-item">item 3</a>
+        <a href="#" class="list-item">item 4</a>
+      </ul>
+
+      <div class="nav-middle">
+        <img src="../static/Logo3.jpg" alt="" />
+
+        <div class="nav-title">
+          <h1>house</h1>
+        </div>
+      </div>
+      <div class="nav-right">
+        <li><a href="#">Manage Rentals</a></li>
+        <li><a href="#">Advertise</a></li>
+        <li><a href="#">Help</a></li>
+        <li><a href="#">Sign In</a></li>
+      </div>
+    </header>
+
+    <div>新增廣告</div>
+    <hr />
+
+    <div>自有房屋搜尋</div>
+    <div>
+      <!--添加 flex box-->
+      <form>title搜尋</form>
+    </div>
+    <hr />
+
+    <br/>
+
+    <h3>現有上架的房屋(table分頁+搜尋)</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="table-primary" scope="col">房屋編號</th>
+          <th class="table-primary" scope="col">房屋標題</th>
+          <th class="table-primary" scope="col">廣告類型</th>
+          <th class="table-primary" scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">1</th>
+          <td><a href="#">房屋頁面</a></td>
+          <td>
+            選單選擇 A OR B
+          </td>
+          <td><a class="btn btn-primary" href="#" role="button">加入廣告</a></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <footer></footer>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=YOURAPI&callback=initMap&v=weekly&libraries=marker,places"
+      defer
+    ></script>
+    <script src="../static/js/bootstrap.bundle.min.js"></script>
+    <script src="../static/scriptCard.js"></script>
+    <script src="../static/scriptList.js"></script>
+    <script src="../static/scriptButton.js"></script>
+    <script src="../static/scriptGoogle.js"></script>
+  </body>
+</html>
