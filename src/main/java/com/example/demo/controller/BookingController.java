@@ -12,5 +12,4 @@ public class BookingController {
 		return "bookingPage";
 	}
 	
-	
 }
