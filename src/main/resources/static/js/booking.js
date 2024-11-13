@@ -67,7 +67,7 @@ $("#calendar").datepicker({
 
 		// display day and month on submit button
 		var monthName = months[month - 1];
-		$(".request .day").text(monthName + " " + day + " 日");
+		$(".request .day").text(year+"年 "+monthName + " " + day + "日");
 
 		todayEqualActive();
 
