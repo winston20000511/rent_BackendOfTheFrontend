@@ -16,17 +16,15 @@
         <ul class="nav-left">
             <li><a href="#">Buy</a></li>
             <li class="link"><a href="#">Rent</a></li>
-            <li><a th:href="@{/booking/page}">預約</a></li>
-            <li><button id="bookingButton">預約</button></li>
         </ul>
-
+	
         <ul class="list" id="list-left-1">
             <a href="#" class="list-item">item 1</a>
             <a href="#" class="list-item">item 2</a>
             <a href="#" class="list-item">item 3</a>
             <a href="#" class="list-item">item 4</a>
         </ul>
-
+	
         <div class="nav-middle">
             <img src="../static/Logo3.jpg" alt="">
             
@@ -39,7 +37,9 @@
             <li><a href="#">Manage Rentals</a></li>
             <li><a href="#">Advertise</a></li>
             <li><a href="#">Help</a></li>
-            <li><a href="#">Sign In</a></li>
+            <div th:if="!${session.loginUserName}"><a th:href="@{/users/login}">Sign In</a></div>
+            <div  th:if="${session.loginUserName}"><p>我是: <span th:text="${session.loginUserName}"></span></p></div>
+        
         </div>
     </header>
 
@@ -79,9 +79,7 @@
     <script src="scriptButton.js"></script>
     <script src="scriptGoogle.js"></script>
 	<script>
-		document.getElementById("bookingButton").onclick=function(){
-            window.location.href="/booking/page";
-        };
+		
 	
 	</script>
 </body>
