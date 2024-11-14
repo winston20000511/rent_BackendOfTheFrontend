@@ -59,6 +59,7 @@ public class HouseBean {
 
 	@Column(name = "address_id")
 	private Long address;
+
 	
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "HouseId", cascade = CascadeType.ALL)
 	@PrimaryKeyJoinColumn
@@ -68,19 +69,19 @@ public class HouseBean {
 		
 	}
 
-	public long getHouseId() {
+	public Long getHouseId() {
 		return houseId;
 	}
 
-	public void setHouseId(long houseId) {
+	public void setHouseId(Long houseId) {
 		this.houseId = houseId;
 	}
 
-	public long getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(long userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 
@@ -92,11 +93,11 @@ public class HouseBean {
 		this.title = title;
 	}
 
-	public long getPrice() {
+	public Long getPrice() {
 		return price;
 	}
 
-	public void setPrice(long price) {
+	public void setPrice(Long price) {
 		this.price = price;
 	}
 
@@ -108,75 +109,75 @@ public class HouseBean {
 		this.description = description;
 	}
 
-	public int getSize() {
+	public Integer getSize() {
 		return size;
 	}
 
-	public void setSize(int size) {
+	public void setSize(Integer size) {
 		this.size = size;
 	}
 
-	public short getRoom() {
+	public Short getRoom() {
 		return room;
 	}
 
-	public void setRoom(short room) {
+	public void setRoom(Short room) {
 		this.room = room;
 	}
 
-	public short getBathroom() {
+	public Short getBathroom() {
 		return bathroom;
 	}
 
-	public void setBathroom(short bathroom) {
+	public void setBathroom(Short bathroom) {
 		this.bathroom = bathroom;
 	}
 
-	public short getLivingroom() {
+	public Short getLivingroom() {
 		return livingroom;
 	}
 
-	public void setLivingroom(short livingroom) {
+	public void setLivingroom(Short livingroom) {
 		this.livingroom = livingroom;
 	}
 
-	public short getKitchen() {
+	public Short getKitchen() {
 		return kitchen;
 	}
 
-	public void setKitchen(short kitchen) {
+	public void setKitchen(Short kitchen) {
 		this.kitchen = kitchen;
 	}
 
-	public byte getHousetype() {
+	public Byte getHousetype() {
 		return housetype;
 	}
 
-	public void setHousetype(byte housetype) {
+	public void setHousetype(Byte housetype) {
 		this.housetype = housetype;
 	}
 
-	public short getFloor() {
+	public Short getFloor() {
 		return floor;
 	}
 
-	public void setFloor(short floor) {
+	public void setFloor(Short floor) {
 		this.floor = floor;
 	}
 
-	public boolean isAtticAddition() {
+	public Boolean getAtticAddition() {
 		return atticAddition;
 	}
 
-	public void setAtticAddition(boolean atticAddition) {
+	public void setAtticAddition(Boolean atticAddition) {
 		this.atticAddition = atticAddition;
 	}
 
-	public short getStatus() {
+	public Short getStatus() {
 		return status;
 	}
 
-	public void setStatus(short status) {
+	public void setStatus(Short status) {
 		this.status = status;
 	}
 
