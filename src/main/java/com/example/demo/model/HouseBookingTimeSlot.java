@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.Time;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -16,8 +17,12 @@ import jakarta.persistence.Table;
 @Table(name = "houseBookingTimeSlot_tabel")
 public class HouseBookingTimeSlot {
 	
-	@Id
-	private Integer houseId;
+	@EmbeddedId
+	@MapsId
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "house_id")
+	private HouseBean HouseId;
+	
 	@Column(name = "form_date")
 	private Date fromDate;
 	@Column(name = "to_date")
@@ -27,73 +32,80 @@ public class HouseBookingTimeSlot {
 	@Column(name = "to_time")
 	private Time to_date;
 	@Column(name = "duration")
-	private Integer duration;
+	private Short duration;
 	@Column(name = "week_day")
-	private String weekDay;
-
-	@MapsId
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "house_id")
-	private HouseBean Houses;
+	private Short weekDay;
 	
-
 	public HouseBookingTimeSlot() {
-	}
-
-	public Integer getHouseId() {
-		return houseId;
-	}
-
-	public void setHouseId(Integer houseId) {
-		this.houseId = houseId;
 	}
 
 	public Date getFromDate() {
 		return fromDate;
 	}
 
+
 	public void setFromDate(Date fromDate) {
 		this.fromDate = fromDate;
 	}
+
 
 	public Date getToDate() {
 		return toDate;
 	}
 
+
 	public void setToDate(Date toDate) {
 		this.toDate = toDate;
 	}
+
 
 	public Time getFromTime() {
 		return fromTime;
 	}
 
+
 	public void setFromTime(Time fromTime) {
 		this.fromTime = fromTime;
 	}
+
 
 	public Time getTo_date() {
 		return to_date;
 	}
 
+
 	public void setTo_date(Time to_date) {
 		this.to_date = to_date;
 	}
 
-	public Integer getDuration() {
+
+	public Short getDuration() {
 		return duration;
 	}
 
-	public void setDuration(Integer duration) {
+
+	public void setDuration(Short duration) {
 		this.duration = duration;
 	}
 
-	public HouseBean getHouses() {
-		return Houses;
+
+	public Short getWeekDay() {
+		return weekDay;
 	}
 
-	public void setHouses(HouseBean houses) {
-		Houses = houses;
+
+	public void setWeekDay(Short weekDay) {
+		this.weekDay = weekDay;
 	}
-	
+
+
+	public HouseBean getHouses() {
+		return HouseId;
+	}
+
+
+	public void setHouses(HouseBean houses) {
+		HouseId = houses;
+	}
+
 }

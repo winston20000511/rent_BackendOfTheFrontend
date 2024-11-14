@@ -6,8 +6,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
@@ -16,33 +14,53 @@ import jakarta.persistence.Table;
 @Table(name = "house_table")
 public class HouseBean {
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "house_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int houseId;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id")
-	private UserBean user;
-	
-//	@OneToOne(fetch = FetchType.LAZY)
+	private Long houseId;
+
+	@Column(name = "user_id")
+	private Long userId;
+
+	@Column(name = "title")
+	private String title;
+
+	@Column(name = "price")
+	private Long price;
+
+	@Column(name = "description")
+	private String description;
+
+	@Column(name = "size")
+	private Integer size;
+
+	@Column(name = "room")
+	private Short room;
+
+	@Column(name = "bathroom")
+	private Short bathroom;
+
+	@Column(name = "livingroom")
+	private Short livingroom;
+
+	@Column(name = "kitchen")
+	private Short kitchen;
+
+	@Column(name = "housetype")
+	private Byte housetype;
+
+	@Column(name = "floor")
+	private Short floor;
+
+	@Column(name = "atticAddition")
+	private Boolean atticAddition;
+
+	@Column(name = "status")
+	private Short status;
+
 	@Column(name = "address_id")
-	private int addressId;
-	private String	title;
-	private int	price;
-	private String	description;
-	private int	size;
-	private String	township;
-	private String	street;
-	private Byte	room;
-	private Byte	bathroom;
-	private Byte	livingroom;
-	private Byte	kitchen;
-	private Byte	floor;
-	private Boolean	atticAddition;
-	private Byte status;
-	private int clickCount;
+	private Long address;
 	
-	@OneToOne(fetch = FetchType.LAZY, mappedBy = "Houses", cascade = CascadeType.ALL)
+	@OneToOne(fetch = FetchType.LAZY, mappedBy = "HouseId", cascade = CascadeType.ALL)
 	@PrimaryKeyJoinColumn
 	private HouseBookingTimeSlot bookingTimeSlot;
 
@@ -50,28 +68,20 @@ public class HouseBean {
 		
 	}
 
-	public int getHouseId() {
+	public long getHouseId() {
 		return houseId;
 	}
 
-	public void setHouseId(int houseId) {
+	public void setHouseId(long houseId) {
 		this.houseId = houseId;
 	}
 
-	public UserBean getUser() {
-		return user;
+	public long getUserId() {
+		return userId;
 	}
 
-	public void setUser(UserBean user) {
-		this.user = user;
-	}
-
-	public int getAddressId() {
-		return addressId;
-	}
-
-	public void setAddressId(int addressId) {
-		this.addressId = addressId;
+	public void setUserId(long userId) {
+		this.userId = userId;
 	}
 
 	public String getTitle() {
@@ -82,11 +92,11 @@ public class HouseBean {
 		this.title = title;
 	}
 
-	public int getPrice() {
+	public long getPrice() {
 		return price;
 	}
 
-	public void setPrice(int price) {
+	public void setPrice(long price) {
 		this.price = price;
 	}
 
@@ -106,84 +116,76 @@ public class HouseBean {
 		this.size = size;
 	}
 
-	public String getTownship() {
-		return township;
-	}
-
-	public void setTownship(String township) {
-		this.township = township;
-	}
-
-	public String getStreet() {
-		return street;
-	}
-
-	public void setStreet(String street) {
-		this.street = street;
-	}
-
-	public Byte getRoom() {
+	public short getRoom() {
 		return room;
 	}
 
-	public void setRoom(Byte room) {
+	public void setRoom(short room) {
 		this.room = room;
 	}
 
-	public Byte getBathroom() {
+	public short getBathroom() {
 		return bathroom;
 	}
 
-	public void setBathroom(Byte bathroom) {
+	public void setBathroom(short bathroom) {
 		this.bathroom = bathroom;
 	}
 
-	public Byte getLivingroom() {
+	public short getLivingroom() {
 		return livingroom;
 	}
 
-	public void setLivingroom(Byte livingroom) {
+	public void setLivingroom(short livingroom) {
 		this.livingroom = livingroom;
 	}
 
-	public Byte getKitchen() {
+	public short getKitchen() {
 		return kitchen;
 	}
 
-	public void setKitchen(Byte kitchen) {
+	public void setKitchen(short kitchen) {
 		this.kitchen = kitchen;
 	}
 
-	public Byte getFloor() {
+	public byte getHousetype() {
+		return housetype;
+	}
+
+	public void setHousetype(byte housetype) {
+		this.housetype = housetype;
+	}
+
+	public short getFloor() {
 		return floor;
 	}
 
-	public void setFloor(Byte floor) {
+	public void setFloor(short floor) {
 		this.floor = floor;
 	}
 
-	public Boolean getAtticAddition() {
+	public boolean isAtticAddition() {
 		return atticAddition;
 	}
 
-	public void setAtticAddition(Boolean atticAddition) {
+	public void setAtticAddition(boolean atticAddition) {
 		this.atticAddition = atticAddition;
 	}
 
-	public Byte getStatus() {
+	public short getStatus() {
 		return status;
 	}
 
-	public void setStatus(Byte status) {
+	public void setStatus(short status) {
 		this.status = status;
 	}
 
-	public int getClickCount() {
-		return clickCount;
+	public Long getAddress() {
+		return address;
 	}
 
-	public void setClickCount(int clickCount) {
-		this.clickCount = clickCount;
+	public void setAddress(Long address) {
+		this.address = address;
 	}
 
 	public HouseBookingTimeSlot getBookingTimeSlot() {
@@ -193,7 +195,5 @@ public class HouseBean {
 	public void setBookingTimeSlot(HouseBookingTimeSlot bookingTimeSlot) {
 		this.bookingTimeSlot = bookingTimeSlot;
 	}
-
-	
 
 }

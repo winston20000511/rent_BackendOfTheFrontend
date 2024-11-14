@@ -15,7 +15,7 @@ public class UserBean {
 	
 	@Id @Column(name = "user_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer userId;
+	private Long userId;
 	
 	private String name;	
 	private String email;
@@ -23,18 +23,18 @@ public class UserBean {
 	private String phone;
 	private byte[] picture;
 	private Timestamp createtime;
-	private Integer gender;
-	private Integer status;
+	private Byte gender;
+	private Byte status;
 	
 	public UserBean() {
 		
 	}
 
-	public Integer getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Integer userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 
@@ -86,20 +86,20 @@ public class UserBean {
 		this.createtime = createtime;
 	}
 
-	public Integer getGender() {
+	public Byte getGender() {
 		return gender;
 	}
 
-	public void setGender(Integer gender) {
+	public void setGender(Byte gender) {
 		this.gender = gender;
 	}
 
-	public Integer getStatus() {
+	public Byte getStatus() {
 		return status;
 	}
 
-	public void setStatus(Integer status) {
+	public void setStatus(Byte status) {
 		this.status = status;
 	}
-	
+
 }

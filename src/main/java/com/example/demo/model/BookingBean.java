@@ -7,6 +7,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
@@ -16,21 +19,29 @@ import jakarta.persistence.Table;
 @Table(name = "booking_table")
 public class BookingBean {
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@MapsId("houseId")
-	@JoinColumn(name = "house_id")
-	private HouseBean houses;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "booking_id")
+	private Long id; 
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@MapsId("userId")
+	@JoinColumn(name = "house_id")
+	private HouseBean house;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private UserBean rentUser;	
+
+	@Column(name = "booking_date")
+	private Date bookingDate;
 	
-	@EmbeddedId
-	private BookingId id;
-	private Date date;
+	@Column(name = "start_time")
 	private Time fromTime;
+	
+	@Column(name = "end_time")
 	private Time toTime;
+	
+	@Column(name = "status")
 	private String status;
 	
 	public BookingBean() {
@@ -39,63 +50,8 @@ public class BookingBean {
 	
 	public boolean isOwner() {
 		
-		return rentUser.getUserId().equals(houses.getUser().getUserId());
+		return rentUser.getUserId().equals(house.getUserId());
 	}
-
-	public BookingId getId() {
-		return id;
-	}
-
-	public void setId(BookingId id) {
-		this.id = id;
-	}
-
-	public Date getDate() {
-		return date;
-	}
-
-	public void setDate(Date date) {
-		this.date = date;
-	}
-
-	public Time getFromTime() {
-		return fromTime;
-	}
-
-	public void setFromTime(Time fromTime) {
-		this.fromTime = fromTime;
-	}
-
-	public Time getToTime() {
-		return toTime;
-	}
-
-	public void setToTime(Time toTime) {
-		this.toTime = toTime;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	public UserBean getUser() {
-		return rentUser;
-	}
-
-	public void setUser(UserBean user) {
-		this.rentUser = user;
-	}
-
-	public HouseBean getHouses() {
-		return houses;
-	}
-
-	public void setHouses(HouseBean houses) {
-		this.houses = houses;
-	}
+	
 	
 }
