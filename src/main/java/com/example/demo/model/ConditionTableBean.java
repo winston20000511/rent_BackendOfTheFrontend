@@ -1,4 +1,4 @@
-package demo.model;
+package com.example.demo.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,7 +15,7 @@ import jakarta.persistence.Table;
 public class ConditionTableBean {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long conditionId;
+	private Long conditionId;
 	@Column(name="houseId")
 	private Integer houseId;
 	@Column(name = "pet")
@@ -37,10 +37,10 @@ public class ConditionTableBean {
 	@Column(name = "genderRestrictions")
 	private Boolean genderRestrictions;
 	
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "houseid", nullable = false)
-    private HouseTableBean HouseTableBean;
-	
+	   @ManyToOne
+	    @JoinColumn(name = "houseId", referencedColumnName = "house_id", insertable = false, updatable = false)
+	    private HouseTableBean house;
+	   
 	public ConditionTableBean() {
 		
 	}

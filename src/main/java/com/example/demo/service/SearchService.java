@@ -1,15 +1,8 @@
-package demo.service;
+package com.example.demo.service;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +11,9 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 
-import demo.model.AddressTableBean;
-import demo.repository.SearchRepository;
-import helper.SearchHelper;
+import com.example.demo.helper.SearchHelper;
+import com.example.demo.model.AddressTableBean;
+import com.example.demo.repository.SearchRepository;
 
 @Service
 public class SearchService {

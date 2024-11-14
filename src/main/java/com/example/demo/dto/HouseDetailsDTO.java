@@ -1,10 +1,10 @@
-package demo.dto;
+package com.example.demo.dto;
 
 import java.util.List;
 
-import demo.model.AddressTableBean;
-import demo.model.ConditionTableBean;
-import demo.model.FurnitureTableBean;
+import com.example.demo.model.AddressTableBean;
+import com.example.demo.model.ConditionTableBean;
+import com.example.demo.model.FurnitureTableBean;
 
 public class HouseDetailsDTO {
 	

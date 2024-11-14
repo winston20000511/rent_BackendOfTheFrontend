@@ -1,4 +1,4 @@
-package demo.controller;
+package com.example.demo.controller;
 
 import java.util.List;
 
@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import demo.dto.OriginRequest;
-import demo.model.AddressTableBean;
-import demo.service.SearchService;
+import com.example.demo.dto.OriginRequest;
+import com.example.demo.model.AddressTableBean;
+import com.example.demo.service.SearchService;
 
 @RestController
 public class SearchController {

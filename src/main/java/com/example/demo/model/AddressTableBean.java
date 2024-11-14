@@ -1,4 +1,4 @@
-package demo.model;
+package com.example.demo.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,8 +13,9 @@ public class AddressTableBean {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long address_id;
+	private Long addressId;
 	
+
 	@Column(name="city")
 	private String city;
 			
@@ -31,25 +32,17 @@ public class AddressTableBean {
 	private Double lng;
 	
 	@Column(name="searchCount")
-	private int searchCount;
+	private Integer searchCount;
+	
 	
 
-	public long getAddress_id() {
-		return address_id;
+	public Long getAddressId() {
+		return addressId;
 	}
 
-	public int getSearchCount() {
-		return searchCount;
+	public void setAddressId(Long addressId) {
+		this.addressId = addressId;
 	}
-
-	public void setSearchCount(int searchCount) {
-		this.searchCount = searchCount;
-	}
-
-	public void setAddress_id(long address_id) {
-		this.address_id = address_id;
-	}
-
 
 	public String getCity() {
 		return city;
@@ -91,8 +84,15 @@ public class AddressTableBean {
 		this.lng = lng;
 	}
 
+	public Integer getSearchCount() {
+		return searchCount;
+	}
 
-	
-	
-	
+	public void setSearchCount(Integer searchCount) {
+		this.searchCount = searchCount;
+	}
+
+	public  AddressTableBean() {
+		
+	}
 }

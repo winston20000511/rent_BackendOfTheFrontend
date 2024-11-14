@@ -1,4 +1,4 @@
-package demo.model;
+package com.example.demo.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,7 +15,7 @@ import jakarta.persistence.Table;
 public class FurnitureTableBean {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long furnitureId;
+	private Long furnitureId;
 
 	@Column(name = "house_id")
 	private Integer houseId;
@@ -44,10 +44,10 @@ public class FurnitureTableBean {
 	@Column(name = "tables")
 	private Boolean tables;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "houseid", nullable = false)
-    private HouseTableBean HouseTableBean;
-	
+	@ManyToOne
+	@JoinColumn(name = "house_id", referencedColumnName = "house_id", insertable = false, updatable = false)
+	private HouseTableBean house;
+
 	public FurnitureTableBean() {
 
 	}

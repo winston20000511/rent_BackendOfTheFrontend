@@ -1,4 +1,4 @@
-package demo.model;
+package com.example.demo.model;
 
 import java.util.List;
 
@@ -19,53 +19,51 @@ import jakarta.persistence.Table;
 public class HouseTableBean {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long house_id;
+	@Column(name = "house_id")
+	private Long houseId;
 
 	@Column(name = "user_id")
-	private long user_id;
+	private Long userId;
 
 	@Column(name = "title")
 	private String title;
 
 	@Column(name = "price")
-	private long price;
+	private Long price;
 
 	@Column(name = "description")
 	private String description;
 
 	@Column(name = "size")
-	private int size;
+	private Integer size;
 
 	@Column(name = "address_id")
-	private long address_id;
+	private Long addressId;
 
 	@Column(name = "room")
-	private short room;
+	private Short room;
 
 	@Column(name = "bathroom")
-	private short bathroom;
+	private Short bathroom;
 
 	@Column(name = "livingroom")
-	private short livingroom;
+	private Short livingroom;
 
 	@Column(name = "kitchen")
-	private short kitchen;
-
-	@Column(name = "housetype")
-	private byte housetype;
+	private Short kitchen;
 
 	@Column(name = "floor")
-	private short floor;
+	private Short floor;
 
 	@Column(name = "atticAddition")
-	private boolean atticAddition;
+	private Boolean atticAddition;
 
 	@Column(name = "status")
-	private short status;
+	private Short status;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "address_id", nullable = true)
-	private AddressTableBean address;
+    @ManyToOne
+    @JoinColumn(name = "address_id", referencedColumnName = "addressId", insertable = false, updatable = false)
+    private AddressTableBean address;
 
 	public AddressTableBean getAddress() {
 		return address;
@@ -75,42 +73,22 @@ public class HouseTableBean {
 		this.address = address;
 	}
 
-	public List<FurnitureTableBean> getFurnitureList() {
-		return furnitureList;
+
+
+	public long getHouseId() {
+		return houseId;
 	}
 
-	public void setFurnitureList(List<FurnitureTableBean> furnitureList) {
-		this.furnitureList = furnitureList;
+	public void setHouseId(long houseId) {
+		this.houseId = houseId;
 	}
 
-	public List<ConditionTableBean> getHouseRestrictionsList() {
-		return houseRestrictionsList;
+	public long getUserId() {
+		return userId;
 	}
 
-	public void setHouseRestrictionsList(List<ConditionTableBean> houseRestrictionsList) {
-		this.houseRestrictionsList = houseRestrictionsList;
-	}
-
-	@OneToMany(mappedBy = "house", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<FurnitureTableBean> furnitureList;
-
-	@OneToMany(mappedBy = "house", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<ConditionTableBean> houseRestrictionsList;
-
-	public long getHouse_id() {
-		return house_id;
-	}
-
-	public void setHouse_id(long house_id) {
-		this.house_id = house_id;
-	}
-
-	public long getUser_id() {
-		return user_id;
-	}
-
-	public void setUser_id(long user_id) {
-		this.user_id = user_id;
+	public void setUserId(long userId) {
+		this.userId = userId;
 	}
 
 	public String getTitle() {
@@ -145,12 +123,12 @@ public class HouseTableBean {
 		this.size = size;
 	}
 
-	public long getAddress_id() {
-		return address_id;
+	public long getAddressId() {
+		return addressId;
 	}
 
-	public void setAddress_id(long address_id) {
-		this.address_id = address_id;
+	public void setAddressId(long addressId) {
+		this.addressId = addressId;
 	}
 
 	public short getRoom() {
@@ -185,13 +163,6 @@ public class HouseTableBean {
 		this.kitchen = kitchen;
 	}
 
-	public byte getHousetype() {
-		return housetype;
-	}
-
-	public void setHousetype(byte housetype) {
-		this.housetype = housetype;
-	}
 
 	public short getFloor() {
 		return floor;
