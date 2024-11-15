@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.demo.model.UserBean;
 import com.example.demo.service.UserService;
@@ -21,21 +22,26 @@ public class UserController {
 	@GetMapping("/users/login")
 	public String login() {
 		return "loginView";
-	}
+	}	
 
 	@PostMapping("/users/loginPost")
-	public String loginPost(String username, String password, Model model, HttpSession httpSession) {
+	public String loginPost(String username, String password, HttpSession httpSession, RedirectAttributes rs, Model model) {
 
 		UserBean result = userService.checkLogin(username, password);
+		
+		
+		
 		if (result != null) {
 			httpSession.setAttribute("loginUserId", result.getUserId());
-			httpSession.setAttribute("loginUserName", result.getName());
+			rs.addFlashAttribute("loginUserName", result.getName());
+
 			return "redirect:/";
 		} else {
 			model.addAttribute("errorMsg", "帳密錯誤");
 			return "loginView";
 		}
-
+		
+		
 	}
 	
 	

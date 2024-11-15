@@ -14,8 +14,9 @@ public class UserService {
 	private UserRepository userRepo;
 	
 	public UserBean checkLogin(String userEmail, String loginPwd) {
-
+		System.out.println(userEmail+"  "+loginPwd);
 		UserBean dbUsers = userRepo.findByEmail(userEmail);
+
 		
 		if (dbUsers != null) {
 			 if(dbUsers.getPassword().equals(loginPwd)) {
