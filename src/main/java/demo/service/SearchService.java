@@ -1,14 +1,10 @@
 package demo.service;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -164,7 +160,6 @@ public class SearchService {
 		return addressList;
 	}
 	
-	
 	public List<Address> GetDurationAndDistanceGoogleAPI(List<Address> addressList) {
 		
 		String encodedOrigin;
@@ -177,6 +172,66 @@ public class SearchService {
 			for(int i = 1 ; i < addressList.size() ; i++) {
 				
 				address = addressList.get(i).getCity()+addressList.get(i).getTownship()+addressList.get(i).getStreet();
+				Double distance = SearchHelper.getDistance(addressList.get(0), addressList.get(i));
+				BigDecimal roundedValue = new BigDecimal(distance).setScale(5, RoundingMode.HALF_UP);
+				if (roundedValue.compareTo(BigDecimal.valueOf(2.0))< 0) {
+					newAddressList.add(addressList.get(i));
+				}
+				
+//				String encodeDestination= java.net.URLEncoder.encode(address,"UTF-8");
+//				String urlString = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" 
+//		                + encodedOrigin + "&destinations=" + encodeDestination + "&mode=driving&language=zh-TW&key=" + apiKey;
+//				StringBuilder content = SearchHelper.urlConnection(urlString);
+//				
+//				JSONObject json = new JSONObject(content.toString());
+//				if("OK".equals(json.getString("status"))) {
+//					JSONObject distance = json.getJSONArray("rows")
+//											.getJSONObject(0)
+//											.getJSONArray("elements")
+//											.getJSONObject(0)
+//											.getJSONObject("distance");
+//					
+//					JSONObject duration = json.getJSONArray("rows")
+//											.getJSONObject(0)
+//											.getJSONArray("elements")
+//											.getJSONObject(0)
+//											.getJSONObject("duration");		
+//					
+//					if (distance.getInt("value") <1500 && duration.getInt("value") < 3600) {
+//						newAddressList.add(addressList.get(i));
+//					}
+////					System.out.println(distance.getInt("value"));
+////					System.out.println(duration.getInt("value"));						
+//					
+//				}
+			}
+			
+
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return newAddressList;
+
+	}
+	
+	public List<Address> GetDurationAndDistanceGoogleAPI2(List<Address> addressList) {
+		
+		String encodedOrigin;
+		List<Address> newAddressList = new ArrayList<>();
+		
+		try {
+			String address = addressList.get(0).getCity()+addressList.get(0).getTownship()+addressList.get(0).getStreet();
+			encodedOrigin = java.net.URLEncoder.encode( address ,"UTF-8");
+			
+			for(int i = 1 ; i < addressList.size() ; i++) {
+				
+				address = addressList.get(i).getCity()+addressList.get(i).getTownship()+addressList.get(i).getStreet();
+
 				String encodeDestination= java.net.URLEncoder.encode(address,"UTF-8");
 				String urlString = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" 
 		                + encodedOrigin + "&destinations=" + encodeDestination + "&mode=driving&language=zh-TW&key=" + apiKey;

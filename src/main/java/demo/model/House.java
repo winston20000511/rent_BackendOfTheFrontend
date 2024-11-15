@@ -30,8 +30,14 @@ public class House {
 	@Column(name="size")
 	private int size;
 	
-	@Column(name="address_id")
-	private long address_id;
+	@Column(name="address")
+	private String address;
+	
+	@Column(name="lat")
+	private Double lat;
+	
+	@Column(name="lng")
+	private Double lng;
 	
 	@Column(name="room")
 	private short room;
@@ -104,13 +110,29 @@ public class House {
 	public void setSize(int size) {
 		this.size = size;
 	}
-
-	public long getAddress_id() {
-		return address_id;
+	
+	public String getAddress() {
+		return address;
 	}
 
-	public void setAddress_id(long address_id) {
-		this.address_id = address_id;
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public Double getLat() {
+		return lat;
+	}
+
+	public void setLat(Double lat) {
+		this.lat = lat;
+	}
+
+	public Double getLng() {
+		return lng;
+	}
+
+	public void setLng(Double lng) {
+		this.lng = lng;
 	}
 
 	public short getRoom() {

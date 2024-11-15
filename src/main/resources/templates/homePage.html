@@ -45,7 +45,6 @@
         <div class="filter-left">
             <input type="text" placeholder="Address, neighborhood, city, ZIP" id="search">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <!-- class="absolute left-0 w-full mt-1 bg-white border border-gray-300 rounded shadow-lg"   -->
         </div>
         <ul class="absolute left-0 w-full mt-1 bg-white border border-gray-300 rounded shadow-lg" id="searchList"></ul>
         <div class="filter-right">
@@ -72,12 +71,8 @@
     <footer>
 
     </footer>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB74YfHLENToX6YpaEoKASZnhaZdqIio2s&callback=initMap&v=weekly&libraries=marker,places"defer></script>
-    <script src="/js/CardScript.js"></script>
-    <script src="/js/ListScript.js"></script>
-    <script src="/js/ButtonScript.js"></script>
-    <script src="/js/GoogleScript.js"></script>
-    <script src="/js/FilterScript.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB74YfHLENToX6YpaEoKASZnhaZdqIio2s&callback=initMap&v=weekly&libraries=marker,places"defer></script>
+    <script type="module" src="/js/index.js"></script>
 
 </body>
 </html>

@@ -1,25 +1,28 @@
-const link = document.querySelector('.link');
-const list = document.getElementById('list-left-1');
-const header = document.getElementById('header');
+export function listEventConfig(){
 
-link.addEventListener('mouseenter', ()=>{
+    const link = document.querySelector('.link');
+    const list = document.getElementById('list-left-1');
+    const header = document.getElementById('header');
     
-	const rect = window.getComputedStyle(header);
-	list.style.top = rect.height;
-	list.style.display='block';
-})
-link.addEventListener('mouseleave', ()=>{
-    setTimeout(()=>{
-        if(!list.matches(':hover')){
-            list.style.display= 'none';
-        }
-    },200)
-})
+    link.addEventListener('mouseenter', ()=>{
+        const rect = window.getComputedStyle(header);
+        list.style.top = rect.height;
+        list.style.display='block';
+    })
+    link.addEventListener('mouseleave', ()=>{
+        setTimeout(()=>{
+            if(!list.matches(':hover')){
+                list.style.display= 'none';
+            }
+        },400)
+    })
+    
+    list.addEventListener('mouseenter',()=>{
+        list.style.display='block';
+    })
+    
+    list.addEventListener('mouseleave',()=>{
+        list.style.display='none';
+    })
 
-list.addEventListener('mouseenter',()=>{
-    list.style.display='block';
-})
-
-list.addEventListener('mouseleave',()=>{
-    list.style.display='none';
-})
+}

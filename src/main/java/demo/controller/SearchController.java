@@ -45,13 +45,13 @@ public class SearchController {
 	
 	@CrossOrigin(origins="*")
 	@PostMapping("/api/keyword")
-	public List<Address> searchShowText(@RequestBody String srhReq){
+	public List<Address> searchShowkeyword(@RequestBody String srhReq){
 		List<Address> addressList = searchService.findByKeyWord(srhReq);
 		if (addressList.size() == 0 ) {
 			Address address = searchService.placeConvertToAdress(srhReq);
 			addressList.add(address);
 			return addressList;
-		}else if(addressList.size() < 8) {
+		}else if(addressList.size() < 10) {
 			return addressList.subList(0, addressList.size());
 		}else {
 			return addressList.subList(0, 10);
