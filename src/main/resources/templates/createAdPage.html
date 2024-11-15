@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ADD AD</title>
+    
+  </head>
+  <body>
+    <header>
+      <ul class="nav-left">
+        <li><a href="#">Buy</a></li>
+        <li class="link"><a href="#">Rent</a></li>
+      </ul>
+
+      <ul class="list" id="list-left-1">
+        <a href="#" class="list-item">item 1</a>
+        <a href="#" class="list-item">item 2</a>
+        <a href="#" class="list-item">item 3</a>
+        <a href="#" class="list-item">item 4</a>
+      </ul>
+
+
+        <div class="nav-title">
+          <h1>house</h1>
+        </div>
+      </div>
+      <div class="nav-right">
+        <li><a href="#">Manage Rentals</a></li>
+        <li><a href="#">Advertise</a></li>
+        <li><a href="#">Help</a></li>
+        <li><a href="#">Sign In</a></li>
+      </div>
+    </header>
+
+    <div class="container">
+      <div>新增廣告</div>
+      <hr />
+
+      <div class="d-flex">
+        <select class="me-2" id="dropdownSelect">
+          <option selected disabled>請選擇搜尋方式</option>
+          <option value="houseTitle">房屋標題</option>
+          <option value="createdAt">廣告新增時間</option>
+        </select>
+        <input
+          type="text"
+          class="search-input me-2"
+          placeholder="請輸入房屋標題"
+        />
+        <div><input type="text" id="datepicker" placeholder="請選擇時間"/></div>
+        <button class="btn btn-primary search-btn" type="button">搜尋</button>
+      </div>
+      <hr />
+
+      <br />
+
+      <h3>現有上架的房屋(table分頁+搜尋)</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th class="table-primary" scope="col">房屋編號</th>
+            <th class="table-primary" scope="col">房屋標題</th>
+            <th class="table-primary" scope="col">廣告類型</th>
+            <th class="table-primary" scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">1</th>
+            <td><a href="#">房屋頁面</a></td>
+            <td>選單選擇 A OR B</td>
+            <td>
+              <a id="addAd" class="btn btn-primary" role="button">加入廣告</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <footer></footer>
+
+  </body>
+</html>

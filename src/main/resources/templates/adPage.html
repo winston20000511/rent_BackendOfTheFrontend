@@ -3,9 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<<<<<<< Updated upstream
     <title>MY AD</title>
     <link rel="stylesheet" href="../static/css/styles.css" />
     <link rel="stylesheet" href="../static/css/bootstrap.min.css" />
+=======
+    <title>Rent house</title>
+    <link rel="stylesheet" href="../static/css/styles.css" />
+>>>>>>> Stashed changes
     <link
       href="https://cdn.jsdelivr.net/npm/tailwindcss@^2.2.19/dist/tailwind.min.css"
       rel="stylesheet"
@@ -20,7 +25,11 @@
       href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
       rel="stylesheet"
     />
+<<<<<<< Updated upstream
     <link rel="stylesheet" href="../static/css/adAndOrderFront.css">
+=======
+    <link href="../static/css/adPage.css" />
+>>>>>>> Stashed changes
   </head>
   <body>
     <header>
@@ -37,7 +46,11 @@
       </ul>
 
       <div class="nav-middle">
+<<<<<<< Updated upstream
         <img src="../static/Logo3.jpg" alt="" />
+=======
+        <img src="../static/img/Logo3.jpg" alt="" />
+>>>>>>> Stashed changes
 
         <div class="nav-title">
           <h1>house</h1>
@@ -51,6 +64,7 @@
       </div>
     </header>
 
+<<<<<<< Updated upstream
     <div>我的廣告</div>
     <hr />
 
@@ -135,5 +149,178 @@
     <script src="../static/scriptList.js"></script>
     <script src="../static/scriptButton.js"></script>
     <script src="../static/scriptGoogle.js"></script>
+=======
+    <aside class="border-black">
+      <div
+        id="my-ad-title"
+        class="text-xl mb-3 text-center border-b border-black py-2"
+      >
+        我的廣告
+      </div>
+      <div class="flex">
+        <div class="w-3/4 px-4">
+          <button
+            type="button"
+            id="paid-ads-btn"
+            class="condition-btn bg-blue-700 text-white py-2 px-4 rounded"
+            value="paidAds"
+          >
+            已付款廣告
+          </button>
+          <button
+            type="button"
+            id="unpaid-ads-btn"
+            class="condition-btn bg-blue-500 text-white py-2 px-4 rounded"
+            value="unpaidAds"
+          >
+            未付款廣告
+          </button>
+
+          <!--其他選項（下拉式選單）-->
+          <div class="relative inline-block text-left">
+            <div>
+              <button
+                type="button"
+                class="condition-btn inline-flex w-full justify-center gap-x-1.5 rounded bg-blue-500 text-white px-4 py-2 whitespace-nowrap"
+                id="menu-button"
+                aria-expanded="true"
+                aria-haspopup="true"
+              >
+                其他搜尋方式 ▼
+              </button>
+            </div>
+            <div
+              id="dropdown-menu"
+              class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none hidden"
+              role="menu"
+              aria-orientation="vertical"
+              aria-labelledby="menu-button"
+              tabindex="-1"
+            >
+              <div class="py-1" role="none">
+                <a
+                  href="#"
+                  class="block px-4 py-2"
+                  role="menuitem"
+                  tabindex="-1"
+                  id="menu-item-0"
+                  >以時間搜尋</a
+                >
+                <a
+                  href="#"
+                  class="block px-4 py-2"
+                  role="menuitem"
+                  tabindex="-1"
+                  id="menu-item-0"
+                  >以房屋搜尋</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="w-1/4 text-center">
+          <button
+            id="add-ad-btn"
+            type="button"
+            class="condition-btn bg-blue-500 text-white py-2 px-4 rounded"
+            value="unpaidAds"
+          >
+            新增廣告+
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="m-3">
+      <div id="view-box" class="border border-gray-400 py-2 px-2 rounded-md">
+        <!-- <div class="bg-blue-400 text-white py-2 px-4 text-center rounded">
+          已付款
+        </div> -->
+        <table
+          id="paid-ads-table"
+          class="table-auto w-full border-collapse border border-gray-300 mt-5"
+        >
+          <thead>
+            <tr>
+              <th class="px-4 py-2 bg-gray-200 text-left">廣告編號</th>
+              <th class="px-4 py-2 bg-gray-200 text-left">房屋標題</th>
+              <th class="px-4 py-2 bg-gray-200 text-center">詳細內容</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="px-4 py-2">1</td>
+              <td class="px-4 py-2 underline">
+                <a href="#">永康區房屋（連結到房屋頁面）</a>
+              </td>
+              <td class="px-4 py-2 flex justify-center text-center"> <div class="bg-blue-500 rounded text-white w-16 py-2">查看</div></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- <div class="bg-blue-400 text-white py-2 px-4 text-center rounded">
+            未付款
+          </div> -->
+
+        <table
+          id="unpaid-ads-table"
+          class="table-auto w-full border-collapse border border-gray-300 mt-5 hidden"
+        >
+          <thead>
+            <tr>
+              <th class="px-4 py-2 bg-gray-200 text-left">廣告編號</th>
+              <th class="px-4 py-2 bg-gray-200 text-left">房屋標題</th>
+              <th class="px-4 py-2 bg-gray-200 text-left">廣告金額</th>
+              <th class="px-4 py-2 bg-gray-200 text-center">詳細內容</th>
+              <th class="px-4 py-2 bg-gray-200 text-center">購買</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="px-4 py-2">1</td>
+              <td class="px-4 py-2 underline">
+                <a href="#">永康區房屋（連結到房屋頁面）</a>
+              </td>
+              <td class="px-4 py-2 text-right">300</td>
+              <td class="px-4 py-2 flex justify-center text-center"> <div class="bg-blue-500 rounded text-white w-16 py-2">查看</div></td>
+              <td class="px-4 py-2 text-center"><input type="checkbox" /></td>
+            </tr>
+            <tr id="total-amount">
+              <td class="px-4 py-2 text-right border-t border-gray-400" colspan="2">總計</td>
+              <td class="px-4 py-2 text-right border-t border-gray-400">300</td>
+              <td class="border-t border-gray-400 text-center" colspan="2"><a href="#">前往下單</a></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table
+          id="add-ad-table"
+          class="table-auto w-full border-collapse border border-gray-300 mt-5 hidden"
+        >
+          <thead>
+            <tr>
+              <th class="px-4 py-2 bg-gray-200 text-left">房屋編號</th>
+              <th class="px-4 py-2 bg-gray-200 text-left">查看詳細</th>
+              <th class="px-4 py-2 bg-gray-200 text-center">新增廣告</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="px-4 py-2">1</td>
+              <td class="px-4 py-2 underline">
+                <a href="#">永康區房屋（連結到房屋頁面）</a>
+              </td>
+              <td class="px-4 py-2 flex justify-center text-center"> <div class="bg-blue-500 rounded text-white w-16 py-2">新增</div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+    <footer></footer>
+    <script src="../static/JS/scriptList.js"></script>
+    <script src="../static/JS/scriptButton.js"></script>
+    <script src="../static/JS/adPage.js"></script>
+>>>>>>> Stashed changes
   </body>
 </html>
