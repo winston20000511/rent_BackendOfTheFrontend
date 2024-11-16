@@ -9,7 +9,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import demo.model.Address;
+import demo.model.House;
 
 public class SearchHelper {
 	
@@ -96,7 +96,7 @@ public class SearchHelper {
 	}
 	
 	//哈弗賽因公式計算
-	public static Double getDistance(Address Origin , Address Target) {
+	public static Double getDistance(House Origin , House Target) {
 		
 		//緯度&經度 角度轉成弧度
 		double lat1Rad = Math.toRadians(Origin.getLat());

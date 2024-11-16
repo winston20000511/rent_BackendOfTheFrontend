@@ -12,10 +12,12 @@ ButtonJs.buttonEventConfig();
 
 //Card event
 CardJs.cardEventConfig();
+//Card 進入首頁時顯示的項目
 CardJs.loadMoreCards(6);
 
-//Google map Search
+//GoogleMap event
 GoogleApiJs.googleSearchEventConfig();
+//GoogleMap Initialize
 GoogleApiJs.initMap();
 
 //TEST event

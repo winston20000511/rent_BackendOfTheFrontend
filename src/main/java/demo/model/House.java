@@ -50,10 +50,7 @@ public class House {
 	
 	@Column(name="kitchen")
 	private short kitchen;
-	
-	@Column(name="housetype")
-	private byte housetype;
-	
+
 	@Column(name="floor")
 	private short floor;
 	
@@ -165,14 +162,6 @@ public class House {
 
 	public void setKitchen(short kitchen) {
 		this.kitchen = kitchen;
-	}
-
-	public byte getHousetype() {
-		return housetype;
-	}
-
-	public void setHousetype(byte housetype) {
-		this.housetype = housetype;
 	}
 
 	public short getFloor() {

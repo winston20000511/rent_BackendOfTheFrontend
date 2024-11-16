@@ -28,7 +28,6 @@ export function googleSearchEventConfig(){
 		if (!isComposing){
 			showKeyWordFetch()
 		}
-	
 	})
 	//點擊其他地方關閉searchList
 	document.addEventListener('click', (e) => {
@@ -55,7 +54,7 @@ export function googleSearchEventConfig(){
 export function initMap() {
 	map = new google.maps.Map(document.getElementById('map'), {
 		center: { lat: 23.023535, lng: 120.222776 }, // 台灣的中心點 緯度 經度
-		zoom: 12,
+		zoom: 13,
 		mapId: "DEMO_MAP_ID",
 	});
 }
@@ -63,7 +62,7 @@ export function initMap() {
 async function showKeyWordFetch(){
 	
 	const searchValue = document.getElementById('search').value;
-	
+	console.log(searchValue);
 	try{
 		const response = await fetch(keywordUrl,{
 			method: "POST",
@@ -88,16 +87,17 @@ async function updateKeyWordList(data){
 	
 	//const keywords=["apple", "banana", "cherry", "date", "elderberry", "fig", "grape", "kiwi", "lemon"];
 	const searchList = document.getElementById('searchList')
+	const search = document.getElementById('search');
 	searchList.innerHTML = '';
 	data.forEach(k=>{
 		const li = document.createElement('li');
-		if (!k.city){ k.address=""};
-
+		//if (k.adress === null){ k.address=""};
+		
 		li.textContent=k.address;
 		li.classList.add('px-4', 'py-2', 'cursor-pointer', 'hover:bg-blue-500', 'hover:text-white');
 
 		li.addEventListener('click',()=>{
-			search.value=k.adress;
+			search.value=k.address;
 			searchList.innerHTML='';
 		})
 		searchList.appendChild(li);
@@ -171,18 +171,27 @@ async function addMarkerByAddress(data) {
 		card.id = `card${cardCount}` 
 		card.innerHTML = `
 		  <img src="./img/view1.jpg" alt="Card image" class="w-full h-48 object-cover mb-4 rounded-md">
-		  <h3 class="text-lg font-semibold mb-2">Price ${k.city}</h3>
-		  <p class="text-gray-600 mb-4">${k.city+k.township+k.street}</p>
+		  <h3 class="text-lg font-semibold mb-2">Price ${k.price}</h3>
+		  <p class="text-gray-600 mb-4">${k.address}</p>
 		  <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">View</button>
 		`;
 		cardContainer.appendChild(card);
 		cardCount++;
 
+		const contentString = `
+		<div>
+		  <img src="./img/view1.jpg" alt="Card image" class="w-full h-48 object-cover mb-4 rounded-md">
+		  <h3 class="text-lg font-semibold mb-2">Price ${k.price}</h3>
+		  <p class="text-gray-600 mb-4">${k.address}</p>
+		  <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">View</button>
+		</div>
+	  `;
+
 		marker.addListener('click',()=>{
-			//map.setZoom(17);
+			map.setZoom(15);
 			map.panTo(marker.position);
+			infoWindow.setContent(contentString);
 			cardSelected(card.id);
-			infoWindow.setContent('<h3>' + marker.title + '</h3>');
 			// infoWindow.setContent('<h3>' + marker.title + '</h3><p>' +`<strong>Distance</strong> ${distancematrix.distance.text}`+ '<p><p>' + `<strong>Duration</strong> ${distancematrix.duration.text}` + '</p>')
 			infoWindow.open(map, marker)
 		});
@@ -214,7 +223,7 @@ async function addMarkerByAddress(data) {
 	markers.push(originMaker);
 	map.panTo(origin);
     //map.setCenter(origin);
-    map.setZoom(15);  // 可以調整地圖縮放級別
+    map.setZoom(13);  // 可以調整地圖縮放級別
 	
 	//loadMoreCards(data);
 
@@ -237,7 +246,7 @@ function geocodeAddress(address){
 
 //取得選擇的卡片
 function cardSelected(cardId){
-
+	fadeIn();
 	document.querySelectorAll('.bg-gray-300').forEach(item =>{
 		item.classList.remove('bg-gray-300')
 		item.classList.add('bg-white');
@@ -246,6 +255,14 @@ function cardSelected(cardId){
 	const cardList = document.getElementById(cardId);
 	cardList.classList.remove('bg-white');
 	cardList.classList.add('bg-gray-300');
-	cardList.scrollIntoView({ behavior: 'smooth', block: 'start' });
+	cardList.scrollIntoView({ behavior: 'auto', block: 'start' });
 }
+function fadeIn() {
+    anime({
+        targets: '#card-container',
+        opacity: [0, 1],
+        duration: 2000,
+        easing: 'easeInOutQuad'
+    });
 
+ }

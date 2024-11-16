@@ -15,6 +15,7 @@ import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import demo.model.Address;
+import demo.model.House;
 import demo.repository.SearchRepository;
 import helper.SearchHelper;
 
@@ -27,49 +28,48 @@ public class SearchService {
 	@Value("${google.api.key}")
 	private String apiKey;
 	
-	public List<Address> findAll() {
+	public List<House> findAll() {
 		return searchRepo.findAll();
 	}
-	
-	public List<Address> findByCity(String city){
-		return searchRepo.findByCity(city);
+//	
+//	public List<Address> findByCity(String city){
+//		return searchRepo.findByCity(city);
+//	}
+//	
+	public List<House> findByCityAndTownship(String address){
+		
+		String[] Parts = SearchHelper.splitCityTownStreet(address);
+		return searchRepo.findByCityAndTownship(Parts[0]+Parts[1]);
 	}
 	
-	public List<Address> findByCityAndTownship(String cityTownship){
-		return searchRepo.findByCityAndTownship(cityTownship);
-	}
-	
-	public List<Address> findByKeyWord(String name){
+	public List<House> findByKeyWord(String name){
 		return searchRepo.findByKeyWord(name);
 	}
-	
-	public List<Address> addressUpdateAll(List<Address> addressList) {
-		return searchRepo.saveAll(addressList);
+
+	public List<House> houseUpdateAll(List<House> houseList) {
+		return searchRepo.saveAll(houseList);
 	}
 	
-	public List<Address> updateFakeAddress(String filePath,List<Address> addressList){
+	public List<House> updateFakeAddress(String filePath,List<House> houseList){
 		
 		List<String> lists = SearchHelper.openfileRead(filePath);
 		
-		for (int i = 0; i < addressList.size(); i++) {
+		for (int i = 0; i < houseList.size(); i++) {
 			
-			String[] Parts = SearchHelper.splitCityTownStreet(lists.get(i));
-			addressList.get(i).setCity(Parts[0]);
-			addressList.get(i).setTownship(Parts[1]);
-			addressList.get(i).setStreet(Parts[2]);
+			houseList.get(i).setAddress(lists.get(i));
 		}
 		
-		return addressList;
+		return houseList;
 	}
 	
-	public Address placeConvertToAdress(String origin) {
+	public House placeConvertToAdress(String origin) {
 		
 		String encodedAddress;
-		Address address = new Address();
+		House house = new House();
 		try {
 			encodedAddress = java.net.URLEncoder.encode(origin,"UTF-8");
 			String urlString = "https://maps.googleapis.com/maps/api/geocode/json?address=" 
-	                + encodedAddress + "&language=zh-TW&key=" + apiKey;
+	                + encodedAddress + "&components=country:TW&language=zh-TW&key=" + apiKey;
 			StringBuilder content = SearchHelper.urlConnection(urlString);
 			
 			JSONObject json = new JSONObject(content.toString());
@@ -77,19 +77,20 @@ public class SearchService {
 				JSONObject location = json.getJSONArray("results")
 										.getJSONObject(0);
 										
+				String address = location.getString("formatted_address");
+				if (address.indexOf("台灣") > -1 && address.indexOf("台灣大道") == -1) {
+					address = address.split("台灣")[1];
+				}
 				
-				String[] Parts = SearchHelper.splitCityTownStreet(location.getString("formatted_address"));
-				address.setCity(Parts[0]);
-				address.setTownship(Parts[1]);
-				address.setStreet(Parts[2]);
+				house.setAddress(address);
 				
 				location = json.getJSONArray("results")
 						.getJSONObject(0)
 						.getJSONObject("geometry")
 						.getJSONObject("location");
 				
-				address.setLat(location.getDouble("lat"));
-				address.setLng(location.getDouble("lng"));
+				house.setLat(location.getDouble("lat"));
+				house.setLng(location.getDouble("lng"));
 				
 			}
 			
@@ -107,18 +108,17 @@ public class SearchService {
 			e.printStackTrace();
 		}
 		
-		return address;
+		return house;
 		
 	}
 	
-	public List<Address> getLatAndLngGoogleAPI(List<Address> addressList) {
+	public List<House> getLatAndLngGoogleAPI(List<House> houseList) {
 		
-		addressList.forEach(p->{
+		houseList.forEach(p->{
 			if (p.getLat() == null) {
 				
-				String address = p.getCity() + p.getTownship() + p.getStreet();
 				try {
-					String encodedAddress = java.net.URLEncoder.encode(address,"UTF-8");
+					String encodedAddress = java.net.URLEncoder.encode(p.getAddress(),"UTF-8");
 					String urlString = "https://maps.googleapis.com/maps/api/geocode/json?address=" 
 	                        + encodedAddress + "&key=" + apiKey;
 
@@ -157,27 +157,22 @@ public class SearchService {
 			
 		});
 		
-		return addressList;
+		return houseList;
 	}
 	
-	public List<Address> GetDurationAndDistanceGoogleAPI(List<Address> addressList) {
+	public List<House> GetDurationAndDistanceGoogleAPI(List<House> houseList) {
 		
-		String encodedOrigin;
-		List<Address> newAddressList = new ArrayList<>();
+		//String encodedOrigin;
+		List<House> newHouseList = new ArrayList<>();
 		
-		try {
-			String address = addressList.get(0).getCity()+addressList.get(0).getTownship()+addressList.get(0).getStreet();
-			encodedOrigin = java.net.URLEncoder.encode( address ,"UTF-8");
+		for(int i = 1 ; i < houseList.size() ; i++) {
 			
-			for(int i = 1 ; i < addressList.size() ; i++) {
-				
-				address = addressList.get(i).getCity()+addressList.get(i).getTownship()+addressList.get(i).getStreet();
-				Double distance = SearchHelper.getDistance(addressList.get(0), addressList.get(i));
-				BigDecimal roundedValue = new BigDecimal(distance).setScale(5, RoundingMode.HALF_UP);
-				if (roundedValue.compareTo(BigDecimal.valueOf(2.0))< 0) {
-					newAddressList.add(addressList.get(i));
-				}
-				
+			Double distance = SearchHelper.getDistance(houseList.get(0), houseList.get(i));
+			BigDecimal roundedValue = new BigDecimal(distance).setScale(5, RoundingMode.HALF_UP);
+			if (roundedValue.compareTo(BigDecimal.valueOf(2.0))< 0) {
+				newHouseList.add(houseList.get(i));
+			}
+			
 //				String encodeDestination= java.net.URLEncoder.encode(address,"UTF-8");
 //				String urlString = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" 
 //		                + encodedOrigin + "&destinations=" + encodeDestination + "&mode=driving&language=zh-TW&key=" + apiKey;
@@ -204,18 +199,9 @@ public class SearchService {
 ////					System.out.println(duration.getInt("value"));						
 //					
 //				}
-			}
-			
-
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		
-		return newAddressList;
+		return newHouseList;
 
 	}
 	
