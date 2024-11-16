@@ -21,7 +21,7 @@
       href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="../static/css/adAndOrderFront.css">
+    <link rel="stylesheet" href="../static/css/adAndOrderFront.css" />
     <link href="../static/css/adPage.css" />
   </head>
   <body>
@@ -53,7 +53,6 @@
       </div>
     </header>
 
-
     <aside class="border-black">
       <div
         id="my-ad-title"
@@ -79,48 +78,6 @@
           >
             未付款廣告
           </button>
-
-          <!--其他選項（下拉式選單）-->
-          <div class="relative inline-block text-left">
-            <div>
-              <button
-                type="button"
-                class="condition-btn inline-flex w-full justify-center gap-x-1.5 rounded bg-blue-500 text-white px-4 py-2 whitespace-nowrap"
-                id="menu-button"
-                aria-expanded="true"
-                aria-haspopup="true"
-              >
-                其他搜尋方式 ▼
-              </button>
-            </div>
-            <div
-              id="dropdown-menu"
-              class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none hidden"
-              role="menu"
-              aria-orientation="vertical"
-              aria-labelledby="menu-button"
-              tabindex="-1"
-            >
-              <div class="py-1" role="none">
-                <a
-                  href="#"
-                  class="block px-4 py-2"
-                  role="menuitem"
-                  tabindex="-1"
-                  id="menu-item-0"
-                  >以時間搜尋</a
-                >
-                <a
-                  href="#"
-                  class="block px-4 py-2"
-                  role="menuitem"
-                  tabindex="-1"
-                  id="menu-item-0"
-                  >以房屋搜尋</a
-                >
-              </div>
-            </div>
-          </div>
         </div>
         <div class="w-1/4 text-center">
           <button
@@ -137,12 +94,9 @@
 
     <main class="m-3">
       <div id="view-box" class="border border-gray-400 py-2 px-2 rounded-md">
-        <!-- <div class="bg-blue-400 text-white py-2 px-4 text-center rounded">
-          已付款
-        </div> -->
         <table
           id="paid-ads-table"
-          class="table-auto w-full border-collapse border border-gray-300 mt-5"
+          class="table-auto w-full border-collapse border border-gray-300"
         >
           <thead>
             <tr>
@@ -157,18 +111,21 @@
               <td class="px-4 py-2 underline">
                 <a href="#">永康區房屋（連結到房屋頁面）</a>
               </td>
-              <td class="px-4 py-2 flex justify-center text-center"> <div class="bg-blue-500 rounded text-white w-16 py-2">查看</div></td>
+              <td class="px-4 py-2 flex justify-center text-center">
+                <button
+                  type="button"
+                  class="check-detail-btn bg-blue-500 rounded text-white w-16 py-2 hover:bg-blue-300"
+                >
+                  查看
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>
 
-        <!-- <div class="bg-blue-400 text-white py-2 px-4 text-center rounded">
-            未付款
-          </div> -->
-
         <table
           id="unpaid-ads-table"
-          class="table-auto w-full border-collapse border border-gray-300 mt-5 hidden"
+          class="table-auto w-full border-collapse border border-gray-300 hidden"
         >
           <thead>
             <tr>
@@ -186,25 +143,41 @@
                 <a href="#">永康區房屋（連結到房屋頁面）</a>
               </td>
               <td class="px-4 py-2 text-right">300</td>
-              <td class="px-4 py-2 flex justify-center text-center"> <div class="bg-blue-500 rounded text-white w-16 py-2">查看</div></td>
+              <td class="px-4 py-2 flex justify-center text-center">
+                <button
+                  type="button"
+                  class="check-detail-btn bg-blue-500 rounded text-white w-16 py-2 hover:bg-blue-300"
+                >
+                  查看
+                </button>
+              </td>
               <td class="px-4 py-2 text-center"><input type="checkbox" /></td>
             </tr>
             <tr id="total-amount">
-              <td class="px-4 py-2 text-right border-t border-gray-400" colspan="2">總計</td>
+              <td
+                class="px-4 py-2 text-right border-t border-gray-400"
+                colspan="2"
+              >
+                總計
+              </td>
               <td class="px-4 py-2 text-right border-t border-gray-400">300</td>
-              <td class="border-t border-gray-400 text-center" colspan="2"><a href="#">前往下單</a></td>
+              <td class="border-t border-gray-400 text-center" colspan="2">
+                <a href="#">前往下單 <i class="fa-solid fa-arrow-right"></i></a>
+              </td>
             </tr>
           </tbody>
         </table>
 
         <table
           id="add-ad-table"
-          class="table-auto w-full border-collapse border border-gray-300 mt-5 hidden"
+          class="table-auto w-full border-collapse border border-gray-300 hidden"
         >
           <thead>
             <tr>
               <th class="px-4 py-2 bg-gray-200 text-left">房屋編號</th>
-              <th class="px-4 py-2 bg-gray-200 text-left">查看詳細</th>
+              <th class="px-4 py-2 bg-gray-200 text-left">查看房屋</th>
+              <th class="px-4 py-2 bg-gray-200 text-left">廣告方案</th>
+              <th class="px-4 py-2 bg-gray-200 text-right">廣告價格</th>
               <th class="px-4 py-2 bg-gray-200 text-center">新增廣告</th>
             </tr>
           </thead>
@@ -214,10 +187,101 @@
               <td class="px-4 py-2 underline">
                 <a href="#">永康區房屋（連結到房屋頁面）</a>
               </td>
-              <td class="px-4 py-2 flex justify-center text-center"> <div class="bg-blue-500 rounded text-white w-16 py-2">新增</div></td>
+              <td class="px-4 py-2">
+                <select name="" id="">
+                  <option>30天</option>
+                  <option>60天</option>
+                </select>
+              </td>
+              <td class="px-4 py-2 text-right">300</td>
+              <td class="px-4 py-2 text-center"><input type="checkbox" /></td>
+            </tr>
+            <tr>
+              <td
+                class="text-right border border-t border-gray-300"
+                colspan="5"
+              >
+                <button
+                  class="confirm-add-btn bg-blue-500 text-white py-2 px-4 rounded m-2 hover:bg-blue-300"
+                >
+                  確認新增廣告
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- 確認彈跳視窗 -->
+      <div id="modal-background" class="fixed inset-0 bg-gray-500/75 hidden"></div>
+      <div
+        id="success-modal"
+        class="fixed inset-0 z-10 bg-gray-500/75 flex items-center justify-center hidden"
+      >
+        <div class="bg-white rounded-lg shadow-lg w-3/4">
+          <div class="m-4">
+            <h3 class="text-2xl font-semibold m-4 text-gray-900 text-center">
+              <i class="fa-solid fa-check" style="color: #63e6be"></i> 新增成功
+            </h3>
+            <div class="text-right mt-10">
+              <button
+                id="stay-btn"
+                type="button"
+                class="px-3 py-1.5 m-0.5 bg-gray-400 text-white rounded hover:bg-gray-300"
+              >
+                繼續新增廣告
+              </button>
+              <button
+                id="check-unpaid-ads"
+                class="px-3 py-1.5 bg-green-500 text-white rounded hover:bg-green-400"
+              >
+                查看已新增的廣告
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 廣告詳細內容 -->
+      <div
+        id="ad-detail-modal"
+        class="fixed inset-0 z-20 bg-gray-500/75 flex items-center justify-center hidden"
+      >
+        <div class="bg-white rounded-lg shadow-lg w-4/5 h-4/5 p-8">
+          <div class="mt-4 text-right">
+            <button
+              id="close-ad-modal-btn"
+              class="px-3 py-1.5 bg-red-500 text-white rounded hover:bg-red-600"
+            >
+              X
+            </button>
+          </div>
+          <h3 class="text-2xl font-semibold text-gray-900 text-center">
+            廣告內容
+          </h3>
+          <div class="m-4 overflow-auto h-[calc(100%-6rem)]">
+            <table class="border border-gray-400 w-full">
+              <thead class="bg-gray-200">
+                <tr>
+                  <th class="px-4 py-2">廣告編號</th>
+                  <th class="px-4 py-2">廣告內容</th>
+                  <th class="px-4 py-2">廣告種類</th>
+                  <th class="px-4 py-2">廣告金額</th>
+                  <th class="px-4 py-2">付款日期</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="text-center">
+                  <td>訂單號碼</td>
+                  <td>物件內容</td>
+                  <td>廣告種類</td>
+                  <td>訂單金額</td>
+                  <td>付款日期</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </main>
 
