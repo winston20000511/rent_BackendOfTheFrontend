@@ -3,109 +3,106 @@ package com.example.demo.model;
 import java.sql.Date;
 import java.sql.Time;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "houseBookingTimeSlot_tabel")
-public class HouseBookingTimeSlot {
-	
-	@EmbeddedId
-	@MapsId
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "house_id")
-	private HouseBean HouseId;
-	
-	@Column(name = "form_date")
+public class HouseBookingTimeSlotBean {
+
+	@Id
+	@Column(name = "house_id")
+	private Long houseId;
+	@Column(name = "from_date")
 	private Date fromDate;
 	@Column(name = "to_date")
 	private Date toDate;
-	@Column(name = "form_time")
+	@Column(name = "from_time")
 	private Time fromTime;
 	@Column(name = "to_time")
-	private Time to_date;
+	private Time toTime;
 	@Column(name = "duration")
 	private Short duration;
 	@Column(name = "week_day")
-	private Short weekDay;
-	
-	public HouseBookingTimeSlot() {
+	private String weekDay;
+
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "house_id", insertable = false, updatable = false)
+	@JsonBackReference
+	private HouseBean house;
+
+	public HouseBookingTimeSlotBean() {
+	}
+
+	public Long getHouseId() {
+		return houseId;
+	}
+
+	public void setHouseId(Long houseId) {
+		this.houseId = houseId;
 	}
 
 	public Date getFromDate() {
 		return fromDate;
 	}
 
-
 	public void setFromDate(Date fromDate) {
 		this.fromDate = fromDate;
 	}
-
 
 	public Date getToDate() {
 		return toDate;
 	}
 
-
 	public void setToDate(Date toDate) {
 		this.toDate = toDate;
 	}
-
 
 	public Time getFromTime() {
 		return fromTime;
 	}
 
-
 	public void setFromTime(Time fromTime) {
 		this.fromTime = fromTime;
 	}
 
-
-	public Time getTo_date() {
-		return to_date;
+	public Time getToTime() {
+		return toTime;
 	}
 
-
-	public void setTo_date(Time to_date) {
-		this.to_date = to_date;
+	public void setToTime(Time toTime) {
+		this.toTime = toTime;
 	}
-
 
 	public Short getDuration() {
 		return duration;
 	}
 
-
 	public void setDuration(Short duration) {
 		this.duration = duration;
 	}
 
-
-	public Short getWeekDay() {
+	public String getWeekDay() {
 		return weekDay;
 	}
 
-
-	public void setWeekDay(Short weekDay) {
+	public void setWeekDay(String weekDay) {
 		this.weekDay = weekDay;
 	}
 
-
-	public HouseBean getHouses() {
-		return HouseId;
+	public HouseBean getHouse() {
+		return house;
 	}
 
-
-	public void setHouses(HouseBean houses) {
-		HouseId = houses;
+	public void setHouse(HouseBean house) {
+		this.house = house;
 	}
-
+	
 }

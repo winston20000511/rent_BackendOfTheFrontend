@@ -1,12 +1,16 @@
 package com.example.demo.model;
 
 import java.sql.Timestamp;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -102,4 +106,7 @@ public class UserBean {
 		this.status = status;
 	}
 
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "rentUser", cascade = CascadeType.ALL)
+	private List<BookingBean> bookings;
+	
 }

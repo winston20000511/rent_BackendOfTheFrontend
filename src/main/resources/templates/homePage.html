@@ -37,10 +37,10 @@
             <li><a href="#">Manage Rentals</a></li>
             <li><a href="#">Advertise</a></li>
             <li><a href="#">Help</a></li>
-            <div th:if="${session.loginUserId}"><a th:href="@{/users/login}">Sign In</a></div>
-            
-            <div th:if="!${session.loginUserId}"><p>我是: <span th:text="${flash.loginUserName}"></span></p></div>
-            
+            <div th:if="!${session.loginUserId}"><a th:href="@{/users/login}">Sign In</a></div>
+			
+            <div th:if="${session.loginUserId}">我是: <span th:text="${session.loginUsername}"></span></div>
+			
         </div>
     </header>
 

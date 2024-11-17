@@ -19,13 +19,14 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 	
+	
 	@GetMapping("/users/login")
 	public String login() {
 		return "loginView";
 	}	
 
 	@PostMapping("/users/loginPost")
-	public String loginPost(String username, String password, HttpSession httpSession, RedirectAttributes rs, Model model) {
+	public String loginPost(String username, String password, HttpSession httpSession, Model model) {
 
 		UserBean result = userService.checkLogin(username, password);
 		
@@ -33,9 +34,11 @@ public class UserController {
 		
 		if (result != null) {
 			httpSession.setAttribute("loginUserId", result.getUserId());
-			rs.addFlashAttribute("loginUserName", result.getName());
-
+			httpSession.setAttribute("loginUsername", result.getName());
+			httpSession.setAttribute("loginUserEmail", result.getEmail());
+			model.addAttribute("loginOkMsg", "登入成功");
 			return "redirect:/";
+			
 		} else {
 			model.addAttribute("errorMsg", "帳密錯誤");
 			return "loginView";

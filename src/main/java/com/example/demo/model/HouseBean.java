@@ -1,4 +1,10 @@
 package com.example.demo.model;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -6,6 +12,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
@@ -33,6 +40,15 @@ public class HouseBean {
 	@Column(name = "size")
 	private Integer size;
 
+	@Column(name = "address")
+	private String address;
+
+	@Column(name = "lat")
+	private BigDecimal lat;
+	
+	@Column(name = "lng")
+	private BigDecimal lng;
+
 	@Column(name = "room")
 	private Short room;
 
@@ -45,9 +61,6 @@ public class HouseBean {
 	@Column(name = "kitchen")
 	private Short kitchen;
 
-	@Column(name = "housetype")
-	private Byte housetype;
-
 	@Column(name = "floor")
 	private Short floor;
 
@@ -57,16 +70,23 @@ public class HouseBean {
 	@Column(name = "status")
 	private Short status;
 
-	@Column(name = "address_id")
-	private Long address;
+	@Column(name = "clickCount")
+	private Integer clickCount;
 
-	
-	@OneToOne(fetch = FetchType.LAZY, mappedBy = "HouseId", cascade = CascadeType.ALL)
-	@PrimaryKeyJoinColumn
-	private HouseBookingTimeSlot bookingTimeSlot;
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "house", cascade = CascadeType.ALL)
+	private List<BookingBean> bookings;
+
+	@OneToOne(fetch = FetchType.LAZY, mappedBy = "house", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	private HouseBookingTimeSlotBean bookingTimeSlot;
 
 	public HouseBean() {
-		
+
+	}
+
+	
+	public HouseBean(Long houseId) {
+		this.houseId = houseId;
 	}
 
 	public Long getHouseId() {
@@ -117,6 +137,30 @@ public class HouseBean {
 		this.size = size;
 	}
 
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public BigDecimal getLat() {
+		return lat;
+	}
+
+	public void setLat(BigDecimal lat) {
+		this.lat = lat;
+	}
+
+	public BigDecimal getLng() {
+		return lng;
+	}
+
+	public void setLng(BigDecimal lng) {
+		this.lng = lng;
+	}
+
 	public Short getRoom() {
 		return room;
 	}
@@ -149,14 +193,6 @@ public class HouseBean {
 		this.kitchen = kitchen;
 	}
 
-	public Byte getHousetype() {
-		return housetype;
-	}
-
-	public void setHousetype(Byte housetype) {
-		this.housetype = housetype;
-	}
-
 	public Short getFloor() {
 		return floor;
 	}
@@ -181,19 +217,27 @@ public class HouseBean {
 		this.status = status;
 	}
 
-	public Long getAddress() {
-		return address;
+	public Integer getClickCount() {
+		return clickCount;
 	}
 
-	public void setAddress(Long address) {
-		this.address = address;
+	public void setClickCount(Integer clickCount) {
+		this.clickCount = clickCount;
 	}
 
-	public HouseBookingTimeSlot getBookingTimeSlot() {
+	public List<BookingBean> getBookings() {
+		return bookings;
+	}
+
+	public void setBookings(List<BookingBean> bookings) {
+		this.bookings = bookings;
+	}
+
+	public HouseBookingTimeSlotBean getBookingTimeSlot() {
 		return bookingTimeSlot;
 	}
 
-	public void setBookingTimeSlot(HouseBookingTimeSlot bookingTimeSlot) {
+	public void setBookingTimeSlot(HouseBookingTimeSlotBean bookingTimeSlot) {
 		this.bookingTimeSlot = bookingTimeSlot;
 	}
 

@@ -1,5 +1,17 @@
 package com.example.demo.dao;
 
-public class BookingDao {
+import com.example.demo.model.HouseBookingTimeSlotBean;
 
+public class BookingDao {
+	
+	public HouseBookingTimeSlotBean getTimeSlotByHouseId(){
+		
+		
+		
+		
+		return null;
+	}
+	
+	
+	
 }
