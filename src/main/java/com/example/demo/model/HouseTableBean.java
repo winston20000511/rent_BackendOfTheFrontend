@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -12,83 +13,79 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "house_table")
 public class HouseTableBean {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "house_id")
-	private Long houseId;
-
-	@Column(name = "user_id")
-	private Long userId;
-
-	@Column(name = "title")
-	private String title;
-
-	@Column(name = "price")
-	private Long price;
-
-	@Column(name = "description")
-	private String description;
-
-	@Column(name = "size")
-	private Integer size;
-
-	@Column(name = "address_id")
-	private Long addressId;
-
-	@Column(name = "room")
-	private Short room;
-
-	@Column(name = "bathroom")
-	private Short bathroom;
-
-	@Column(name = "livingroom")
-	private Short livingroom;
-
-	@Column(name = "kitchen")
-	private Short kitchen;
-
-	@Column(name = "floor")
-	private Short floor;
-
-	@Column(name = "atticAddition")
-	private Boolean atticAddition;
-
-	@Column(name = "status")
-	private Short status;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long houseId;
 
     @ManyToOne
-    @JoinColumn(name = "address_id", referencedColumnName = "addressId", insertable = false, updatable = false)
-    private AddressTableBean address;
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserTableBean user;
+    @Column(name = "title")
+    private String title;
+    @Column(name = "price")
+    private Integer price;
+    @Column(name = "description")
+    private String description;
+    @Column(name = "size")
+    private Integer size;
+    @Column(name = "address")
+    private String address;
+    @Column(name = "lat")
+    private BigDecimal lat;
+    @Column(name = "lng")
+    private BigDecimal lng;
+    @Column(name = "room")
+    private Byte room;
+    @Column(name = "bathroom")
+    private Byte bathroom;
+    @Column(name = "livingroom")
+    private Byte livingroom;
+    @Column(name = "kitchen")
+    private Byte kitchen;
+    @Column(name = "floor")
+    private Byte floor;
+    @Column(name = "atticAddition")
+    private Boolean atticAddition;
+    @Column(name = "status")
+    private Byte status;
+    @Column(name = "clickCount")
+    private Integer clickCount;
 
-	public AddressTableBean getAddress() {
-		return address;
-	}
+    @OneToOne(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private ConditionTableBean condition;
 
-	public void setAddress(AddressTableBean address) {
-		this.address = address;
-	}
+    @OneToOne(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private FurnitureTableBean furniture;
 
+    @OneToMany(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<HouseImageTableBean> images;
 
+    @OneToMany(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<BookingTableBean> bookings;
 
-	public long getHouseId() {
+    @OneToMany(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<HouseBookingTimeSlotBean> bookingTimeSlots;
+
+	public Long getHouseId() {
 		return houseId;
 	}
 
-	public void setHouseId(long houseId) {
+	public void setHouseId(Long houseId) {
 		this.houseId = houseId;
 	}
 
-	public long getUserId() {
-		return userId;
+	public UserTableBean getUser() {
+		return user;
 	}
 
-	public void setUserId(long userId) {
-		this.userId = userId;
+	public void setUser(UserTableBean user) {
+		this.user = user;
 	}
 
 	public String getTitle() {
@@ -99,11 +96,11 @@ public class HouseTableBean {
 		this.title = title;
 	}
 
-	public long getPrice() {
+	public Integer getPrice() {
 		return price;
 	}
 
-	public void setPrice(long price) {
+	public void setPrice(Integer price) {
 		this.price = price;
 	}
 
@@ -115,77 +112,139 @@ public class HouseTableBean {
 		this.description = description;
 	}
 
-	public int getSize() {
+	public Integer getSize() {
 		return size;
 	}
 
-	public void setSize(int size) {
+	public void setSize(Integer size) {
 		this.size = size;
 	}
 
-	public long getAddressId() {
-		return addressId;
+	public String getAddress() {
+		return address;
 	}
 
-	public void setAddressId(long addressId) {
-		this.addressId = addressId;
+	public void setAddress(String address) {
+		this.address = address;
 	}
 
-	public short getRoom() {
+	public BigDecimal getLat() {
+		return lat;
+	}
+
+	public void setLat(BigDecimal lat) {
+		this.lat = lat;
+	}
+
+	public BigDecimal getLng() {
+		return lng;
+	}
+
+	public void setLng(BigDecimal lng) {
+		this.lng = lng;
+	}
+
+	public Byte getRoom() {
 		return room;
 	}
 
-	public void setRoom(short room) {
+	public void setRoom(Byte room) {
 		this.room = room;
 	}
 
-	public short getBathroom() {
+	public Byte getBathroom() {
 		return bathroom;
 	}
 
-	public void setBathroom(short bathroom) {
+	public void setBathroom(Byte bathroom) {
 		this.bathroom = bathroom;
 	}
 
-	public short getLivingroom() {
+	public Byte getLivingroom() {
 		return livingroom;
 	}
 
-	public void setLivingroom(short livingroom) {
+	public void setLivingroom(Byte livingroom) {
 		this.livingroom = livingroom;
 	}
 
-	public short getKitchen() {
+	public Byte getKitchen() {
 		return kitchen;
 	}
 
-	public void setKitchen(short kitchen) {
+	public void setKitchen(Byte kitchen) {
 		this.kitchen = kitchen;
 	}
 
-
-	public short getFloor() {
+	public Byte getFloor() {
 		return floor;
 	}
 
-	public void setFloor(short floor) {
+	public void setFloor(Byte floor) {
 		this.floor = floor;
 	}
 
-	public boolean isAtticAddition() {
+	public Boolean getAtticAddition() {
 		return atticAddition;
 	}
 
-	public void setAtticAddition(boolean atticAddition) {
+	public void setAtticAddition(Boolean atticAddition) {
 		this.atticAddition = atticAddition;
 	}
 
-	public short getStatus() {
+	public Byte getStatus() {
 		return status;
 	}
 
-	public void setStatus(short status) {
+	public void setStatus(Byte status) {
 		this.status = status;
 	}
 
+	public Integer getClickCount() {
+		return clickCount;
+	}
+
+	public void setClickCount(Integer clickCount) {
+		this.clickCount = clickCount;
+	}
+
+	public ConditionTableBean getCondition() {
+		return condition;
+	}
+
+	public void setCondition(ConditionTableBean condition) {
+		this.condition = condition;
+	}
+
+	public FurnitureTableBean getFurniture() {
+		return furniture;
+	}
+
+	public void setFurniture(FurnitureTableBean furniture) {
+		this.furniture = furniture;
+	}
+
+	public List<HouseImageTableBean> getImages() {
+		return images;
+	}
+
+	public void setImages(List<HouseImageTableBean> images) {
+		this.images = images;
+	}
+
+	public List<BookingTableBean> getBookings() {
+		return bookings;
+	}
+
+	public void setBookings(List<BookingTableBean> bookings) {
+		this.bookings = bookings;
+	}
+
+	public List<HouseBookingTimeSlotBean> getBookingTimeSlots() {
+		return bookingTimeSlots;
+	}
+
+	public void setBookingTimeSlots(List<HouseBookingTimeSlotBean> bookingTimeSlots) {
+		this.bookingTimeSlots = bookingTimeSlots;
+	}
 }

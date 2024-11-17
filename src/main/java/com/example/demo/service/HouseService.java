@@ -20,7 +20,6 @@ public class HouseService {
         HouseDetailsDTO houseDetailsDTO = new HouseDetailsDTO();
         houseDetailsDTO.setHouseId(house.getHouseId());
 
-        houseDetailsDTO.setAddress(house.getAddress());
 
         return houseDetailsDTO;
     }

@@ -7,14 +7,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.example.demo.model.AddressTableBean;
+import com.example.demo.model.HouseTableBean;
 
 
 @Repository
-public interface SearchRepository extends JpaRepository<AddressTableBean, Long>{
+public interface SearchRepository extends JpaRepository<HouseTableBean, Long>{
 	
-	List<AddressTableBean> findByCity(String city);
+	List<HouseTableBean> findByCity(String city);
 	
 	@Query("from Address where concat(city ,concat(township,street)) like %:n%")
-	List<AddressTableBean> findByKeyWord(@Param("n") String name);
+	List<HouseTableBean> findByKeyWord(@Param("n") String name);
 }
