@@ -42,13 +42,6 @@ public class ConditionTableBean {
 		
 	}
 
-	public Long getHouseId() {
-		return houseId;
-	}
-
-	public void setHouseId(Long houseId) {
-		this.houseId = houseId;
-	}
 
 	public Boolean getPet() {
 		return pet;
