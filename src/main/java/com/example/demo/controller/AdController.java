@@ -1,9 +1,7 @@
 package com.example.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,14 +16,8 @@ public class AdController {
 	@Autowired
 	private AdService adService;
 	
-	// get ads
-	@GetMapping("/list")
-	public Page<AdBean> getAds(Integer pageNumber) {
-		return adService.getAdsByPageNumber(pageNumber);
-	}
 	
 	// get an ad
-	@GetMapping("/{adId}")
 	public AdBean getAdById(Integer adId) {
 		return adService.getAdById(adId);
 	}
@@ -45,7 +37,6 @@ public class AdController {
 	}
 	
 	// delete an ad
-	@GetMapping("/{adId}")
 	@Transactional
 	public boolean deleteAdById(Integer adId) {
 		return adService.deleteAdById(adId);

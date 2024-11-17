@@ -1,14 +1,10 @@
 package com.example.demo.model;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -18,7 +14,7 @@ public class OrderBean {
 	@Column(name = "user_id")
 	private Long userId;
 	
-	@Column(name = "merchantId")
+	@Column(name = "merchant_id")
 	private String merchantId;
 	
 	@Id
@@ -37,8 +33,8 @@ public class OrderBean {
 	@Column(name = "itemName")
 	private String itemName;
 	
-	@Column(name = "orderStatus")
-	private Integer orderStatus;
+	@Column(name = "order_status", columnDefinition = "TINYINT")
+	private Short orderStatus;
 	
 	@Column(name = "returnUrl")
 	private String returnUrl;
@@ -49,12 +45,6 @@ public class OrderBean {
 	@Column(name = "checkMacValue")
 	private String checkMacValue;
 	
-	@OneToMany(
-			mappedBy="order", 
-			cascade = CascadeType.ALL, 
-			fetch = FetchType.LAZY)
-	private List<AdBean> ads;
-
 	public OrderBean() {
 	}
 
@@ -114,11 +104,11 @@ public class OrderBean {
 		this.itemName = itemName;
 	}
 
-	public Integer getOrderStatus() {
+	public Short getOrderStatus() {
 		return orderStatus;
 	}
 
-	public void setOrderStatus(Integer orderStatus) {
+	public void setOrderStatus(Short orderStatus) {
 		this.orderStatus = orderStatus;
 	}
 
@@ -146,12 +136,4 @@ public class OrderBean {
 		this.checkMacValue = checkMacValue;
 	}
 
-	public List<AdBean> getAds() {
-		return ads;
-	}
-
-	public void setAds(List<AdBean> ads) {
-		this.ads = ads;
-	}
-	
 }
