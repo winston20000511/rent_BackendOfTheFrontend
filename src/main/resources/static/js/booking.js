@@ -23,15 +23,7 @@ $(document).ready(function() {
 
 
 			$(".owl").timepicker({
-				timeFormat: "h:mm p", // 時間隔式
-				interval: 60, //時間間隔
-				minTime: "10", //最小時間
-				maxTime: "6:00pm", //最大時間
-				defaultTime: "11", //預設起始時間
-				startTime: "10:00", // 開始時間
-				dynamic: true, //是否顯示項目，使第一個項目按時間順序緊接在所選時間之後
-				dropdown: true, //是否顯示時間條目的下拉列表
-				scrollbar: true, //是否顯示捲軸
+				
 			});
 
 			$("#calendar").datepicker({

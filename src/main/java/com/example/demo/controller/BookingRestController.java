@@ -10,6 +10,9 @@ import com.example.demo.model.HouseBookingTimeSlotBean;
 import com.example.demo.service.BookingService;
 
 import jakarta.servlet.http.HttpSession;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 @RestController
@@ -34,5 +37,8 @@ public class BookingRestController {
 		
 		return bookingTimeSlot;
 	}
+	
+	
+	
 	
 }

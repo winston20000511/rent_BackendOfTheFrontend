@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Insert title here</title>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+</head>
+
+<body>
+  <div class="container">
+    <div class="shadow-sm p-3 mb-5 bg-body rounded">
+      <h3>選擇可預約日期:</h3>
+      <label for="from" class="form-label">從</label>
+      <input type="text" id="from" name="from">
+      <label for="to" class="form-label">到</label>
+      <input type="text" id="to" name="to">
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="shadow-sm p-3 mb-5 bg-body rounded">
+      <h3>選擇可預約時段:</h3>
+
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="shadow-sm p-3 mb-5 bg-body rounded">
+      <h3>選擇可預約的星期：</h3>
+      <fieldset class="btn-group" role="group" id="weekDaysFieldset">
+        
+      </fieldset>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="shadow-sm p-3 mb-5 bg-body rounded">
+      <h3>選擇預約間隔時間:</h3>
+
+    </div>
+  </div>
+
+
+
+  <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+  <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    $(function () {
+      var url = window.location.pathname.split('/');
+      var houseId = url[url.length - 1];
+
+      $.ajax({
+        url: '/booking/timeSlot',
+        type: 'GET',
+        dataType: 'json',
+        data: {
+          houseId: houseId,
+        },
+        success: function (response) {
+          console.log(response);
+          var weekDay = response.weekDay;
+          var fromTime = response.fromTime;
+          var toTime = response.toTime;
+          var fromDate = response.fromDate
+          var toDate = response.toDate;
+          var duration = response.duration;
+          var daysOfWeek = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"];
+
+          $('#from').val(fromDate);
+          $('#to').val(toDate);
+
+          for (let i = 0; i < weekDay.length; i++) {
+            var checkbox = $('<input>', {
+              type: 'checkbox',
+              id: 'day-' + i,
+              name: 'weekDays',
+              value: daysOfWeek[i],
+              checked: weekDay[i] === '1',
+              class: 'btn-check'
+
+            });
+            var label = $('<label>', {
+              for: 'day-' + i,
+              text: daysOfWeek[i],
+              class: 'btn btn-outline-primary',
+              style: 'vertical-align: inherit'
+            });
+            $('#weekDaysFieldset').append(checkbox).append(label);
+          }
+
+          var dateFormat = "yy-dd-mm",
+            from = $("#from")
+              .datepicker({
+                minDate: '+1',
+                defaultDate: "+1",
+                changeMonth: true,
+                showOtherMonths: true,
+                selectOtherMonths: true
+              })
+              .on("change", function () {
+                to.datepicker("option", "minDate", getDate(this));
+              }),
+            to = $("#to").datepicker({
+              defaultDate: "+1w",
+              changeMonth: true,
+              showOtherMonths: true,
+              selectOtherMonths: true
+            })
+              .on("change", function () {
+                from.datepicker("option", "maxDate", getDate(this));
+              });
+
+          function getDate(element) {
+            var date;
+            try {
+              date = $.datepicker.parseDate(dateFormat, element.value);
+            } catch (error) {
+              date = null;
+            }
+
+            return date;
+          }
+        }
+
+      });
+
+      //中文化
+      $.datepicker.regional['zh-TW'] = {
+        dayNames: ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"],
+        dayNamesMin: ["日", "一", "二", "三", "四", "五", "六"],
+        monthNames: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
+        monthNamesShort: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
+        prevText: "上月",
+        nextText: "次月",
+        weekHeader: "週",
+        dateFormat: 'yy-mm-dd'
+      };
+      //將預設語系設定為中文
+      $.datepicker.setDefaults($.datepicker.regional["zh-TW"]);
+
+
+
+
+
+    });
+  </script>
+</body>
+
+</html>

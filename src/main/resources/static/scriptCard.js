@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	          <p class="text-gray-600 mb-4">This is card number ${cardCount + 1}. It contains some descriptive content.</p>
 	          <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">View</button>
 		      <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onclick="bookingPage(${cardCount + 1})">預約</button>
+			  <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onclick="editSlot(${cardCount + 1})">編輯時段</button>
 			</div>  
 			  `;
 			cardContainer.appendChild(card);
@@ -43,3 +44,8 @@ document.addEventListener('DOMContentLoaded', () => {
 function bookingPage(houseId) {
 	window.location.href = "/booking/house/" + houseId;
 };
+
+function editSlot(houseId) {
+	window.location.href = "/booking/timeSlot/" + houseId;
+};
+
