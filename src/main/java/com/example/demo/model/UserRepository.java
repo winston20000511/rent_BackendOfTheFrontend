@@ -2,7 +2,7 @@ package com.example.demo.model;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<UserBean, Integer> {
+public interface UserRepository extends JpaRepository<UserTableBean, Integer> {
 	
-	UserBean findByEmail(String email);
+	UserTableBean findByEmail(String email);
 }

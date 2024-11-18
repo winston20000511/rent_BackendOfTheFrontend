@@ -3,6 +3,8 @@ package com.example.demo.model;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,8 +23,11 @@ import jakarta.persistence.Table;
 public class HouseTableBean {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "house_id")
     private Long houseId;
-
+    
+    @Column(name = "user_id")
+    private Long userId;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private UserTableBean user;
@@ -67,9 +72,10 @@ public class HouseTableBean {
     private List<HouseImageTableBean> images;
 
     @OneToMany(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private List<BookingTableBean> bookings;
+    private List<BookingBean> bookings;
 
     @OneToMany(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<HouseBookingTimeSlotBean> bookingTimeSlots;
 
 	public Long getHouseId() {
@@ -232,11 +238,11 @@ public class HouseTableBean {
 		this.images = images;
 	}
 
-	public List<BookingTableBean> getBookings() {
+	public List<BookingBean> getBookings() {
 		return bookings;
 	}
 
-	public void setBookings(List<BookingTableBean> bookings) {
+	public void setBookings(List<BookingBean> bookings) {
 		this.bookings = bookings;
 	}
 
@@ -246,5 +252,13 @@ public class HouseTableBean {
 
 	public void setBookingTimeSlots(List<HouseBookingTimeSlotBean> bookingTimeSlots) {
 		this.bookingTimeSlots = bookingTimeSlots;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 }
