@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="https://www.thymeleaf.org/" lang="zh-hant-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rent house</title>
-    <link rel="stylesheet" href="../static/css/styles.css">
+    <link rel="stylesheet" href="styles.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@^2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,16 +17,16 @@
             <li><a href="#">Buy</a></li>
             <li class="link"><a href="#">Rent</a></li>
         </ul>
-
+	
         <ul class="list" id="list-left-1">
             <a href="#" class="list-item">item 1</a>
             <a href="#" class="list-item">item 2</a>
             <a href="#" class="list-item">item 3</a>
             <a href="#" class="list-item">item 4</a>
         </ul>
-
+	
         <div class="nav-middle">
-            <img src="../static/img/Logo3.jpg" alt="">
+            <img src="../static/Logo3.jpg" alt="">
             
             <div class="nav-title">
                 <h1>house</h1>
@@ -37,7 +37,10 @@
             <li><a href="#">Manage Rentals</a></li>
             <li><a href="#">Advertise</a></li>
             <li><a href="#">Help</a></li>
-            <li><a href="#">Sign In</a></li>
+            <div th:if="!${session.loginUserId}"><a th:href="@{/users/login}">Sign In</a></div>
+			
+            <div th:if="${session.loginUserId}">我是: <span th:text="${session.loginUsername}"></span></div>
+			
         </div>
     </header>
 
@@ -70,11 +73,15 @@
     <footer>
 
     </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=YOURAPI&callback=initMap&v=weekly&libraries=marker,places"defer></script>
-    <script src="../static/JS/scriptCard.js"></script>
-    <script src="../static/JS/scriptList.js"></script>
-    <script src="../static/JS/scriptButton.js"></script>
-    <script src="../static/JS/scriptGoogle.js"></script>
-
+    <script src="scriptCard.js"></script>
+    <script src="scriptList.js"></script>
+    <script src="scriptButton.js"></script>
+    <script src="scriptGoogle.js"></script>
+	<script>
+		
+	
+	</script>
 </body>
 </html>
