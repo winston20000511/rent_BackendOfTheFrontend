@@ -1,0 +1,138 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f2f2f2;
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #3579C0;
+    color: white;
+    padding: 10px 20px;
+}
+
+.header .logo {
+    font-size: 20px;
+}
+
+.header .nav {
+    display: flex;
+    gap: 20px;
+}
+
+.header .nav a {
+    color: white;
+    text-decoration: none;
+}
+
+.title {
+    text-align: center;
+    font-size: 24px;
+    margin: 20px 0;
+}
+
+/* Slideshow */
+.slideshow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ccc;
+    height: 200px;
+    margin: 20px;
+}
+
+.slideshow .arrow {
+    font-size: 30px;
+    cursor: pointer;
+    padding: 0 20px;
+}
+
+.slideshow .images {
+    display: flex;
+    gap: 10px;
+}
+
+.slideshow .images img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+}
+
+/* Google Map */
+.map {
+    background-color: #fff;
+    padding: 50px;
+    margin: 20px;
+    text-align: center;
+}
+
+/* Owner Info */
+.owner-section {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px;
+    background-color: #fff;
+    padding: 20px;
+}
+
+.owner-intro {
+    flex: 2;
+    padding: 0 20px;
+}
+
+.owner-details {
+    flex: 1;
+    padding: 0 20px;
+}
+
+.owner-details button {
+    background-color: #3579C0;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+}
+
+/* Comments Section */
+.comments-section {
+    background-color: #fff;
+    margin: 20px;
+    padding: 20px;
+}
+
+/* Recommended Houses */
+.recommended-section {
+    background-color: #fff;
+    margin: 20px;
+    padding: 20px;
+}
+
+.recommended-list {
+    display: flex;
+    justify-content: space-around;
+}
+
+.recommended-list .recommended-item {
+    background-color: #f5f5f5;
+    padding: 20px;
+    width: 150px;
+    text-align: center;
+}
+
+.recommended-list .recommended-item:hover {
+    background-color: #3579C0;
+    color: white;
+}
+
+/* Footer */
+.footer {
+    background-color: #3579C0;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    margin-top: 20px;
+}

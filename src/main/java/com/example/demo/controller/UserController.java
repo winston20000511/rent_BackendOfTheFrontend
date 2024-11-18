@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.example.demo.model.UserBean;
+import com.example.demo.model.UserTableBean;
 import com.example.demo.service.UserService;
 
 import jakarta.security.auth.message.callback.PrivateKeyCallback.Request;
@@ -30,7 +30,7 @@ public class UserController {
 	@PostMapping("/users/loginPost")
 	public String loginPost(String username, String password, HttpSession httpSession, Model model) {
 
-		UserBean result = userService.checkLogin(username, password);
+		UserTableBean result = userService.checkLogin(username, password);
 		
 		
 		if (result != null) {

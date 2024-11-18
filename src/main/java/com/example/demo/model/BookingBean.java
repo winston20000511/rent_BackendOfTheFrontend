@@ -23,7 +23,7 @@ public class BookingBean {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "house_id", insertable = false, updatable = false)
-    private HouseBean house;
+    private HouseTableBean house;
 
     @Id
     @Column(name = "user_id")
@@ -31,7 +31,7 @@ public class BookingBean {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
-    private UserBean rentUser;
+    private UserTableBean rentUser;
 
 	@Column(name = "booking_date")
 	private Date bookingDate;
@@ -51,22 +51,22 @@ public class BookingBean {
 	
 	public boolean isOwner() {
 		
-		return rentUser.getUserId().equals(house.getUserId());
+		return rentUser.getUserId().equals(house.getUser().getUserId());
 	}
 
-	public HouseBean getHouse() {
+	public HouseTableBean getHouse() {
 		return house;
 	}
 
-	public void setHouse(HouseBean house) {
+	public void setHouse(HouseTableBean house) {
 		this.house = house;
 	}
 
-	public UserBean getRentUser() {
+	public UserTableBean getRentUser() {
 		return rentUser;
 	}
 
-	public void setRentUser(UserBean rentUser) {
+	public void setRentUser(UserTableBean rentUser) {
 		this.rentUser = rentUser;
 	}
 
