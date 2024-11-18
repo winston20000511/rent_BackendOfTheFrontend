@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,13 +18,11 @@ public class AdService {
 		this.adBeanDao = adBeanDao;
 	}
 	
-	// get ads by page & user id
-	
-	
-	// get an ad
-	public AdBean getAdById(Integer adId) {
-		return null;
+	// get ads by user id (and page)
+	public List<AdBean> findAdsByUserId(Integer userId){
+		return adBeanDao.findAdsByUserId(userId);
 	}
+	
 	
 	// create an ad new ad
 	public AdBean createAd(AdBean adBean) {

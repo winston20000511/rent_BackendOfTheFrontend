@@ -55,7 +55,7 @@ public class OrderController {
 		 */
 	}
 	
-	// get orders by merchantTradNo
+	// get orders by user id and merchantTradNo
 	@GetMapping("/merchantTradNo/{userId}/{merchantTradNo}")
 	public List<OrderBean> findOrdersByUserIdAndMerchantTradNo(
 			@PathVariable("userId") Integer userId, @PathVariable("merchantTradNo") String merchantTradNo){
