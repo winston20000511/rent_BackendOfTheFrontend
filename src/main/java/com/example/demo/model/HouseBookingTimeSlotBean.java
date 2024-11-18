@@ -10,6 +10,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
@@ -18,7 +19,6 @@ import jakarta.persistence.Table;
 public class HouseBookingTimeSlotBean {
 
 	@Id
-	@Column(name = "house_id")
 	private Long houseId;
 	@Column(name = "from_date")
 	private Date fromDate;
@@ -34,6 +34,7 @@ public class HouseBookingTimeSlotBean {
 	private String weekDay;
 
 	@OneToOne(fetch = FetchType.LAZY)
+	@MapsId
 	@JoinColumn(name = "house_id", insertable = false, updatable = false)
 	@JsonBackReference
 	private HouseTableBean house;

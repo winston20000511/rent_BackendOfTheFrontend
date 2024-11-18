@@ -41,7 +41,7 @@ public class UserTableBean {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<HouseTableBean> houses;
     
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "rentUser", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<BookingBean> bookings;
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)

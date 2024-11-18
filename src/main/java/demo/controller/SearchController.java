@@ -47,6 +47,7 @@ public class SearchController {
 	@CrossOrigin(origins="*")
 	@PostMapping("/api/keyword")
 	public List<HouseTableBean> searchShowkeyword(@RequestBody String srhReq){
+		System.out.println("ok");
 		List<HouseTableBean> houseList = searchService.findByKeyWord(srhReq);
 		if (houseList.size() == 0 ) {
 			HouseTableBean house = searchService.placeConvertToAdress(srhReq);

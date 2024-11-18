@@ -25,8 +25,7 @@ public class HouseTableBean {
     @Column(name = "house_id")
     private Long houseId;
     
-    @Column(name = "user_id")
-    private Long userId;
+    
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private UserTableBean user;
@@ -73,9 +72,9 @@ public class HouseTableBean {
     @OneToMany(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<BookingBean> bookings;
 
-    @OneToMany(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JsonManagedReference
-    private List<HouseBookingTimeSlotBean> bookingTimeSlots;
+    private HouseBookingTimeSlotBean bookingTimeSlots;
 
 	public Long getHouseId() {
 		return houseId;
@@ -245,19 +244,15 @@ public class HouseTableBean {
 		this.bookings = bookings;
 	}
 
-	public List<HouseBookingTimeSlotBean> getBookingTimeSlots() {
+	public HouseBookingTimeSlotBean getBookingTimeSlots() {
 		return bookingTimeSlots;
 	}
 
-	public void setBookingTimeSlots(List<HouseBookingTimeSlotBean> bookingTimeSlots) {
+	public void setBookingTimeSlots(HouseBookingTimeSlotBean bookingTimeSlots) {
 		this.bookingTimeSlots = bookingTimeSlots;
 	}
 
-	public Long getUserId() {
-		return userId;
-	}
 
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
+
+
 }

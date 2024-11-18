@@ -3,7 +3,7 @@ var map;
 var circle;
 var markers=[];
 const mapUrl='http://localhost:8080/api/map'
-const keywordUrl='http://localhost:8080/api/keyword'
+const keywordUrl='api/keyword'
 
 
 export function googleSearchEventConfig(){
@@ -66,40 +66,40 @@ async function showKeyWordFetch(){
 	
 	const searchValue = document.getElementById('search').value;
 	console.log(searchValue);
-	
-	fetch(keywordUrl,{
-		method: "POST",
-		headers:{'Content-Type': 'text/plain'},
-		body: searchValue
-	})
-	.then(response => response.json())
-	.then(data=>{
-	 	console.log('Data received:' , data);
-	 	updateKeyWordList(data);
-	})
-	.catch(error =>{
-		console.error('There has been a problem with your fetch operation ', error);
-	})
 
-
-	// try{
-	// 	const response = await fetch(keywordUrl,{
-	// 		method: "POST",
-	// 		headers:{'Content-Type': 'text/plain'},
-	// 		body: searchValue
-	// 	});
-		
-	// 	if (!response.ok){
-	// 		throw new Error('Network response was not ok')
-	// 	}
-		
-	// 	const data = await response.json();
-	// 	console.log('Data received:' , data);
-	// 	updateKeyWordList(data);
-
-	// }catch (error){
+	// fetch(keywordUrl,{
+	// 	method: "POST",
+	// 	headers:{'Content-Type': 'text/plain'},
+	// 	body: searchValue
+	// })
+	// .then(response => response.json())
+	// .then(data=>{
+	//  	console.log('Data received:' , data);
+	//  	updateKeyWordList(data);
+	// })
+	// .catch(error =>{
 	// 	console.error('There has been a problem with your fetch operation ', error);
-	// }
+	// })
+
+	
+	try{
+		const response = await fetch(keywordUrl,{
+			method: "POST",
+			headers:{'Content-Type': 'text/plain'},
+			body: searchValue
+		});
+		
+		if (!response.ok){
+			throw new Error('Network response was not ok')
+		}
+		
+		const data = await response.json();
+		console.log('Data received:' , data);
+		updateKeyWordList(data);
+
+	}catch (error){
+		console.error('There has been a problem with your fetch operation ', error);
+	}
 }
 
 async function updateKeyWordList(data){

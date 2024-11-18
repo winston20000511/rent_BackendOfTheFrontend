@@ -51,7 +51,7 @@ public class BookingBean {
 	
 	public boolean isOwner() {
 		
-		return rentUser.getUserId().equals(house.getUserId());
+		return rentUser.getUserId().equals(house.getUser().getUserId());
 	}
 
 	public HouseTableBean getHouse() {
