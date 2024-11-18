@@ -14,6 +14,7 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.helper.SearchHelper;
 import com.example.demo.model.HouseTableBean;
 
 import demo.repository.SearchRepository;
@@ -49,7 +50,7 @@ public class SearchService {
 		return searchRepo.saveAll(houseList);
 	}
 	
-	public List<House> updateFakeAddress(String filePath,List<HouseTableBean> houseList){
+	public List<HouseTableBean> updateFakeAddress(String filePath,List<HouseTableBean> houseList){
 		
 		List<String> lists = SearchHelper.openfileRead(filePath);
 		

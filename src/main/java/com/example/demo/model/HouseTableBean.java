@@ -1,6 +1,5 @@
 package com.example.demo.model;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -42,9 +41,9 @@ public class HouseTableBean {
     @Column(name = "address")
     private String address;
     @Column(name = "lat")
-    private double lat;
+    private Double lat;
     @Column(name = "lng")
-    private double lng;
+    private Double lng;
     @Column(name = "room")
     private Byte room;
     @Column(name = "bathroom")
@@ -134,19 +133,19 @@ public class HouseTableBean {
 		this.address = address;
 	}
 
-	public double getLat() {
+	public Double getLat() {
 		return lat;
 	}
 
-	public void setLat(double lat) {
+	public void setLat(Double lat) {
 		this.lat = lat;
 	}
 
-	public double getLng() {
+	public Double getLng() {
 		return lng;
 	}
 
-	public void setLng(double lng) {
+	public void setLng(Double lng) {
 		this.lng = lng;
 	}
 
