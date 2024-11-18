@@ -4,11 +4,30 @@ import * as CardJs from './CardScript.js';
 import * as GoogleApiJs from './GoogleScript.js';
 import * as TestJs from './TestScript.js'
 
+
 //List event
-ListJs.listEventConfig();
+try {
+    ListJs.init();
+    TestJs.addEvent('.link','mouseenter',ListJs.linkMouseenter); //link滑鼠移入
+    TestJs.addEvent('.link','mouseleave',ListJs.linkMouseleave); //link滑鼠移入
+    TestJs.addEvent('.link-list','mouseenter',ListJs.listMouseenter); //list滑鼠移入
+    TestJs.addEvent('.link-list','mouseleave',ListJs.listMouseleave); //list滑鼠移入
+    console.log('List 初始化成功 ...');
+} catch (error) {
+    console.log('List 初始化失敗 ...',error)
+}
 
 //Button event
-ButtonJs.buttonEventConfig();
+try{
+    ButtonJs.init();
+    TestJs.addEvent('#filter-btn-1','click',ButtonJs.buttonClick);
+    console.log('Button 初始化成功 ...');
+}catch(error){
+    console.log('Button 初始化失敗 ...',error)
+}
+
+
+//ButtonJs.buttonEventConfig();
 
 //Card event
 CardJs.cardEventConfig();
@@ -20,5 +39,4 @@ GoogleApiJs.googleSearchEventConfig();
 //GoogleMap Initialize
 GoogleApiJs.initMap();
 
-//TEST event
-// TestJs.testFetch();
+

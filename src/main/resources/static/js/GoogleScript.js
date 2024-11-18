@@ -1,5 +1,6 @@
 
 var map;
+var circle;
 var markers=[];
 const mapUrl='http://localhost:8080/api/map'
 const keywordUrl='http://localhost:8080/api/keyword'
@@ -11,21 +12,23 @@ export function googleSearchEventConfig(){
 	const iconButton = document.querySelector('.fa-solid');
 	let isComposing = false; // 標記是否處於輸入拼音或注音過程中
 	
-	
+
 	// 當輸入開始時（例如拼音輸入的過程中），設定 isComposing 為 true
 	search.addEventListener('compositionstart', () => {
+		//if (pgmDebug) console.log('search compositionstart')
 		isComposing = true;
 	});
 	
 	// 當輸入結束時（輸入完成並轉換為中文字後），設定 isComposing 為 false
 	search.addEventListener('compositionend', () => {
+		//if (pgmDebug) console.log('search compositionend')
 		isComposing = false;
 		showKeyWordFetch()
 	});
 	
 	//輸入時顯示List
 	search.addEventListener('input',()=>{
-		if (!isComposing){
+		if (isComposing === false){
 			showKeyWordFetch()
 		}
 	})
@@ -63,24 +66,40 @@ async function showKeyWordFetch(){
 	
 	const searchValue = document.getElementById('search').value;
 	console.log(searchValue);
-	try{
-		const response = await fetch(keywordUrl,{
-			method: "POST",
-			headers:{'Content-Type': 'text/plain'},
-			body: searchValue
-		});
-		
-		if (!response.ok){
-			throw new Error('Network response was not ok')
-		}
-		
-		const data = await response.json();
-		console.log('Data received:' , data);
-		updateKeyWordList(data);
+	
+	fetch(keywordUrl,{
+		method: "POST",
+		headers:{'Content-Type': 'text/plain'},
+		body: searchValue
+	})
+	.then(response => response.json())
+	.then(data=>{
+	 	console.log('Data received:' , data);
+	 	updateKeyWordList(data);
+	})
+	.catch(error =>{
+		console.error('There has been a problem with your fetch operation ', error);
+	})
 
-	}catch (error){
-		console.error('There has been a problem with your fetch operation', error);
-	}
+
+	// try{
+	// 	const response = await fetch(keywordUrl,{
+	// 		method: "POST",
+	// 		headers:{'Content-Type': 'text/plain'},
+	// 		body: searchValue
+	// 	});
+		
+	// 	if (!response.ok){
+	// 		throw new Error('Network response was not ok')
+	// 	}
+		
+	// 	const data = await response.json();
+	// 	console.log('Data received:' , data);
+	// 	updateKeyWordList(data);
+
+	// }catch (error){
+	// 	console.error('There has been a problem with your fetch operation ', error);
+	// }
 }
 
 async function updateKeyWordList(data){
@@ -179,11 +198,11 @@ async function addMarkerByAddress(data) {
 		cardCount++;
 
 		const contentString = `
-		<div>
-		  <img src="./img/view1.jpg" alt="Card image" class="w-full h-48 object-cover mb-4 rounded-md">
-		  <h3 class="text-lg font-semibold mb-2">Price ${k.price}</h3>
-		  <p class="text-gray-600 mb-4">${k.address}</p>
-		  <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">View</button>
+		<div style="width="300px height="300px">
+			<img src="./img/view1.jpg" alt="Card image" class="w-full h-48 object-cover mb-4 rounded-md">
+			<h3 class="text-lg font-semibold mb-2">Price ${k.price}</h3>
+			<p class="text-gray-600 mb-4">${k.address}</p>
+			<button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">View</button>
 		</div>
 	  `;
 
@@ -211,7 +230,7 @@ async function addMarkerByAddress(data) {
 
 	let mFlagImg = document.createElement('img');
 	mFlagImg.src= "/img/mhouse.png"
-    // // 將地圖中心移動到新標記位置
+    // 將地圖中心移動到新標記位置
 	const address = document.getElementById('search').value;
 	const origin = await geocodeAddress(address)
     const originMaker = new google.maps.marker.AdvancedMarkerElement({
@@ -224,8 +243,29 @@ async function addMarkerByAddress(data) {
 	map.panTo(origin);
     //map.setCenter(origin);
     map.setZoom(13);  // 可以調整地圖縮放級別
+
+	if (circle){
+		circle.setMap(null);
+	}
 	
-	//loadMoreCards(data);
+	circle = new google.maps.Circle({
+		strokeColor: "#FF0000", // 邊框顏色
+		strokeOpacity: 0.8,    // 邊框透明度
+		strokeWeight: 2,       // 邊框粗細
+		fillColor: "#AA0000",  // 填充顏色
+		fillOpacity: 0.35,     // 填充透明度
+		map: map,
+		center: origin, // 圓心座標
+		radius: 2000,          // 半徑（以公尺為單位）
+	  });
+	
+	map.addListener('click',()=>{
+		infoWindow.close();
+	})
+	circle.addListener('click',()=>{
+		infoWindow.close();
+	})
+	
 
 }
 

@@ -13,6 +13,28 @@ export async function testFetch(){
 	}).catch(error =>{
 		console.error('Three has been a proble with your fetch operation',error)
 	})
+}
+
+export function errorCatch(callback,moduleName){
+	try {
+		callback();
+		console.log(`${moduleName}初始化成功`)
+	} catch (error) {
+		console.log(`${moduleName} 初始化失敗`, error)
+	}
+
+}
+
+export function addEvent(selector , eventType , callback){
+	const elements = document.querySelectorAll(selector);
+	if (elements.length ===0){
+		console.error(`選擇器 "${selector}" 匹配不到`)
+		return;
+	}
+
+	elements.forEach(element => {
+		element.addEventListener(eventType,callback);
+	})
 
 }
 

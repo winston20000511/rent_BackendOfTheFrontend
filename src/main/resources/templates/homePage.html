@@ -18,7 +18,7 @@
             <li class="link"><a href="#">Rent</a></li>
         </ul>
 
-        <ul class="list" id="list-left-1">
+        <ul class="link-list" id="link-list-1">
             <a href="#" class="list-item">item 1</a>
             <a href="#" class="list-item">item 2</a>
             <a href="#" class="list-item">item 3</a>
@@ -41,14 +41,14 @@
         </div>
     </header>
 
-    <div class="filter">
+    <div class="filter" id="filter">
         <div class="filter-left">
             <input type="text" placeholder="Address, neighborhood, city, ZIP" id="search">
             <i class="fa-solid fa-magnifying-glass"></i>
         </div>
         <ul class="absolute left-0 w-full mt-1 bg-white border border-gray-300 rounded shadow-lg" id="searchList"></ul>
         <div class="filter-right">
-            <button class="filter-btn bg-white text-black font-bold py-2 px-4 rounded hover:bg-gray-100 border border-blue-700">
+            <button class="filter-btn bg-white text-black font-bold py-2 px-4 rounded hover:bg-gray-100 border border-blue-700" id="filter-btn-1" >
                 Price
                 <i class="fa-solid fa-angle-down"></i>
             </button>
@@ -57,6 +57,10 @@
                 <i class="fa-solid fa-angle-down"></i>
             </button>
         </div>
+        <ul class="btn-list" id="btn-list-1">
+            <li>Price Range</li><hr>
+            <li>Minimum<input type="text" class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6" placeholder="請輸入數字 .."></li>
+        </ul>
     </div>
 
     <main class="main">
@@ -74,5 +78,6 @@
     <script type="module" src="/js/index.js"></script>
     <script src="https://unpkg.com/animejs@3.2.1/lib/anime.min.js"></script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB74YfHLENToX6YpaEoKASZnhaZdqIio2s&callback=initMap&v=weekly&libraries=marker,places"defer></script>
+    
 </body>
 </html>

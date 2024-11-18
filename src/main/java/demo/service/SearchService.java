@@ -205,19 +205,18 @@ public class SearchService {
 
 	}
 	
-	public List<Address> GetDurationAndDistanceGoogleAPI2(List<Address> addressList) {
+	public List<House> GetDurationAndDistanceGoogleAPI2(List<House> houseList) {
 		
 		String encodedOrigin;
-		List<Address> newAddressList = new ArrayList<>();
+		List<House> newHouseList = new ArrayList<>();
 		
 		try {
-			String address = addressList.get(0).getCity()+addressList.get(0).getTownship()+addressList.get(0).getStreet();
+			String address = houseList.get(0).getAddress();
 			encodedOrigin = java.net.URLEncoder.encode( address ,"UTF-8");
 			
-			for(int i = 1 ; i < addressList.size() ; i++) {
+			for(int i = 1 ; i < houseList.size() ; i++) {
 				
-				address = addressList.get(i).getCity()+addressList.get(i).getTownship()+addressList.get(i).getStreet();
-
+				address = houseList.get(i).getAddress();
 				String encodeDestination= java.net.URLEncoder.encode(address,"UTF-8");
 				String urlString = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" 
 		                + encodedOrigin + "&destinations=" + encodeDestination + "&mode=driving&language=zh-TW&key=" + apiKey;
@@ -237,8 +236,8 @@ public class SearchService {
 											.getJSONObject(0)
 											.getJSONObject("duration");		
 					
-					if (distance.getInt("value") <1500 && duration.getInt("value") < 3600) {
-						newAddressList.add(addressList.get(i));
+					if (distance.getInt("value") <2000 && duration.getInt("value") < 3600) {
+						newHouseList.add(houseList.get(i));
 					}
 //					System.out.println(distance.getInt("value"));
 //					System.out.println(duration.getInt("value"));						
@@ -258,7 +257,7 @@ public class SearchService {
 			e.printStackTrace();
 		}
 		
-		return newAddressList;
+		return newHouseList;
 
 	}
 	

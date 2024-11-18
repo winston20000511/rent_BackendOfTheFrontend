@@ -104,7 +104,7 @@ public class SearchHelper {
 		double lat2Rad = Math.toRadians(Target.getLat());
 		double lng2Rad = Math.toRadians(Target.getLng());
 		
-        // Haversine 公式
+        //Haversine 公式
         double deltaLat = lat2Rad - lat1Rad;
         double deltaLng = lng2Rad - lng1Rad;
 
@@ -114,7 +114,7 @@ public class SearchHelper {
 
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-        // 計算距離
+        //計算距離
         return earthRadiusKm * c;
 		
 	}
