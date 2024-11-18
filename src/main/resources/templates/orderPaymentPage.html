@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MY ORDER</title>
+    <link rel="stylesheet" href="../static/css/styles.css" />
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@^2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <ul class="nav-left">
+        <li><a href="#">Buy</a></li>
+        <li class="link"><a href="#">Rent</a></li>
+      </ul>
+
+      <ul class="list" id="list-left-1">
+        <a href="#" class="list-item">item 1</a>
+        <a href="#" class="list-item">item 2</a>
+        <a href="#" class="list-item">item 3</a>
+        <a href="#" class="list-item">item 4</a>
+      </ul>
+
+      <div class="nav-middle">
+        <img src="../static/Logo3.jpg" alt="" />
+
+        <div class="nav-title">
+          <h1>house</h1>
+        </div>
+      </div>
+      <div class="nav-right">
+        <li><a href="#">Manage Rentals</a></li>
+        <li><a href="#">Advertise</a></li>
+        <li><a href="#">Help</a></li>
+        <li><a href="#">Sign In</a></li>
+      </div>
+    </header>
+
+    <div
+        id="my-ad-title"
+        class="text-xl mb-3 text-center border-b border-black py-2"
+      >
+        訂單確認
+    </div>
+
+      <div class="flex items-center mr-64 ml-64 mt-10">
+        <div class="flex flex-col items-center">
+          <div class="w-8 h-8 flex items-center justify-center bg-blue-400 rounded-full">
+            <i class="fa-solid fa-check" style="color: #fafcff;"></i>
+          </div>
+          <div class="mt-2 text-sm text-gray-600">確認</div>
+        </div>
+        <div class="flex-1 h-0.5 bg-blue-400 -mt-6"></div>
+        <div class="flex flex-col items-center">
+          <div class="w-8 h-8 flex items-center justify-center bg-gray-100 border-2 border-blue-300 rounded-full">
+            <div class="w-3 h-3 rounded-full bg-blue-400"></div>
+          </div>
+          <div class="mt-2 text-sm text-gray-600">付款</div>
+        </div>
+        <div class="flex-1 h-0.5 bg-gray-200 -mt-6"></div>
+        <div class="flex flex-col items-center">
+          <div class="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full"></div>
+          <div class="mt-2 text-sm text-gray-600">完成</div>
+        </div>
+      </div>
+
+    <br/>
+      <div class="px-1 py-1 m-2 text-center border-b-2 border-blue-400 mr-64 ml-64">step2. 請填寫付款資料</div>
+      
+      <main class="text-center">外嵌綠界付款介面</main>
+      
+    </div>
+    
+
+    <footer></footer>
+    <script src="../static/JS/scriptList.js"></script>
+    <script src="../static/JS/scriptButton.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  </body>
+</html>

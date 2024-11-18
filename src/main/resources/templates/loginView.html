@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/" lang="zh-hant-TW">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link th:href="@{/css/bootstrap.min.css}" rel="stylesheet" />
+<title>登入頁面</title>
+</head>
+<body>
+	<div class="container">
+		<div class="row justify-content-center">
+			<div class="col-6">
+				<h1>登入</h1>
+
+				<form th:action="@{/users/loginPost}" method="post">
+
+					<div class="mb-3">
+						<label for="exampleInputEmail1" class="form-label">帳號</label> <input
+							type="text" name="username" class="form-control"
+							id="exampleInputEmail1" aria-describedby="emailHelp">
+					</div>
+
+					<div class="mb-3">
+						<label for="exampleInputPassword1" class="form-label">密碼</label> <input
+							type="password" name="password" class="form-control"
+							id="exampleInputPassword1">
+					</div>
+
+					<div th:text="${loginOkMsg} ? ${loginOkMsg}"></div>
+					<div th:text="${errorMsg} ? ${errorMsg}" style="color: red"></div>
+					<button type="submit" class="btn btn-primary">送出</button>
+				</form>
+
+
+			</div>
+		</div>
+	</div>
+
+
+	<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
