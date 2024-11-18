@@ -1,4 +1,4 @@
-package demo.service;
+package com.example.demo.service;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -16,8 +16,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.helper.SearchHelper;
 import com.example.demo.model.HouseTableBean;
-
-import demo.repository.SearchRepository;
+import com.example.demo.repository.SearchRepository;
 
 @Service
 public class SearchService {

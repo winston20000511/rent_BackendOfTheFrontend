@@ -1,4 +1,4 @@
-package demo.controller;
+package com.example.demo.controller;
 
 import java.util.List;
 
@@ -11,8 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.OriginRequest;
 import com.example.demo.model.HouseTableBean;
-
-import demo.service.SearchService;
+import com.example.demo.service.SearchService;
 
 @RestController
 public class SearchController {

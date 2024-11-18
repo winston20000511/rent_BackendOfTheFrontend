@@ -3,7 +3,7 @@ var map;
 var circle;
 var markers=[];
 const mapUrl='http://localhost:8080/api/map'
-const keywordUrl='api/keyword'
+const keywordUrl='http://localhost:8080/api/keyword'
 
 
 export function googleSearchEventConfig(){
