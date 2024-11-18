@@ -12,8 +12,13 @@ import jakarta.persistence.Table;
 @Table(name="condition_table")
 public class ConditionTableBean {
 
+<<<<<<< Updated upstream
 	@Id
 	private Long houseId;
+=======
+	@Column(name="houseId")
+	private Integer houseId;
+>>>>>>> Stashed changes
 	@Column(name = "pet")
 	private Boolean pet;
 	@Column(name = "parkingSpace")
@@ -42,7 +47,16 @@ public class ConditionTableBean {
 		
 	}
 
+<<<<<<< Updated upstream
 
+=======
+	public Integer getHouseId() {
+		return houseId;
+	}
+	public void setHouseId(Integer houseId) {
+		this.houseId = houseId;
+	}
+>>>>>>> Stashed changes
 	public Boolean getPet() {
 		return pet;
 	}
