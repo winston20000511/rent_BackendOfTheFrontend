@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import demo.dto.OriginRequest;
 import demo.model.Address;
+import demo.model.House;
 import demo.service.SearchService;
 
 @RestController
@@ -20,41 +21,41 @@ public class SearchController {
 	private SearchService searchService;
 	
 	@GetMapping("/api/test")
-	public List<Address> testupdate() {
-		List<Address> addressList = searchService.findAll();
-		addressList = searchService.updateFakeAddress("C:\\Users\\User\\Desktop\\Rent_index\\address.csv",addressList);
-		addressList = searchService.getLatAndLngGoogleAPI(addressList);
-		addressList = searchService.addressUpdateAll(addressList);
+	public List<House> testupdate() {
+		List<House> houseList = searchService.findAll();
+		houseList = searchService.updateFakeAddress("C:\\Users\\User\\Desktop\\Rent_index\\address.csv",houseList);
+		houseList = searchService.getLatAndLngGoogleAPI(houseList);
+		houseList = searchService.houseUpdateAll(houseList);
 
-		return addressList;
+		return houseList;
 	}
 	
 	// TODO
 	@CrossOrigin(origins = "*")
 	@PostMapping("/api/map")
-	public List<Address> searchShowMap(@RequestBody OriginRequest request) {
-		Address origin = searchService.placeConvertToAdress(request.getOrigin());
-		List<Address> addressList = searchService.findByCityAndTownship(origin.getCity()+origin.getTownship());
-		addressList.add(0,origin);
+	public List<House> searchShowMap(@RequestBody OriginRequest request) {
+		House origin = searchService.placeConvertToAdress(request.getOrigin());
+		List<House> houseList = searchService.findByCityAndTownship(origin.getAddress());
+		houseList.add(0,origin);
 		long startTime = System.currentTimeMillis();
-		addressList = searchService.GetDurationAndDistanceGoogleAPI(addressList);
+		houseList = searchService.GetDurationAndDistanceGoogleAPI(houseList);
 		long endTime = System.currentTimeMillis();
 		System.out.println("執行時間：" + (endTime - startTime) + " 毫秒");
-		return addressList;
+		return houseList;
 	}
 	
 	@CrossOrigin(origins="*")
 	@PostMapping("/api/keyword")
-	public List<Address> searchShowkeyword(@RequestBody String srhReq){
-		List<Address> addressList = searchService.findByKeyWord(srhReq);
-		if (addressList.size() == 0 ) {
-			Address address = searchService.placeConvertToAdress(srhReq);
-			addressList.add(address);
-			return addressList;
-		}else if(addressList.size() < 10) {
-			return addressList.subList(0, addressList.size());
+	public List<House> searchShowkeyword(@RequestBody String srhReq){
+		List<House> houseList = searchService.findByKeyWord(srhReq);
+		if (houseList.size() == 0 ) {
+			House house = searchService.placeConvertToAdress(srhReq);
+			houseList.add(house);
+			return houseList;
+		}else if(houseList.size() < 10) {
+			return houseList.subList(0, houseList.size());
 		}else {
-			return addressList.subList(0, 10);
+			return houseList.subList(0, 10);
 		}
 	}
 	

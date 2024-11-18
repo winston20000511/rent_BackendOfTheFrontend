@@ -9,8 +9,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import demo.model.Address;
-
 public class SearchHelper {
 	
 	//地球半徑 單位公里
@@ -96,7 +94,7 @@ public class SearchHelper {
 	}
 	
 	//哈弗賽因公式計算
-	public static Double getDistance(Address Origin , Address Target) {
+	public static Double getDistance(House Origin , House Target) {
 		
 		//緯度&經度 角度轉成弧度
 		double lat1Rad = Math.toRadians(Origin.getLat());
@@ -104,7 +102,7 @@ public class SearchHelper {
 		double lat2Rad = Math.toRadians(Target.getLat());
 		double lng2Rad = Math.toRadians(Target.getLng());
 		
-        // Haversine 公式
+        //Haversine 公式
         double deltaLat = lat2Rad - lat1Rad;
         double deltaLng = lng2Rad - lng1Rad;
 
@@ -114,7 +112,7 @@ public class SearchHelper {
 
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-        // 計算距離
+        //計算距離
         return earthRadiusKm * c;
 		
 	}
