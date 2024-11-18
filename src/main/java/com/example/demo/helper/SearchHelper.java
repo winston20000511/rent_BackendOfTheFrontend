@@ -9,7 +9,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import demo.model.Address;
+
 public class SearchHelper {
+	
+	//地球半徑 單位公里
+	private static final double earthRadiusKm = 6371.0; 
+	
 	
 	//將地址切割成縣市 , 鄉鎮區 , 街路號
 	public static String[] splitCityTownStreet(String address) {
@@ -47,6 +53,7 @@ public class SearchHelper {
 		
 	}
 
+	//呼叫API 回傳JOSN字串格式
 	public static StringBuilder urlConnection(String urlString) throws IOException {
 		
 		URL url = new URL(urlString);
@@ -66,7 +73,8 @@ public class SearchHelper {
 		
 		return content;
 	}
-
+	
+	//開啟檔案
 	public static List<String> openfileRead(String filePath){
 		
 		List<String> lists = new ArrayList<String>();
@@ -85,5 +93,29 @@ public class SearchHelper {
 		}
 		
 		return lists;
+	}
+	
+	//哈弗賽因公式計算
+	public static Double getDistance(Address Origin , Address Target) {
+		
+		//緯度&經度 角度轉成弧度
+		double lat1Rad = Math.toRadians(Origin.getLat());
+		double lng1Rad = Math.toRadians(Origin.getLng());
+		double lat2Rad = Math.toRadians(Target.getLat());
+		double lng2Rad = Math.toRadians(Target.getLng());
+		
+        // Haversine 公式
+        double deltaLat = lat2Rad - lat1Rad;
+        double deltaLng = lng2Rad - lng1Rad;
+
+        double a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+                   Math.cos(lat1Rad) * Math.cos(lat2Rad) *
+                   Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        // 計算距離
+        return earthRadiusKm * c;
+		
 	}
 }
