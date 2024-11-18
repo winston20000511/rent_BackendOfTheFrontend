@@ -42,9 +42,9 @@ public class HouseTableBean {
     @Column(name = "address")
     private String address;
     @Column(name = "lat")
-    private BigDecimal lat;
+    private double lat;
     @Column(name = "lng")
-    private BigDecimal lng;
+    private double lng;
     @Column(name = "room")
     private Byte room;
     @Column(name = "bathroom")
@@ -134,19 +134,19 @@ public class HouseTableBean {
 		this.address = address;
 	}
 
-	public BigDecimal getLat() {
+	public double getLat() {
 		return lat;
 	}
 
-	public void setLat(BigDecimal lat) {
+	public void setLat(double lat) {
 		this.lat = lat;
 	}
 
-	public BigDecimal getLng() {
+	public double getLng() {
 		return lng;
 	}
 
-	public void setLng(BigDecimal lng) {
+	public void setLng(double lng) {
 		this.lng = lng;
 	}
 

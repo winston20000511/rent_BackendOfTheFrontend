@@ -14,10 +14,9 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 
-import demo.model.Address;
-import demo.model.House;
+import com.example.demo.model.HouseTableBean;
+
 import demo.repository.SearchRepository;
-import helper.SearchHelper;
 
 @Service
 public class SearchService {
@@ -28,7 +27,7 @@ public class SearchService {
 	@Value("${google.api.key}")
 	private String apiKey;
 	
-	public List<House> findAll() {
+	public List<HouseTableBean> findAll() {
 		return searchRepo.findAll();
 	}
 //	
@@ -36,21 +35,21 @@ public class SearchService {
 //		return searchRepo.findByCity(city);
 //	}
 //	
-	public List<House> findByCityAndTownship(String address){
+	public List<HouseTableBean> findByCityAndTownship(String address){
 		
 		String[] Parts = SearchHelper.splitCityTownStreet(address);
 		return searchRepo.findByCityAndTownship(Parts[0]+Parts[1]);
 	}
 	
-	public List<House> findByKeyWord(String name){
+	public List<HouseTableBean> findByKeyWord(String name){
 		return searchRepo.findByKeyWord(name);
 	}
 
-	public List<House> houseUpdateAll(List<House> houseList) {
+	public List<HouseTableBean> houseUpdateAll(List<HouseTableBean> houseList) {
 		return searchRepo.saveAll(houseList);
 	}
 	
-	public List<House> updateFakeAddress(String filePath,List<House> houseList){
+	public List<House> updateFakeAddress(String filePath,List<HouseTableBean> houseList){
 		
 		List<String> lists = SearchHelper.openfileRead(filePath);
 		
@@ -62,10 +61,10 @@ public class SearchService {
 		return houseList;
 	}
 	
-	public House placeConvertToAdress(String origin) {
+	public HouseTableBean placeConvertToAdress(String origin) {
 		
 		String encodedAddress;
-		House house = new House();
+		HouseTableBean house = new HouseTableBean();
 		try {
 			encodedAddress = java.net.URLEncoder.encode(origin,"UTF-8");
 			String urlString = "https://maps.googleapis.com/maps/api/geocode/json?address=" 
@@ -112,7 +111,7 @@ public class SearchService {
 		
 	}
 	
-	public List<House> getLatAndLngGoogleAPI(List<House> houseList) {
+	public List<HouseTableBean> getLatAndLngGoogleAPI(List<HouseTableBean> houseList) {
 		
 		houseList.forEach(p->{
 			if (p.getLat() == null) {
@@ -160,10 +159,10 @@ public class SearchService {
 		return houseList;
 	}
 	
-	public List<House> GetDurationAndDistanceGoogleAPI(List<House> houseList) {
+	public List<HouseTableBean> GetDurationAndDistanceGoogleAPI(List<HouseTableBean> houseList) {
 		
 		//String encodedOrigin;
-		List<House> newHouseList = new ArrayList<>();
+		List<HouseTableBean> newHouseList = new ArrayList<>();
 		
 		for(int i = 1 ; i < houseList.size() ; i++) {
 			
@@ -205,10 +204,10 @@ public class SearchService {
 
 	}
 	
-	public List<House> GetDurationAndDistanceGoogleAPI2(List<House> houseList) {
+	public List<HouseTableBean> GetDurationAndDistanceGoogleAPI2(List<HouseTableBean> houseList) {
 		
 		String encodedOrigin;
-		List<House> newHouseList = new ArrayList<>();
+		List<HouseTableBean> newHouseList = new ArrayList<>();
 		
 		try {
 			String address = houseList.get(0).getAddress();

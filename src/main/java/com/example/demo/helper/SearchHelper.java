@@ -1,4 +1,4 @@
-package helper;
+package com.example.demo.helper;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -9,7 +9,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import demo.model.House;
+import com.example.demo.model.HouseTableBean;
 
 public class SearchHelper {
 	
@@ -96,7 +96,7 @@ public class SearchHelper {
 	}
 	
 	//哈弗賽因公式計算
-	public static Double getDistance(House Origin , House Target) {
+	public static Double getDistance(HouseTableBean Origin , HouseTableBean Target) {
 		
 		//緯度&經度 角度轉成弧度
 		double lat1Rad = Math.toRadians(Origin.getLat());

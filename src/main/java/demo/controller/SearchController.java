@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import demo.dto.OriginRequest;
-import demo.model.Address;
-import demo.model.House;
+import com.example.demo.dto.OriginRequest;
+import com.example.demo.model.HouseTableBean;
+
 import demo.service.SearchService;
 
 @RestController
@@ -21,8 +21,8 @@ public class SearchController {
 	private SearchService searchService;
 	
 	@GetMapping("/api/test")
-	public List<House> testupdate() {
-		List<House> houseList = searchService.findAll();
+	public List<HouseTableBean> testupdate() {
+		List<HouseTableBean> houseList = searchService.findAll();
 		houseList = searchService.updateFakeAddress("C:\\Users\\User\\Desktop\\Rent_index\\address.csv",houseList);
 		houseList = searchService.getLatAndLngGoogleAPI(houseList);
 		houseList = searchService.houseUpdateAll(houseList);
@@ -33,9 +33,9 @@ public class SearchController {
 	// TODO
 	@CrossOrigin(origins = "*")
 	@PostMapping("/api/map")
-	public List<House> searchShowMap(@RequestBody OriginRequest request) {
-		House origin = searchService.placeConvertToAdress(request.getOrigin());
-		List<House> houseList = searchService.findByCityAndTownship(origin.getAddress());
+	public List<HouseTableBean> searchShowMap(@RequestBody OriginRequest request) {
+		HouseTableBean origin = searchService.placeConvertToAdress(request.getOrigin());
+		List<HouseTableBean> houseList = searchService.findByCityAndTownship(origin.getAddress());
 		houseList.add(0,origin);
 		long startTime = System.currentTimeMillis();
 		houseList = searchService.GetDurationAndDistanceGoogleAPI(houseList);
@@ -46,10 +46,10 @@ public class SearchController {
 	
 	@CrossOrigin(origins="*")
 	@PostMapping("/api/keyword")
-	public List<House> searchShowkeyword(@RequestBody String srhReq){
-		List<House> houseList = searchService.findByKeyWord(srhReq);
+	public List<HouseTableBean> searchShowkeyword(@RequestBody String srhReq){
+		List<HouseTableBean> houseList = searchService.findByKeyWord(srhReq);
 		if (houseList.size() == 0 ) {
-			House house = searchService.placeConvertToAdress(srhReq);
+			HouseTableBean house = searchService.placeConvertToAdress(srhReq);
 			houseList.add(house);
 			return houseList;
 		}else if(houseList.size() < 10) {

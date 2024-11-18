@@ -7,19 +7,18 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import demo.model.Address;
-import demo.model.House;
+import com.example.demo.model.HouseTableBean;
 
 
 @Repository
-public interface SearchRepository extends JpaRepository<House, Long>{
+public interface SearchRepository extends JpaRepository<HouseTableBean, Long>{
 	
 //	List<Address> findByCity(String city);
 //	
 	@Query("from House where address like %:n%")
-	List<House> findByKeyWord(@Param("n") String name);
+	List<HouseTableBean> findByKeyWord(@Param("n") String name);
 
 	@Query("from House where address like :n%")
-	List<House> findByCityAndTownship(@Param("n") String name);
+	List<HouseTableBean> findByCityAndTownship(@Param("n") String name);
 	
 }
