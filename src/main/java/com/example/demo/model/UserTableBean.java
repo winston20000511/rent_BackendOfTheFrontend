@@ -18,6 +18,7 @@ import jakarta.persistence.Table;
 public class UserTableBean {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long userId;
     @Column(name = "name")
     private String name;
@@ -31,11 +32,11 @@ public class UserTableBean {
     private byte[] picture;
     @Column(name = "createtime")
     private LocalDateTime createTime;
-    @Column(name = "")
+    @Column(name = "gender")
     private Byte gender;
-    @Column(name = "")
+    @Column(name = "coupon")
     private Byte coupon;
-    @Column(name = "")
+    @Column(name = "status")
     private Byte status;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<HouseTableBean> houses;
