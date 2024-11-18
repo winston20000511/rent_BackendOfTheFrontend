@@ -22,7 +22,16 @@
   <div class="container">
     <div class="shadow-sm p-3 mb-5 bg-body rounded">
       <h3>選擇可預約時段:</h3>
+      
+    </div>
+  </div>
+  
+  <div class="container">
+    <div class="shadow-sm p-3 mb-5 bg-body rounded">
+      <h3>選擇預約間隔時間:</h3>
+      <select id="durationSelect" class="form-select">
 
+      </select>
     </div>
   </div>
 
@@ -35,12 +44,6 @@
     </div>
   </div>
 
-  <div class="container">
-    <div class="shadow-sm p-3 mb-5 bg-body rounded">
-      <h3>選擇預約間隔時間:</h3>
-
-    </div>
-  </div>
 
 
 
@@ -49,8 +52,8 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     $(function () {
-      var url = window.location.pathname.split('/');
-      var houseId = url[url.length - 1];
+      let url = window.location.pathname.split('/');
+      let houseId = url[url.length - 1];
 
       $.ajax({
         url: '/booking/timeSlot',
@@ -61,19 +64,32 @@
         },
         success: function (response) {
           console.log(response);
-          var weekDay = response.weekDay;
-          var fromTime = response.fromTime;
-          var toTime = response.toTime;
-          var fromDate = response.fromDate
-          var toDate = response.toDate;
-          var duration = response.duration;
-          var daysOfWeek = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"];
+          let weekDay = response.weekDay;
+          let fromTime = response.fromTime;
+          let toTime = response.toTime;
+          let fromDate = response.fromDate
+          let toDate = response.toDate;
+          let duration = response.duration;
+          let daysOfWeek = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"];
 
-          $('#from').val(fromDate);
-          $('#to').val(toDate);
+          /*預約間隔時間*/
+          let durationOptions = [30,60];
+          let durationSelect = $('#durationSelect');
+          durationSelect.empty();
 
+          durationOptions.forEach(function(time){
+            let option = $('<option>',{
+              value: time,
+              text: time + '分鐘',
+              selected: time === duration
+            });
+            durationSelect.append(option);
+          });
+
+
+          /* 預約星期 */
           for (let i = 0; i < weekDay.length; i++) {
-            var checkbox = $('<input>', {
+            let input = $('<input>', {
               type: 'checkbox',
               id: 'day-' + i,
               name: 'weekDays',
@@ -82,20 +98,23 @@
               class: 'btn-check'
 
             });
-            var label = $('<label>', {
+            let label = $('<label>', {
               for: 'day-' + i,
               text: daysOfWeek[i],
               class: 'btn btn-outline-primary',
-              style: 'vertical-align: inherit'
+              style: 'vertical-align: inherit ;margin-right: 2px'
             });
-            $('#weekDaysFieldset').append(checkbox).append(label);
+            $('#weekDaysFieldset').append(input).append(label);
           }
 
-          var dateFormat = "yy-dd-mm",
+          /* 預約日期 */
+          $('#from').val(fromDate);
+          $('#to').val(toDate);
+
+          var dateFormat = "yy-mm-dd",
             from = $("#from")
               .datepicker({
                 minDate: '+1',
-                defaultDate: "+1",
                 changeMonth: true,
                 showOtherMonths: true,
                 selectOtherMonths: true
@@ -104,7 +123,6 @@
                 to.datepicker("option", "minDate", getDate(this));
               }),
             to = $("#to").datepicker({
-              defaultDate: "+1w",
               changeMonth: true,
               showOtherMonths: true,
               selectOtherMonths: true
@@ -114,16 +132,17 @@
               });
 
           function getDate(element) {
-            var date;
+            let date;
             try {
               date = $.datepicker.parseDate(dateFormat, element.value);
             } catch (error) {
               date = null;
             }
-
             return date;
           }
         }
+
+
 
       });
 

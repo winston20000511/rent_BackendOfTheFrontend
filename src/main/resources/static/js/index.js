@@ -39,4 +39,3 @@ GoogleApiJs.googleSearchEventConfig();
 //GoogleMap Initialize
 GoogleApiJs.initMap();
 
-
