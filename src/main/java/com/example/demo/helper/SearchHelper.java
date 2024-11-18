@@ -1,4 +1,4 @@
-package com.example.demo.helper;
+package helper;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -8,6 +8,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import demo.model.House;
 
 public class SearchHelper {
 	
