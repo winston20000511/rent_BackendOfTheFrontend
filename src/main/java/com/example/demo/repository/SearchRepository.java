@@ -15,10 +15,10 @@ public interface SearchRepository extends JpaRepository<HouseTableBean, Long>{
 	
 //	List<Address> findByCity(String city);
 //	
-	@Query("from House where address like %:n%")
+	@Query("from HouseTableBean where address like %:n%")
 	List<HouseTableBean> findByKeyWord(@Param("n") String name);
 
-	@Query("from House where address like :n%")
+	@Query("from HouseTableBean where address like :n%")
 	List<HouseTableBean> findByCityAndTownship(@Param("n") String name);
 	
 }
