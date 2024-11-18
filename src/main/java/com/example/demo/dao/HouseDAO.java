@@ -1,6 +1,8 @@
-package com.example.demo.model;
+package com.example.demo.dao;
 
 import java.util.Map;
+
+import com.example.demo.model.HouseTableBean;
 
 public interface HouseDAO {
 	
