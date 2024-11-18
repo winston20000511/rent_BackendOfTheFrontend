@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -60,9 +60,11 @@
       >
         我的廣告
       </div>
+      
       <div class="flex">
         <div class="w-3/4 px-4">
           <button
+          	th:action="@{/advertisements/list}"
             type="button"
             id="paid-ads-btn"
             class="condition-btn bg-blue-700 text-white py-2 px-4 rounded"

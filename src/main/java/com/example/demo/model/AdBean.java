@@ -4,9 +4,12 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -39,8 +42,9 @@ public class AdBean {
 	@Column(name = "paid_date")
 	private LocalDateTime paidDate;
 	
-	@OneToOne
-	private AdType adtype;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="adtype_id", insertable=false, updatable=false)
+	private AdtypeBean adtype;
 
 	public AdBean() {
 	}
