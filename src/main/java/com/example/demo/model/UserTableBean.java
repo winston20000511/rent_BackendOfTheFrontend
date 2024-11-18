@@ -42,7 +42,7 @@ public class UserTableBean {
     private List<HouseTableBean> houses;
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private List<BookingBean> bookings;
+    private List<BookingTableBean> bookings;
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<HouseImageTableBean> images;
@@ -139,11 +139,11 @@ public class UserTableBean {
 		this.houses = houses;
 	}
 
-	public List<BookingBean> getBookings() {
+	public List<BookingTableBean> getBookings() {
 		return bookings;
 	}
 
-	public void setBookings(List<BookingBean> bookings) {
+	public void setBookings(List<BookingTableBean> bookings) {
 		this.bookings = bookings;
 	}
 

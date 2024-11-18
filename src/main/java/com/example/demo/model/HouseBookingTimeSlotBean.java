@@ -36,7 +36,7 @@ public class HouseBookingTimeSlotBean {
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "house_id", insertable = false, updatable = false)
 	@JsonBackReference
-	private HouseTableBean house;
+	private HouseBean house;
 
 	public HouseBookingTimeSlotBean() {
 	}
@@ -97,11 +97,11 @@ public class HouseBookingTimeSlotBean {
 		this.weekDay = weekDay;
 	}
 
-	public HouseTableBean getHouse() {
+	public HouseBean getHouse() {
 		return house;
 	}
 
-	public void setHouse(HouseTableBean house) {
+	public void setHouse(HouseBean house) {
 		this.house = house;
 	}
 	
