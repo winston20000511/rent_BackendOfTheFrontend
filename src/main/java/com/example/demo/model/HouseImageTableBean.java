@@ -14,10 +14,9 @@ import jakarta.persistence.Table;
 public class HouseImageTableBean {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "image_id")
-    private Long imageId;
-    
-	@Column(name = "image_url")
+    private Long id;
+
+    @Column(name = "image_url")
     private byte[] imageUrl;
 
     @ManyToOne
@@ -31,15 +30,14 @@ public class HouseImageTableBean {
 	public HouseImageTableBean() {
 
 	}
-	public Long getImageId() {
-		return imageId;
-	}
-	
-	public void setImageId(Long imageId) {
-		this.imageId = imageId;
+
+	public Long getId() {
+		return id;
 	}
 
-
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public byte[] getImageUrl() {
 		return imageUrl;

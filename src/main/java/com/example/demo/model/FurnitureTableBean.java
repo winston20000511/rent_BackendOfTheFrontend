@@ -48,13 +48,7 @@ public class FurnitureTableBean {
 
 	}
 
-<<<<<<< Updated upstream
 	public Long getHouseId() {
-=======
-
-
-	public Integer getHouseId() {
->>>>>>> Stashed changes
 		return houseId;
 	}
 
