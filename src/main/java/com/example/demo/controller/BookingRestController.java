@@ -18,8 +18,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 public class BookingRestController {
 	
-	
+	@Autowired
 	private BookingService bookingService;
+	
+	
 	
 	private BookingRestController(BookingService bookingService) {
 		this.bookingService = bookingService;
@@ -38,7 +40,18 @@ public class BookingRestController {
 		return bookingTimeSlot;
 	}
 	
-	
+	@PostMapping("/api/house/book")
+    public String bookHouse(@RequestParam String houseName, @RequestParam String landlordEmail) {
+        // 處理預約邏輯，例如保存到資料庫等
+        
+        // 發送郵件通知房東
+        String subject = "新預約通知";
+        String body = "房屋名稱: " + houseName + "\n有新的預約請求。";
+        
+        bookingService.sendEmail(landlordEmail, subject, body);
+        
+        return "預約成功，已通知房東！";
+    }
 	
 	
 }
