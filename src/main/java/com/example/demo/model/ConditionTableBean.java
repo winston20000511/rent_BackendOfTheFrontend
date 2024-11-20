@@ -22,8 +22,8 @@ public class ConditionTableBean {
 	private Boolean elevator;
 	@Column(name = "balcony")
 	private Boolean balcony;
-	@Column(name = "shortTern")
-	private Boolean shortTern;
+	@Column(name = "shortTerm")
+	private Boolean shortTerm;
 	@Column(name = "cooking")
 	private Boolean cooking;
 	@Column(name = "waterDispenser")
@@ -75,12 +75,12 @@ public class ConditionTableBean {
 		this.balcony = balcony;
 	}
 
-	public Boolean getShortTern() {
-		return shortTern;
+	public Boolean getShortTerm() {
+		return shortTerm;
 	}
 
 	public void setShortTern(Boolean shortTern) {
-		this.shortTern = shortTern;
+		this.shortTerm = shortTern;
 	}
 
 	public Boolean getCooking() {
