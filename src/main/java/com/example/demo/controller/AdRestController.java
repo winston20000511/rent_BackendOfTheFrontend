@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.AdCreationRequestDTO;
+import com.example.demo.dto.AdDetailsResponseDTO;
 import com.example.demo.model.AdBean;
 import com.example.demo.service.AdService;
 
@@ -61,4 +62,12 @@ public class AdRestController {
 	public boolean deleteAdById(@PathVariable("adId") Long adId) {
 		return adService.deleteAdById(adId);
 	}
+	
+	
+	/* DTO: get ad details */
+	@GetMapping("details/{adId}")
+	public AdDetailsResponseDTO getMethodName(@PathVariable("adId") Long adId) {
+		return adService.findAdDetailsByAdId(adId);
+	}
+	
 }

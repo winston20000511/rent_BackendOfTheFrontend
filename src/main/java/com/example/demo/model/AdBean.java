@@ -2,6 +2,8 @@ package com.example.demo.model;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -45,6 +47,15 @@ public class AdBean {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="adtype_id", insertable=false, updatable=false)
 	private AdtypeBean adtype;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", insertable = false, updatable = false)
+	private UserTableBean user;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="house_id", insertable=false, updatable=false)
+	@JsonIgnore
+	private HouseTableBean house;
 
 	public AdBean() {
 	}
@@ -105,4 +116,29 @@ public class AdBean {
 		this.paidDate = paidDate;
 	}
 
+	public Long getAdId() {
+		return adId;
+	}
+
+	public void setAdId(Long adId) {
+		this.adId = adId;
+	}
+
+	public AdtypeBean getAdtype() {
+		return adtype;
+	}
+
+	public void setAdtype(AdtypeBean adtype) {
+		this.adtype = adtype;
+	}
+
+	public HouseTableBean getHouse() {
+		return house;
+	}
+
+	public void setHouse(HouseTableBean house) {
+		this.house = house;
+	}
+
+	
 }

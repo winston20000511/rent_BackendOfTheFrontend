@@ -10,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.AdCreationRequestDTO;
+import com.example.demo.dto.AdDetailsResponseDTO;
 import com.example.demo.model.AdBean;
 import com.example.demo.model.AdtypeBean;
 import com.example.demo.repository.AdRepository;
@@ -27,14 +28,15 @@ public class AdService {
 		this.adtypeRepository = adtypeRepository;
 	}
 	
+	/* CRUD */
+	
 	// get ads by user id and page
-	public List<AdBean> findAdsByUserIdAndPage(Integer userId, Integer pageNumber){
+	public List<AdBean> findAdsByUserIdAndIsPaidAndPage(Long userId, Boolean isPaid, Integer pageNumber){
 		Pageable pageable = PageRequest.of(pageNumber-1, 10, Sort.Direction.DESC, "houseId");
-		List<AdBean> ads = adRepository.findAdsByUserIdAndPage(userId, pageable);
+		List<AdBean> ads = adRepository.findAdsByUserIdAndIsPaidAndPage(userId, isPaid, pageable);
 		 System.out.println(ads);
 		 return ads;
 	}
-	
 	
 	// create a new ad
 	public AdBean createAd(AdCreationRequestDTO adCreationRequestDTO) {
@@ -88,5 +90,14 @@ public class AdService {
 		
 		return false;
 	}
+	
+	
+	/* DTOs */	
+	public AdDetailsResponseDTO findAdDetailsByAdId(Long adId){
+		AdDetailsResponseDTO adDetails = adRepository.findAdDetailsByAdId(adId);
+		return adDetails;
+	}
+	
+	
 	
 }

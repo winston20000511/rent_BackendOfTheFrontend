@@ -2,6 +2,7 @@ package com.example.demo.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -75,7 +76,11 @@ public class HouseTableBean {
     @OneToOne(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JsonManagedReference
     private HouseBookingTimeSlotBean bookingTimeSlots;
-
+    
+    @OneToMany(mappedBy = "house", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<AdBean> ads;
+    
 	public Long getHouseId() {
 		return houseId;
 	}
@@ -252,7 +257,12 @@ public class HouseTableBean {
 		this.bookingTimeSlots = bookingTimeSlots;
 	}
 
+	public List<AdBean> getAds() {
+		return ads;
+	}
 
-
+	public void setAds(List<AdBean> ads) {
+		this.ads = ads;
+	}
 
 }
