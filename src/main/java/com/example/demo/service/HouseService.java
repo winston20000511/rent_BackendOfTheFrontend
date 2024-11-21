@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,4 +25,25 @@ public class HouseService {
 
         return houseDetailsDTO;
     }
-}
+
+
+
+   public void addHouse(Map<String, String> params) {
+            HouseDetailsDTO house = new HouseDetailsDTO();
+            
+            house.setTitle(params.get("title"));
+            house.setPrice(Double.parseDouble(params.get("price")));
+            house.setSize(Double.parseDouble(params.get("size")));
+            house.setDescription(params.get("description"));
+            house.setAddress(params.get("address"));
+            house.setLat(params.get("lat"));
+            house.setLng(params.get("lng"));
+            house.setRoom(Integer.parseInt(params.get("room")));
+            house.setBathroom(Integer.parseInt(params.get("bathroom")));
+            house.setKitchen(Boolean.parseBoolean(params.get("kitchen")));
+
+            houseRepository.save(house);
+        }
+    }
+
+
