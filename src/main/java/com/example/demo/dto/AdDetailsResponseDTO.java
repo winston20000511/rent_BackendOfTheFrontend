@@ -102,5 +102,15 @@ public class AdDetailsResponseDTO {
 	public void setPaidDate(LocalDateTime paidDate) {
 		this.paidDate = paidDate;
 	}
+
+
+	@Override
+	public String toString() {
+		return "AdDetailsResponseDTO [adId=" + adId + ", userId=" + userId + ", userName=" + userName + ", houseTitle="
+				+ houseTitle + ", adName=" + adName + ", adPrice=" + adPrice + ", isPaid=" + isPaid + ", orderId="
+				+ orderId + ", paidDate=" + paidDate + "]";
+	}
+	
+	
 	
 }

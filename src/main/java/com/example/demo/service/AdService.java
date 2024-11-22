@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,10 +33,9 @@ public class AdService {
 	
 	// get ads by user id and page
 	public List<AdBean> findAdsByUserIdAndIsPaidAndPage(Long userId, Boolean isPaid, Integer pageNumber){
-		Pageable pageable = PageRequest.of(pageNumber-1, 10, Sort.Direction.DESC, "houseId");
+		Pageable pageable = PageRequest.of(pageNumber-1, 10, Sort.Direction.DESC, "adId");
 		List<AdBean> ads = adRepository.findAdsByUserIdAndIsPaidAndPage(userId, isPaid, pageable);
-		 System.out.println(ads);
-		 return ads;
+		return ads;
 	}
 	
 	// create a new ad
@@ -98,6 +98,24 @@ public class AdService {
 		return adDetails;
 	}
 	
-	
-	
+	public List<AdDetailsResponseDTO> findAdTableDataByUserIdAndIsPaid(Long userId, Boolean isPaid, Integer pageNumber) {
+		Pageable pageable = PageRequest.of(pageNumber-1, 10, Sort.Direction.DESC, "adId");
+		List<AdBean> adsData = adRepository.findAdsByUserIdAndIsPaidAndPage(userId, isPaid, pageable);
+		
+		List<AdDetailsResponseDTO> adTableDataList = new ArrayList<>();
+		for(AdBean adData : adsData) {
+			AdDetailsResponseDTO adTableDataDTO = new AdDetailsResponseDTO();
+			adTableDataDTO.setAdId(adData.getAdId());
+			adTableDataDTO.setAdName(adData.getAdtype().getAdName());
+			adTableDataDTO.setAdPrice(adData.getAdPrice());
+			adTableDataDTO.setHouseTitle(adData.getHouse().getTitle());
+			adTableDataDTO.setIsPaid(adData.getIsPaid());
+			adTableDataDTO.setOrderId(adData.getOrderId());
+			adTableDataDTO.setPaidDate(adData.getPaidDate());
+			
+			adTableDataList.add(adTableDataDTO);
+		}
+		
+		return adTableDataList;
+	}
 }

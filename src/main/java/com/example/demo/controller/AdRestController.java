@@ -19,6 +19,8 @@ import com.example.demo.dto.AdDetailsResponseDTO;
 import com.example.demo.model.AdBean;
 import com.example.demo.service.AdService;
 
+import jakarta.servlet.http.HttpSession;
+
 @RestController
 @RequestMapping("/advertisements")
 public class AdRestController {
@@ -30,11 +32,16 @@ public class AdRestController {
 		this.adService = adService;
 	}
 	
-	// get ads by user id and page
-	@GetMapping("/{userId}/{pageNumber}")
-	public List<AdBean> findAdsByUserIdAndPage(
-			@PathVariable("userId") Integer userId, @PathVariable("pageNumber") Integer pageNumber) {
-		return adService.findAdsByUserIdAndPage(userId, pageNumber);
+	// get ads by user id and is paid and page
+	@GetMapping("/{userId}/{isPaid}/{pageNumber}")
+	public List<AdBean> findAdsBydAndIsPaidAndPage(
+			@PathVariable("userId") Long userId,
+			//HttpSession session,
+			@PathVariable("isPaid") Boolean isPaid,
+			@PathVariable("pageNumber") Integer pageNumber) {
+//		Long loginUserId = (Long)session.getAttribute("loginUserId");
+//		loginUserId = (long) 5; //先測試
+		return adService.findAdsByUserIdAndIsPaidAndPage(userId, isPaid, pageNumber);
 	}
 	
 	// create a new ad
@@ -65,9 +72,21 @@ public class AdRestController {
 	
 	
 	/* DTO: get ad details */
-	@GetMapping("details/{adId}")
-	public AdDetailsResponseDTO getMethodName(@PathVariable("adId") Long adId) {
-		return adService.findAdDetailsByAdId(adId);
+	// get an ad by ad id
+	@GetMapping("/details/{adId}")
+	public AdDetailsResponseDTO findAdsByAdId(@PathVariable("adId") Long adId) {
+		AdDetailsResponseDTO adDetails = adService.findAdDetailsByAdId(adId);
+		System.out.println(adDetails.toString());
+		return adDetails;
+	}
+	
+	@GetMapping("/tabledata/{userId}/{isPaid}/{pageNumber}")
+	public List<AdDetailsResponseDTO> findAdTableDataByAdIdAndIsPaid(
+			@PathVariable("userId") Long userId,
+			@PathVariable("isPaid") Boolean isPaid,
+			@PathVariable("pageNumber") Integer pageNumber){
+		List<AdDetailsResponseDTO> dtos = adService.findAdTableDataByUserIdAndIsPaid(userId, isPaid, pageNumber);
+		return dtos;
 	}
 	
 }

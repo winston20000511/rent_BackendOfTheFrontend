@@ -106,23 +106,6 @@
             </tr>
           </thead>
           <tbody>
-          <th:block th:each="ad : ${ads}">
-            <tr>
-              <td class="px-4 py-2" th:text="${ad.adId}"></td>
-              <td>
-              	<a class="px-4 py-2 underline" th:href="@{#}" th:text="${ad.house.title}">
-              	</a>
-              </td>
-              <td class="px-4 py-2 flex justify-center text-center">
-                <button
-                  type="button"
-                  class="check-detail-btn bg-blue-500 rounded text-white w-16 py-2 hover:bg-blue-300"
-                >
-                  查看
-                </button>
-              </td>
-            </tr>
-            </th:block>
           </tbody>
         </table>
 
@@ -134,41 +117,12 @@
             <tr>
               <th class="px-4 py-2 bg-gray-200 text-left">廣告編號</th>
               <th class="px-4 py-2 bg-gray-200 text-left">房屋標題</th>
-              <th class="px-4 py-2 bg-gray-200 text-left">廣告金額</th>
+              <th class="px-4 py-2 bg-gray-200 text-right">廣告金額</th>
               <th class="px-4 py-2 bg-gray-200 text-center">詳細內容</th>
               <th class="px-4 py-2 bg-gray-200 text-center">購買</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td class="px-4 py-2">1</td>
-              <td class="px-4 py-2 underline">
-                <a href="#">永康區房屋（連結到房屋頁面）</a>
-              </td>
-              <td class="px-4 py-2 text-right">300</td>
-              <td class="px-4 py-2 flex justify-center text-center">
-                <button
-                  type="button"
-                  class="check-detail-btn bg-blue-500 rounded text-white w-16 py-2 hover:bg-blue-300"
-                >
-                  查看
-                </button>
-              </td>
-              <td class="px-4 py-2 text-center"><input type="checkbox" /></td>
-            </tr>
-            <tr id="total-amount">
-              <td
-                class="px-4 py-2 text-right border-t border-gray-400"
-                colspan="2"
-              >
-                總計
-              </td>
-              <td class="px-4 py-2 text-right border-t border-gray-400">300</td>
-              <td class="border-t border-gray-400 text-center" colspan="2">
-                <a href="#">前往下單 <i class="fa-solid fa-arrow-right"></i></a>
-              </td>
-            </tr>
-          </tbody>
+          <tbody></tbody>
         </table>
 
         <table
@@ -177,41 +131,14 @@
         >
           <thead>
             <tr>
-              <th class="px-4 py-2 bg-gray-200 text-left">房屋編號</th>
+              <th class="px-4 py-2 bg-gray-200 text-left">廣告編號</th>
               <th class="px-4 py-2 bg-gray-200 text-left">查看房屋</th>
               <th class="px-4 py-2 bg-gray-200 text-left">廣告方案</th>
               <th class="px-4 py-2 bg-gray-200 text-right">廣告價格</th>
               <th class="px-4 py-2 bg-gray-200 text-center">新增廣告</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td class="px-4 py-2">1</td>
-              <td class="px-4 py-2 underline">
-                <a href="#">永康區房屋（連結到房屋頁面）</a>
-              </td>
-              <td class="px-4 py-2">
-                <select name="" id="">
-                  <option>30天</option>
-                  <option>60天</option>
-                </select>
-              </td>
-              <td class="px-4 py-2 text-right">300</td>
-              <td class="px-4 py-2 text-center"><input type="checkbox" /></td>
-            </tr>
-            <tr>
-              <td
-                class="text-right border border-t border-gray-300"
-                colspan="5"
-              >
-                <button
-                  class="confirm-add-btn bg-blue-500 text-white py-2 px-4 rounded m-2 hover:bg-blue-300"
-                >
-                  確認新增廣告
-                </button>
-              </td>
-            </tr>
-          </tbody>
+          <tbody></tbody>
         </table>
       </div>
 
@@ -272,7 +199,7 @@
                   <th class="px-4 py-2">付款日期</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="ad-details-body">
                 <tr class="text-center">
                   <td>廣告編號</td>
                   <td>房屋標題</td>

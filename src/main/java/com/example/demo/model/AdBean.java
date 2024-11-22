@@ -54,7 +54,6 @@ public class AdBean {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="house_id", insertable=false, updatable=false)
-	@JsonIgnore
 	private HouseTableBean house;
 
 	public AdBean() {

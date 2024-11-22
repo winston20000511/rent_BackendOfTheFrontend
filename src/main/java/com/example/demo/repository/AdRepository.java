@@ -14,7 +14,6 @@ public interface AdRepository extends JpaRepository<AdBean, Long>{
 	@Query("From AdBean where userId = :userId and isPaid = :isPaid")
 	public List<AdBean> findAdsByUserIdAndIsPaidAndPage(Long userId, Boolean isPaid, Pageable pageable);
 	
-	
 	@Query(value="select new com.example.demo.dto.AdDetailsResponseDTO"
 			+ "(a.adId, u.userId, u.name, h.title, adt.adName, a.adPrice, a.isPaid, a.orderId, a.paidDate) "
 			+ "from AdBean a "

@@ -78,7 +78,6 @@ public class HouseTableBean {
     private HouseBookingTimeSlotBean bookingTimeSlots;
     
     @OneToMany(mappedBy = "house", fetch = FetchType.LAZY)
-    @JsonIgnore
     private List<AdBean> ads;
     
 	public Long getHouseId() {

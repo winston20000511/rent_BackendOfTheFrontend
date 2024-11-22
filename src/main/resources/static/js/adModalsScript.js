@@ -10,6 +10,28 @@ export function showAdDetailsModal(adDetails) {
   adDetailModal.classList.remove("hidden");
   toggleModalBackground();
 
+  const {adId, adName, adPrice, houseTitle, isPaid, orderId, paidDate, userId, userName} = adDetails;
+
+  // 處理顯示文字
+  const paymentStatus = isPaid? "已付款" : "未付款";
+  const paidDateYYMMDD = paidDate? paidDate.substring(0, 10) : "無";
+  const shownOrderId = orderId? orderId : "無";
+
+  document.getElementById("ad-details-body").innerHTML=
+  `
+    <tbody id="ad-details-body">
+      <tr class="text-center">
+        <td>${adId}</td>
+        <td>${houseTitle}</td>
+        <td>${adName}</td>
+        <td>${adPrice}</td>
+        <td>${paymentStatus}</td>
+        <td>${shownOrderId}</td>
+        <td>${paidDateYYMMDD}</td>
+      </tr>
+    </tbody>
+  `
+
   adDetailModal.addEventListener("click", handleAdDetailModalClose);
 }
 
