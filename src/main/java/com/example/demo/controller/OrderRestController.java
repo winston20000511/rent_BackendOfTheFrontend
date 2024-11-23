@@ -17,12 +17,12 @@ import com.example.demo.service.OrderService;
 
 @RestController
 @RequestMapping("/orders")
-public class OrderController {
+public class OrderRestController {
 
 	private OrderService orderService;
 	
 	@Autowired
-	private OrderController(OrderService orderService) {
+	private OrderRestController(OrderService orderService) {
 		this.orderService = orderService;
 	}
 	
@@ -42,6 +42,7 @@ public class OrderController {
 		 *
 		 * String userId = (String)session.getAttribute("userId");
 		 * if(userId == null) {
+		 * // 之後製作禁止修改訂單的錯誤訊息頁面 + 前端網頁控管
 		 * return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("您沒有瀏覽權限");
 		 * }
 		*/
@@ -49,13 +50,13 @@ public class OrderController {
 		/* 
 		 * 3. 重新導向 
 		 * HttpHeaders headers = new HttpHeaders();
-		 * headers/add("Location", "/login"); 登入頁面的路徑
+		 * headers/add("Location", "/users/login"); 登入頁面的路徑
 		 * new ResponseEntity<>(headers, HttpSession.FOUND);
 		 * 
 		 */
 	}
 	
-	// get orders by merchantTradNo
+	// get orders by user id and merchantTradNo
 	@GetMapping("/merchantTradNo/{userId}/{merchantTradNo}")
 	public List<OrderBean> findOrdersByUserIdAndMerchantTradNo(
 			@PathVariable("userId") Integer userId, @PathVariable("merchantTradNo") String merchantTradNo){
