@@ -46,14 +46,17 @@ public class AdBean {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="adtype_id", insertable=false, updatable=false)
+	@JsonIgnore
 	private AdtypeBean adtype;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", insertable = false, updatable = false)
+	@JsonIgnore
 	private UserTableBean user;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="house_id", insertable=false, updatable=false)
+	@JsonIgnore
 	private HouseTableBean house;
 
 	public AdBean() {

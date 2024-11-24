@@ -1,5 +1,8 @@
 package com.example.demo.service;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,5 +25,10 @@ public class HouseService {
 
 
         return houseDetailsDTO;
+    }
+    
+    
+    public List<Map<String,Object>> findNoAdHouses(Long userId){
+    	return houseRepository.findNoAdHouses(userId);
     }
 }
