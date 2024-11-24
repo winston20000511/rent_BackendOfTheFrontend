@@ -75,7 +75,7 @@ public class ConditionTableBean {
 		this.balcony = balcony;
 	}
 
-	public Boolean getShortTern() {
+	public Boolean getShortTerm() {
 		return shortTerm;
 	}
 

@@ -6,9 +6,12 @@ import java.util.Map;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import com.example.demo.dto.HouseDetailsDTO;
 import com.example.demo.model.HouseTableBean;
 
 public interface HouseRepository extends JpaRepository<HouseTableBean, Long> {
+
+	void save(HouseDetailsDTO house);
 	
 	@Query(value="select h.house_id as houseId, h.title as houseTitle from house_table h "
 			+ "left join ads_table a on a.house_id = h.house_id "

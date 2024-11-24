@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org/">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,35 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header id="header">
-        <ul class="nav-left">
-            <li><a href="#">Buy</a></li>
-            <li class="link"><a href="#">Rent</a></li>
-        </ul>
-
-        <ul class="link-list" id="link-list-1">
-            <a href="#" class="list-item">item 1</a>
-            <a href="#" class="list-item">item 2</a>
-            <a href="#" class="list-item">item 3</a>
-            <a href="#" class="list-item">item 4</a>
-        </ul>
-
-        <div class="nav-middle">
-            <img src="/img/Logo3.jpg" alt="">
-            
-            <div class="nav-title">
-                <h1>house</h1>
-            </div>
-            
-        </div>
-        <div class="nav-right">
-            <li><a href="#">Manage Rentals</a></li>
-            <li><a href="#">Advertise</a></li>
-            <li><a href="#">Help</a></li>
-            <li><a href="#">Sign In</a></li>
-        </div>
-    </header>
-
+	<div th:replace="~{layout/navbar}"></div>
     <div class="filter" id="filter">
         <div class="filter-left">
             <input type="text" placeholder="Address, neighborhood, city, ZIP" id="search">
@@ -62,7 +34,7 @@
             <li>Minimum<input type="text" class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6" placeholder="請輸入數字 .."></li>
         </ul>
     </div>
-
+	
     <main class="main">
         <div id="map"></div>
         <div class="main-right bg-white p-1 custom-left-shadow w-160" id="mRight" >
@@ -77,6 +49,7 @@
     </footer>
     <script type="module" src="/js/index.js"></script>
     <script src="https://unpkg.com/animejs@3.2.1/lib/anime.min.js"></script>
-    <script  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB74YfHLENToX6YpaEoKASZnhaZdqIio2s&callback=GoogleApiJs.initMap&v=weekly&libraries=marker,places" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB74YfHLENToX6YpaEoKASZnhaZdqIio2s&callback=initMap&v=weekly&libraries=marker,places" async defer ></script>
+    
 </body>
 </html>

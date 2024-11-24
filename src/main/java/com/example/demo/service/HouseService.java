@@ -1,6 +1,5 @@
 package com.example.demo.service;
 
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +25,15 @@ public class HouseService {
 
         return houseDetailsDTO;
     }
-    
-    
-    public List<Map<String,Object>> findNoAdHouses(Long userId){
-    	return houseRepository.findNoAdHouses(userId);
+
+
+
+   public void addHouse(Map<String, String> params) {
+            HouseDetailsDTO house = new HouseDetailsDTO();
+            
+
+            houseRepository.save(house);
+        }
     }
-}
+
+
