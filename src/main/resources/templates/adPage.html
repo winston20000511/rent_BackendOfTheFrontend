@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MY AD</title>
-    <link rel="stylesheet" href="../static/css/styles.css" />
-    <link rel="stylesheet" href="../static/css/bootstrap.min.css" />
-
+    <link rel="stylesheet" href="/css/styles.css" />
     <link
       href="https://cdn.jsdelivr.net/npm/tailwindcss@^2.2.19/dist/tailwind.min.css"
       rel="stylesheet"
@@ -21,17 +19,16 @@
       href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="../static/css/adAndOrderFront.css" />
-    <link href="../static/css/adPage.css" />
+    <link rel="stylesheet" href="/css/adAndOrderFront.css" />
   </head>
   <body>
-    <header>
+    <header id="header">
       <ul class="nav-left">
         <li><a href="#">Buy</a></li>
         <li class="link"><a href="#">Rent</a></li>
       </ul>
 
-      <ul class="list" id="list-left-1">
+      <ul class="link-list" id="link-list-1">
         <a href="#" class="list-item">item 1</a>
         <a href="#" class="list-item">item 2</a>
         <a href="#" class="list-item">item 3</a>
@@ -39,7 +36,7 @@
       </ul>
 
       <div class="nav-middle">
-        <img src="../static/Logo3.jpg" alt="" />
+        <img src="/img/Logo3.jpg" alt="" />
 
         <div class="nav-title">
           <h1>house</h1>
@@ -60,6 +57,7 @@
       >
         我的廣告
       </div>
+
       <div class="flex">
         <div class="w-3/4 px-4">
           <button
@@ -93,7 +91,9 @@
     </aside>
 
     <main class="m-3">
+    
       <div id="view-box" class="border border-gray-400 py-2 px-2 rounded-md">
+      
         <table
           id="paid-ads-table"
           class="table-auto w-full border-collapse border border-gray-300"
@@ -106,20 +106,6 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td class="px-4 py-2">1</td>
-              <td class="px-4 py-2 underline">
-                <a href="#">永康區房屋（連結到房屋頁面）</a>
-              </td>
-              <td class="px-4 py-2 flex justify-center text-center">
-                <button
-                  type="button"
-                  class="check-detail-btn bg-blue-500 rounded text-white w-16 py-2 hover:bg-blue-300"
-                >
-                  查看
-                </button>
-              </td>
-            </tr>
           </tbody>
         </table>
 
@@ -131,41 +117,12 @@
             <tr>
               <th class="px-4 py-2 bg-gray-200 text-left">廣告編號</th>
               <th class="px-4 py-2 bg-gray-200 text-left">房屋標題</th>
-              <th class="px-4 py-2 bg-gray-200 text-left">廣告金額</th>
+              <th class="px-4 py-2 bg-gray-200 text-right">廣告金額</th>
               <th class="px-4 py-2 bg-gray-200 text-center">詳細內容</th>
               <th class="px-4 py-2 bg-gray-200 text-center">購買</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td class="px-4 py-2">1</td>
-              <td class="px-4 py-2 underline">
-                <a href="#">永康區房屋（連結到房屋頁面）</a>
-              </td>
-              <td class="px-4 py-2 text-right">300</td>
-              <td class="px-4 py-2 flex justify-center text-center">
-                <button
-                  type="button"
-                  class="check-detail-btn bg-blue-500 rounded text-white w-16 py-2 hover:bg-blue-300"
-                >
-                  查看
-                </button>
-              </td>
-              <td class="px-4 py-2 text-center"><input type="checkbox" /></td>
-            </tr>
-            <tr id="total-amount">
-              <td
-                class="px-4 py-2 text-right border-t border-gray-400"
-                colspan="2"
-              >
-                總計
-              </td>
-              <td class="px-4 py-2 text-right border-t border-gray-400">300</td>
-              <td class="border-t border-gray-400 text-center" colspan="2">
-                <a href="#">前往下單 <i class="fa-solid fa-arrow-right"></i></a>
-              </td>
-            </tr>
-          </tbody>
+          <tbody></tbody>
         </table>
 
         <table
@@ -174,46 +131,22 @@
         >
           <thead>
             <tr>
-              <th class="px-4 py-2 bg-gray-200 text-left">房屋編號</th>
+              <th class="px-4 py-2 bg-gray-200 text-left">廣告編號</th>
               <th class="px-4 py-2 bg-gray-200 text-left">查看房屋</th>
               <th class="px-4 py-2 bg-gray-200 text-left">廣告方案</th>
               <th class="px-4 py-2 bg-gray-200 text-right">廣告價格</th>
               <th class="px-4 py-2 bg-gray-200 text-center">新增廣告</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td class="px-4 py-2">1</td>
-              <td class="px-4 py-2 underline">
-                <a href="#">永康區房屋（連結到房屋頁面）</a>
-              </td>
-              <td class="px-4 py-2">
-                <select name="" id="">
-                  <option>30天</option>
-                  <option>60天</option>
-                </select>
-              </td>
-              <td class="px-4 py-2 text-right">300</td>
-              <td class="px-4 py-2 text-center"><input type="checkbox" /></td>
-            </tr>
-            <tr>
-              <td
-                class="text-right border border-t border-gray-300"
-                colspan="5"
-              >
-                <button
-                  class="confirm-add-btn bg-blue-500 text-white py-2 px-4 rounded m-2 hover:bg-blue-300"
-                >
-                  確認新增廣告
-                </button>
-              </td>
-            </tr>
-          </tbody>
+          <tbody></tbody>
         </table>
       </div>
 
       <!-- 確認彈跳視窗 -->
-      <div id="modal-background" class="fixed inset-0 bg-gray-500/75 hidden"></div>
+      <div
+        id="modal-background"
+        class="fixed inset-0 bg-gray-500/75 hidden"
+      ></div>
       <div
         id="success-modal"
         class="fixed inset-0 z-10 bg-gray-500/75 flex items-center justify-center hidden"
@@ -225,17 +158,11 @@
             </h3>
             <div class="text-right mt-10">
               <button
-                id="stay-btn"
+                id="close-sucess-modal"
                 type="button"
-                class="px-3 py-1.5 m-0.5 bg-gray-400 text-white rounded hover:bg-gray-300"
+                class="modal-btn px-3 py-1.5 bg-gray-500 text-white rounded hover:bg-gray-400"
               >
-                繼續新增廣告
-              </button>
-              <button
-                id="check-unpaid-ads"
-                class="px-3 py-1.5 bg-green-500 text-white rounded hover:bg-green-400"
-              >
-                查看已新增的廣告
+                關閉
               </button>
             </div>
           </div>
@@ -264,18 +191,22 @@
               <thead class="bg-gray-200">
                 <tr>
                   <th class="px-4 py-2">廣告編號</th>
-                  <th class="px-4 py-2">廣告內容</th>
+                  <th class="px-4 py-2">房屋標題</th>
                   <th class="px-4 py-2">廣告種類</th>
                   <th class="px-4 py-2">廣告金額</th>
+                  <th class="px-4 py-2">付款狀態</th>
+                  <th class="px-4 py-2">訂單號碼</th>
                   <th class="px-4 py-2">付款日期</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="ad-details-body">
                 <tr class="text-center">
-                  <td>訂單號碼</td>
-                  <td>物件內容</td>
+                  <td>廣告編號</td>
+                  <td>房屋標題</td>
                   <td>廣告種類</td>
-                  <td>訂單金額</td>
+                  <td>廣告金額</td>
+                  <td>付款狀態</td>
+                  <td>訂單號碼</td>
                   <td>付款日期</td>
                 </tr>
               </tbody>
@@ -286,8 +217,10 @@
     </main>
 
     <footer></footer>
-    <script src="../static/JS/scriptList.js"></script>
-    <script src="../static/JS/scriptButton.js"></script>
-    <script src="../static/JS/adPage.js"></script>
+    <script type="module">
+      import * as ListJs from "/js/ListScript.js";
+      ListJs.init();
+    </script>
+    <script type="module" src="/js/adPage.js"></script>
   </body>
 </html>

@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,4 +25,15 @@ public class HouseService {
 
         return houseDetailsDTO;
     }
-}
+
+
+
+   public void addHouse(Map<String, String> params) {
+            HouseDetailsDTO house = new HouseDetailsDTO();
+            
+
+            houseRepository.save(house);
+        }
+    }
+
+

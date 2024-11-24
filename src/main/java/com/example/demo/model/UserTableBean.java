@@ -47,6 +47,9 @@ public class UserTableBean {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<HouseImageTableBean> images;
     
+    @OneToMany(mappedBy = "user")
+    private List<AdBean> ads;
+    
     public UserTableBean() {
     	
     }
