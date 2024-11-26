@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.demo.dto.AddressDTO;
 import com.example.demo.model.HouseTableBean;
 
 public class SearchHelper {
@@ -18,7 +19,7 @@ public class SearchHelper {
 	
 	
 	//將地址切割成縣市 , 鄉鎮區 , 街路號
-	public static String[] splitCityTownStreet(String address) {
+	public static String[] splitCityTown(String address) {
 		
 		String[] Parts = new String[3];
 
@@ -31,22 +32,18 @@ public class SearchHelper {
 		address = address.substring(3);
 		
 		//town
-		if(address.indexOf("市")>-1) {
-			Parts[1] = address.split("市")[0] + "市";
-			Parts[2] = address.split("市")[1];
-		}
-		else if (address.indexOf("區")>-1) {
-			Parts[1] = address.split("區")[0] + "區";
-			Parts[2] = address.split("區")[1];
+		if(address.indexOf("市區")>-1) {
+			Parts[1] = address.split("市區")[0] + "市區";
 		}else if(address.indexOf("鎮區")>-1){
+			Parts[1] = address.split("鎮區")[0] + "鎮區";
+		}else if(address.indexOf("市")>-1) {
+			Parts[1] = address.split("市")[0] + "市";
+		}else if (address.indexOf("區")>-1) {
 			Parts[1] = address.split("區")[0] + "區";
-			Parts[2] = address.split("區")[1];
 		}else if(address.indexOf("鄉")>-1) {
 			Parts[1] = address.split("鄉")[0] + "鄉";
-			Parts[2] = address.split("鄉")[1];
 		}else if(address.indexOf("鎮")>-1) {
 			Parts[1] = address.split("鎮")[0] + "鎮";
-			Parts[2] = address.split("鎮")[1];
 		}
 		
 		return Parts;
@@ -96,7 +93,7 @@ public class SearchHelper {
 	}
 	
 	//哈弗賽因公式計算
-	public static Double getDistance(HouseTableBean Origin , HouseTableBean Target) {
+	public static Double getDistance(AddressDTO Origin , AddressDTO Target) {
 		
 		//緯度&經度 角度轉成弧度
 		double lat1Rad = Math.toRadians(Origin.getLat());

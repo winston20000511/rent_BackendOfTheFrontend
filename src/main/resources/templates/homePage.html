@@ -47,9 +47,12 @@
     <footer>
 
     </footer>
-    <script type="module" src="/js/index.js"></script>
+    <script type="text/javascript" src="/js/GoogleScript.js"></script>
+    <script type="text/javascript" src="/js/ListScript.js"></script>
+    <script type="text/javascript" src="/js/CardScript.js"></script>
+    <script type="text/javascript" src="/js/ButtonScript.js"></script>
+    <script th:src="'https://maps.googleapis.com/maps/api/js?key=' + ${googleApiKey} + '&callback=initMap&v=weekly&libraries=marker,places'" async defer></script>
     <script src="https://unpkg.com/animejs@3.2.1/lib/anime.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB74YfHLENToX6YpaEoKASZnhaZdqIio2s&callback=initMap&v=weekly&libraries=marker,places" async defer ></script>
     
 </body>
 </html>

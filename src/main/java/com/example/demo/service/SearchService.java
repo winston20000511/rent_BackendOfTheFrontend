@@ -9,11 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.dto.AddressDTO;
+import com.example.demo.helper.GoogleApiConfig;
 import com.example.demo.helper.SearchHelper;
 import com.example.demo.model.HouseTableBean;
 import com.example.demo.repository.SearchRepository;
@@ -24,8 +25,8 @@ public class SearchService {
 	@Autowired
 	private SearchRepository searchRepo;
 	
-	@Value("${google.api.key}")
-	private String apiKey;
+	@Autowired
+	private GoogleApiConfig googleApiConfig;
 	
 	public List<HouseTableBean> findAll() {
 		return searchRepo.findAll();
@@ -35,15 +36,16 @@ public class SearchService {
 //		return searchRepo.findByCity(city);
 //	}
 //	
-	public List<HouseTableBean> findByCityAndTownship(String address){
+	public List<AddressDTO> findByCityAndTownship(String address){
 		
-		String[] Parts = SearchHelper.splitCityTownStreet(address);
+		String[] Parts = SearchHelper.splitCityTown(address);
 		return searchRepo.findByCityAndTownship(Parts[0]+Parts[1]);
 	}
 	
-	public List<HouseTableBean> findByKeyWord(String name){
+	public List<AddressDTO> findByKeyWord(String name){
 		return searchRepo.findByKeyWord(name);
 	}
+
 
 	public List<HouseTableBean> houseUpdateAll(List<HouseTableBean> houseList) {
 		return searchRepo.saveAll(houseList);
@@ -61,14 +63,14 @@ public class SearchService {
 		return houseList;
 	}
 	
-	public HouseTableBean placeConvertToAdress(String origin) {
+	public AddressDTO placeConvertToAdress(String origin) {
 		
 		String encodedAddress;
-		HouseTableBean house = new HouseTableBean();
+		AddressDTO adress = new AddressDTO();
 		try {
 			encodedAddress = java.net.URLEncoder.encode(origin,"UTF-8");
 			String urlString = "https://maps.googleapis.com/maps/api/geocode/json?address=" 
-	                + encodedAddress + "&components=country:TW&language=zh-TW&key=" + apiKey;
+	                + encodedAddress + "&components=country:TW&language=zh-TW&key=" + googleApiConfig.getGoogleMapKey();
 			StringBuilder content = SearchHelper.urlConnection(urlString);
 			
 			JSONObject json = new JSONObject(content.toString());
@@ -81,15 +83,15 @@ public class SearchService {
 					address = address.split("台灣")[1];
 				}
 				
-				house.setAddress(address);
+				adress.setAddress(address);
 				
 				location = json.getJSONArray("results")
 						.getJSONObject(0)
 						.getJSONObject("geometry")
 						.getJSONObject("location");
 				
-				house.setLat(location.getDouble("lat"));
-				house.setLng(location.getDouble("lng"));
+				adress.setLat(location.getDouble("lat"));
+				adress.setLng(location.getDouble("lng"));
 				
 			}
 			
@@ -107,7 +109,7 @@ public class SearchService {
 			e.printStackTrace();
 		}
 		
-		return house;
+		return adress;
 		
 	}
 	
@@ -119,7 +121,7 @@ public class SearchService {
 				try {
 					String encodedAddress = java.net.URLEncoder.encode(p.getAddress(),"UTF-8");
 					String urlString = "https://maps.googleapis.com/maps/api/geocode/json?address=" 
-	                        + encodedAddress + "&key=" + apiKey;
+	                        + encodedAddress + "&key=" + googleApiConfig.getGoogleMapKey();
 
 					StringBuilder content = SearchHelper.urlConnection(urlString);
 					
@@ -159,48 +161,21 @@ public class SearchService {
 		return houseList;
 	}
 	
-	public List<HouseTableBean> GetDurationAndDistanceGoogleAPI(List<HouseTableBean> houseList) {
+	public List<AddressDTO> GetDurationAndDistanceGoogleAPI(List<AddressDTO> addressDtoList) {
 		
 		//String encodedOrigin;
-		List<HouseTableBean> newHouseList = new ArrayList<>();
+		List<AddressDTO> newAddressDtoList = new ArrayList<>();
 		
-		for(int i = 1 ; i < houseList.size() ; i++) {
+		for(int i = 1 ; i < addressDtoList.size() ; i++) {
 			
-			Double distance = SearchHelper.getDistance(houseList.get(0), houseList.get(i));
+			Double distance = SearchHelper.getDistance(addressDtoList.get(0), addressDtoList.get(i));
 			BigDecimal roundedValue = new BigDecimal(distance).setScale(5, RoundingMode.HALF_UP);
 			if (roundedValue.compareTo(BigDecimal.valueOf(2.0))< 0) {
-				newHouseList.add(houseList.get(i));
+				newAddressDtoList.add(addressDtoList.get(i));
 			}
-			
-//				String encodeDestination= java.net.URLEncoder.encode(address,"UTF-8");
-//				String urlString = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" 
-//		                + encodedOrigin + "&destinations=" + encodeDestination + "&mode=driving&language=zh-TW&key=" + apiKey;
-//				StringBuilder content = SearchHelper.urlConnection(urlString);
-//				
-//				JSONObject json = new JSONObject(content.toString());
-//				if("OK".equals(json.getString("status"))) {
-//					JSONObject distance = json.getJSONArray("rows")
-//											.getJSONObject(0)
-//											.getJSONArray("elements")
-//											.getJSONObject(0)
-//											.getJSONObject("distance");
-//					
-//					JSONObject duration = json.getJSONArray("rows")
-//											.getJSONObject(0)
-//											.getJSONArray("elements")
-//											.getJSONObject(0)
-//											.getJSONObject("duration");		
-//					
-//					if (distance.getInt("value") <1500 && duration.getInt("value") < 3600) {
-//						newAddressList.add(addressList.get(i));
-//					}
-////					System.out.println(distance.getInt("value"));
-////					System.out.println(duration.getInt("value"));						
-//					
-//				}
 		}
 		
-		return newHouseList;
+		return newAddressDtoList;
 
 	}
 	
@@ -218,7 +193,7 @@ public class SearchService {
 				address = houseList.get(i).getAddress();
 				String encodeDestination= java.net.URLEncoder.encode(address,"UTF-8");
 				String urlString = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" 
-		                + encodedOrigin + "&destinations=" + encodeDestination + "&mode=driving&language=zh-TW&key=" + apiKey;
+		                + encodedOrigin + "&destinations=" + encodeDestination + "&mode=driving&language=zh-TW&key=" + googleApiConfig.getGoogleMapKey();
 				StringBuilder content = SearchHelper.urlConnection(urlString);
 				
 				JSONObject json = new JSONObject(content.toString());

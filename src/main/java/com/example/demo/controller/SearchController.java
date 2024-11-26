@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.dto.OriginRequest;
+import com.example.demo.dto.AddressDTO;
+import com.example.demo.dto.OriginDTO;
 import com.example.demo.model.HouseTableBean;
 import com.example.demo.service.SearchService;
 
@@ -32,29 +33,29 @@ public class SearchController {
 	// TODO
 	@CrossOrigin(origins = "*")
 	@PostMapping("/api/map")
-	public List<HouseTableBean> searchShowMap(@RequestBody OriginRequest request) {
-		HouseTableBean origin = searchService.placeConvertToAdress(request.getOrigin());
-		List<HouseTableBean> houseList = searchService.findByCityAndTownship(origin.getAddress());
-		houseList.add(0,origin);
+	public List<AddressDTO> searchShowMap(@RequestBody OriginDTO request) {
+		AddressDTO origin = searchService.placeConvertToAdress(request.getOrigin());
+		List<AddressDTO> addressDtoList = searchService.findByCityAndTownship(origin.getAddress());
+		addressDtoList.add(0,origin);
 		long startTime = System.currentTimeMillis();
-		houseList = searchService.GetDurationAndDistanceGoogleAPI(houseList);
+		addressDtoList = searchService.GetDurationAndDistanceGoogleAPI(addressDtoList);
 		long endTime = System.currentTimeMillis();
 		System.out.println("執行時間：" + (endTime - startTime) + " 毫秒");
-		return houseList;
+		return addressDtoList;
 	}
 	
 	@CrossOrigin(origins="*")
 	@PostMapping("/api/keyword")
-	public List<HouseTableBean> searchShowkeyword(@RequestBody String srhReq){
-		List<HouseTableBean> houseList = searchService.findByKeyWord(srhReq);
-		if (houseList.size() == 0 ) {
-			HouseTableBean house = searchService.placeConvertToAdress(srhReq);
-			houseList.add(house);
-			return houseList;
-		}else if(houseList.size() < 10) {
-			return houseList.subList(0, houseList.size());
+	public List<AddressDTO> searchShowkeyword(@RequestBody String srhReq){
+		List<AddressDTO> addressDtoList = searchService.findByKeyWord(srhReq);
+		if (addressDtoList.size() == 0 ) {
+			AddressDTO house = searchService.placeConvertToAdress(srhReq);
+			addressDtoList.add(house);
+			return addressDtoList;
+		}else if(addressDtoList.size() < 10) {
+			return addressDtoList.subList(0, addressDtoList.size());
 		}else {
-			return houseList.subList(0, 10);
+			return addressDtoList.subList(0, 10);
 		}
 	}
 	

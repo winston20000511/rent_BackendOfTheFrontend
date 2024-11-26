@@ -1,6 +1,6 @@
 package com.example.demo.dto;
 
-public class OriginRequest {
+public class OriginDTO {
 	
 	private String origin;
 

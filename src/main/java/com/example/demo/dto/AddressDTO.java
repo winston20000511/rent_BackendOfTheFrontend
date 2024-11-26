@@ -6,6 +6,23 @@ public class AddressDTO {
 	private Double lat;
 	private Double lng;
 	private Integer price;
+	private boolean isPaid;
+	
+
+	public AddressDTO() {
+
+	}
+
+
+	public AddressDTO(String address, Double lat, Double lng, Integer price, boolean isPaid) {
+		super();
+		this.address = address;
+		this.lat = lat;
+		this.lng = lng;
+		this.price = price;
+		this.isPaid = isPaid;
+	}
+
 	public String getAddress() {
 		return address;
 	}
@@ -30,7 +47,15 @@ public class AddressDTO {
 	public void setPrice(Integer price) {
 		this.price = price;
 	}
+
+	public boolean isPaid() {
+		return isPaid;
+	}
+
+	public void setPaid(boolean isPaid) {
+		this.isPaid = isPaid;
+	}
 	
-	
+
 	
 }
