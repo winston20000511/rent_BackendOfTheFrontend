@@ -34,6 +34,10 @@ public class BookingService {
 		
 	}
 	
+	public HouseBookingTimeSlotBean updataTimeSlot(HouseBookingTimeSlotBean timeSlot) {
+		return timeSlotRepo.save(timeSlot);
+	}
+	
 	public void sendEmail(String to, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
