@@ -1,90 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add House</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新增房屋</title>
+<!-- Bootstrap CSS -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
 </head>
 <body>
-<div class="container mt-5">
-    <h2 class="text-center">Add New House</h2>
-    <form id="addHouseForm">
-        <div class="form-group">
-            <label for="title">Title</label>
-            <input type="text" class="form-control" id="title" name="title" required>
-        </div>
-        <div class="form-group">
-            <label for="price">Price</label>
-            <input type="number" class="form-control" id="price" name="price" required>
-        </div>
-        <div class="form-group">
-            <label for="size">Size</label>
-            <input type="number" class="form-control" id="size" name="size" required>
-        </div>
-        <div class="form-group">
-            <label for="description">Description</label>
-            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
-        </div>
-        <div class="form-group">
-            <label for="address">Address</label>
-            <input type="text" class="form-control" id="address" name="address" required>
-        </div>
-        <div class="form-group">
-            <label for="lat">Latitude</label>
-            <input type="text" class="form-control" id="lat" name="lat">
-        </div>
-        <div class="form-group">
-            <label for="lng">Longitude</label>
-            <input type="text" class="form-control" id="lng" name="lng">
-        </div>
-        <div class="form-group">
-            <label for="room">Number of Rooms</label>
-            <input type="number" class="form-control" id="room" name="room">
-        </div>
-        <div class="form-group">
-            <label for="bathroom">Number of Bathrooms</label>
-            <input type="number" class="form-control" id="bathroom" name="bathroom">
-        </div>
-        <div class="form-group">
-            <label for="kitchen">Kitchen (Yes/No)</label>
-            <select class="form-control" id="kitchen" name="kitchen">
-                <option value="1">Yes</option>
-                <option value="0">No</option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-</div>
+	<div>
+		<div class="container">
+			<div class="container mt-5" style="width: 50%">
+				<h2 class="text-center">新增房屋</h2>
+				<form id="addHouseForm" enctype="multipart/form-data">
+					<div class="form-group">
+						<label for="title">標題</label> <input type="text"
+							class="form-control" id="title" name="title" required>
+					</div>
+					<div class="form-group">
+						<label for="price">價格</label> <input type="number"
+							class="form-control" id="price" name="price" required>
+					</div>
+					<div class="form-group">
+						<label for="size">坪數</label> <input type="number"
+							class="form-control" id="size" name="size" required>
+					</div>
+					<div class="form-group">
+						<div class="twzipcode"></div>
+						<label for="address">詳細地址:</label> <input type="text" id="address"
+							name="address" required>
+					</div>
 
-<script>
-    $(document).ready(function () {
-        $('#addHouseForm').on('submit', function (event) {
-            event.preventDefault();
+					<div class="form-group">
+						<label for="room">房間數</label> <input type="number"
+							class="form-control" id="room" name="room" required>
+					</div>
+					<div class="form-group">
+						<label for="bathroom">裕廁數量</label> <input type="number"
+							class="form-control" id="bathroom" name="bathroom" required>
+					</div>
+					<div class="form-group">
+						<label for="livingroom">客廳數量</label> <input type="number"
+							class="livingroom" id="livingroom" name="livingroom" required>
+					</div>
+					<div class="form-group">
+						<label for="kitchen">廚房數量</label> <input type="number"
+							class="form-control" id="kitchen" name="kitchen" required>
+					</div>
+					<div class="form-group">
+						<label for="floor">樓層</label> <input type="number"
+							class="form-control" id="floor" name="floor" required>
+					</div>
+					<div class="form-group">
+						<label for="atticAddition">是否為頂樓加蓋</label> <input type="checkbox"
+							class="form-control" id="atticAddition" name="atticAddition"
+							required>
+					</div>
 
-            // Serialize form data
-            const formData = $(this).serialize();
+					<hr>
+					<h3>提供家具與服務</h3>
+					<div id="checkboxContainer">
+						<label><input type="checkbox" name="washingMachine"
+							value="washingMachine">洗衣機</label> <label><input
+							type="checkbox" name="airConditioner" value="airConditioner">空調</label>
+						<label><input type="checkbox" name="network"
+							value="network">網路</label> <label><input type="checkbox"
+							name="bedstead" value="bedstead">床架</label> <label><input
+							type="checkbox" name="mattress" value="mattress"> 床墊</label> <label><input
+							type="checkbox" name="refrigerator" value="refrigerator">冰箱</label>
+						<label><input type="checkbox" name="ewaterHeater"
+							value="ewaterHeater">電熱水器</label> <label><input
+							type="checkbox" name="gwaterHeater" value="gwaterHeater">
+							瓦斯熱水器</label> <label><input type="checkbox" name="television"
+							value="television">電視</label> <label><input
+							type="checkbox" name="channel4" value="channel4">第四台</label> <label><input
+							type="checkbox" name="sofa" value="sofa">沙發</label> <label><input
+							type="checkbox" name="tables" value="tables">桌椅</label>
+					</div>
+					<hr>
+					<h3>房屋限制</h3>
+					<div id="checkboxContainer">
+						<label><input type="checkbox" name="pet" value="pet">是否可以養寵物</label>
+						<label><input type="checkbox" name="parkingSpace"
+							value="parkingSpace"> 停車空間</label> <label><input
+							type="checkbox" name="elevator" value="elevator">電梯</label> <label><input
+							type="checkbox" name="balcony" value="balcony">陽台</label> <label><input
+							type="checkbox" name="shortTerm" value="shortTerm">是否可以接受短期租賃</label>
+						<label><input type="checkbox" name="cooking"
+							value="cooking">是否可以開伙</label> <label><input
+							type="checkbox" name="waterDispenser" value="waterDispenser">是否有飲水機</label>
+						<label><input type="checkbox" name="fee" value="fee">是否有管理費</label>
+						<label> <input type="checkbox" id="genderRestrictions"
+							name="genderRestrictions" value="genderRestrictions">
+							是否有性別限制
+						</label>
 
-            // Send data to the server using AJAX
-            $.ajax({
-                url: '/api/house/add',
-                type: 'POST',
-                data: formData,
-                success: function (response) {
-                    alert('House added successfully!');
-                    $('#addHouseForm')[0].reset(); // Reset the form
-                },
-                error: function (xhr, status, error) {
-                    alert('Failed to add house: ' + xhr.responseText);
-                }
-            });
-        });
+						<!-- 性別選項 -->
+						<div id="genderOptions" style="display: none;">
+							<label><input type="radio" name="genderOption" value="1">
+								男</label> <label><input type="radio" name="genderOption"
+								value="2"> 女</label>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="description">簡介</label>
+						<textarea class="form-control" id="description" name="description"
+							rows="3"></textarea>
+					</div>
+					<hr>
+					<label for="fileInput">上傳圖片:</label> <input type="file"
+						id="fileInput" name="images[]" accept="image/*" multiple required><br>
+					<br>
+					<button type="submit" class="btn btn-primary">Submit</button>
+				</form>
+				<div id="imagePreviewContainer"></div>
+			</div>
+		</div>
+	</div>
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://code.essoduke.org/js/twzipcode/twzipcode.js"></script>
+	<script>
+	$(function() {
+    $("#twzipcode").twzipcode({
+        zipcodeIntoDistrict: false, // 郵遞區號自動顯示在區別選單中
+        css: ["county form-control", "district form-control"], // 自訂 CSS 類別名稱
+        countyName: "county", // 自訂城市 select 標籤的 name 值
+        districtName: "district" // 自訂區別 select 標籤的 name 值
     });
-</script>
+});
+document.getElementById('genderRestrictions').addEventListener('change', function() {
+    const genderOptions = document.getElementById('genderOptions');
+    
+    // 根據性別限制複選框的狀態顯示或隱藏性別選項
+    if (this.checked) {
+        genderOptions.style.display = 'block';
+    } else {
+        genderOptions.style.display = 'none';
+        // 重置性別選擇
+        const radios = genderOptions.querySelectorAll('input[type=radio]');
+        radios.forEach(radio => {
+            radio.checked = false;
+        });
+    }
+});
+document.getElementById('addHouseForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // 防止默認提交行為
 
-<!-- Bootstrap JS -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    const formData = new FormData(this); // 使用 FormData 將表單資料封裝
+
+    // 處理複選框的布林值
+    const booleanFields = [
+        'washingMachine', 'airConditioner', 'network', 'bedstead', 
+        'mattress', 'refrigerator', 'ewaterHeater', 'gwaterHeater', 
+        'television', 'channel4', 'sofa', 'tables',
+        'pet', 'parkingSpace', 'elevator', 'balcony',
+        'shortTerm', 'cooking', 'waterDispenser', 'fee',
+        'atticAddition' // 包含 atticAddition
+    ];
+
+    booleanFields.forEach(field => {
+        formData.append(field, document.querySelector(`input[name="${field}"]`).checked);
+    });
+
+    // 處理性別限制
+    const genderRadio = document.querySelector('input[name="genderOption"]:checked');
+    if (genderRadio) {
+        formData.append('genderRestrictions', genderRadio.value);
+    } else {
+        formData.append('genderRestrictions', 0); // 沒有限制
+    }
+
+    // 使用 Fetch API 發送請求
+    fetch('/api/houses', { // 替換為你的伺服器端點
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data); // 處理伺服器回應
+        alert('房屋資訊已成功提交！');
+    })
+    .catch(error => {
+        console.error('提交失敗:', error);
+        alert('提交失敗！');
+    });
+});
+</script>
 </body>
 </html>
