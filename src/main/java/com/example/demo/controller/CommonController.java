@@ -20,4 +20,8 @@ public class CommonController {
 		model.addAttribute("googleApiKey", googleApiConfig.getGoogleMapKey());
 		return "homePage";
 	}
+    @GetMapping("/login")
+    public String login(Model model) {
+        return "users/login"; // 渲染 src/main/resources/templates/users/login.html
+    }
 }
