@@ -54,7 +54,7 @@ public class HouseController {
             @RequestParam(required = false) List<MultipartFile> images // 圖片上傳
     ) {
         // 在這裡處理接收到的數據，例如保存到資料庫
-
+    	
         HouseTableBean house = new HouseTableBean();
         house.setTitle(title);
         house.setPrice(price);
