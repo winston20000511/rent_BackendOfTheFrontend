@@ -28,11 +28,9 @@ public class HouseService {
 
 
 
-   public void addHouse(Map<String, String> params) {
-            HouseDetailsDTO house = new HouseDetailsDTO();
-            
+   public HouseTableBean addHouse(HouseTableBean house) {            
 
-            houseRepository.save(house);
+          return  houseRepository.save(house);
         }
     }
 

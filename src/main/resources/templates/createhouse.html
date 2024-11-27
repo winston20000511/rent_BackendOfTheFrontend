@@ -12,7 +12,7 @@
 <body>
 	<div>
 		<div class="container">
-			<div class="container mt-5" style="width: 50%">
+			<div class="container mt-5" style="width: 60%">
 				<h2 class="text-center">新增房屋</h2>
 				<form id="addHouseForm" enctype="multipart/form-data">
 					<div class="form-group">
@@ -29,7 +29,7 @@
 					</div>
 					  <div class="form-group">
                 <label for="address">詳細地址:</label>
-                <div id="twzipcode"></div> <!-- 渲染 twzipcode 组件 -->
+                <div id="twzipcode"></div>
                 <input type="text" id="addressDetail" name="addressDetail" placeholder="請輸入詳細地址" required class="form-control mt-2">
             </div>
 
@@ -42,8 +42,8 @@
 							class="form-control" id="bathroom" name="bathroom" required>
 					</div>
 					<div class="form-group">
-						<label for="livingroom">客廳數量</label> <input type="number"
-							class="livingroom" id="livingroom" name="livingroom" required>
+						<label for="livingroom">客廳數量</label><br/><input type="number"
+						class="form-control" id="livingroom" name="livingroom" required>
 					</div>
 					<div class="form-group">
 						<label for="kitchen">廚房數量</label> <input type="number"
@@ -54,7 +54,7 @@
 							class="form-control" id="floor" name="floor" required>
 					</div>
 					<div class="form-group">
-						<label for="atticAddition">是否為頂樓加蓋</label> <input type="checkbox"
+						<p for="atticAddition">是否為頂樓加蓋</p> <input type="checkbox"
 							class="form-control" id="atticAddition" name="atticAddition"
 							required>
 					</div>
@@ -63,7 +63,7 @@
 					<h3>提供家具與服務</h3>
 					<div id="checkboxContainer">
 						<label><input type="checkbox" name="washingMachine"
-							value="washingMachine">洗衣機</label> <label><input
+							value="washingMachine">洗衣機<img src="../static/icon/house-on/e3429-ahtbb-001.ico" alt="洗衣機"></label> <label><input
 							type="checkbox" name="airConditioner" value="airConditioner">空調</label>
 						<label><input type="checkbox" name="network"
 							value="network">網路</label> <label><input type="checkbox"
