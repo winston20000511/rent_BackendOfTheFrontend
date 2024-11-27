@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet" />
+    <style>
+        .navbar-brand {
+            color: blue;
+            font-weight: bold;
+        }
+        .navbar-brand:hover {
+            color: darkblue;
+        }
+        .forgot-password:hover {
+            color: darkblue;
+            text-decoration: underline;
+        }
+        .left-side {
+            border-right: 1px solid #ddd;
+        }
+        .terms-link:hover {
+            color: darkblue;
+            text-decoration: underline;
+        }
+    </style>
+    <title>Rent189 - 登入與註冊</title>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <div class="navbar-nav me-auto">
+                <a class="nav-link" th:href="@{/buy}">買房</a>
+                <a class="nav-link" th:href="@{/rent}">租房</a>
+                <a class="nav-link" th:href="@{/sell}">賣房</a>
+            </div>
+            <a class="navbar-brand mx-auto" href="#">Rent189</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" th:href="@{/ads}">廣告</a>
+                <a class="nav-link" th:href="@{/help}">幫助</a>
+                <a class="nav-link" th:href="@{/login}">登入</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Content area with split layout -->
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Left side for future ads -->
+            <div class="col-md-6 left-side"></div>
+            
+            <!-- Right side with login/register form -->
+            <div class="col-md-6">
+                <h3 class="text-center mb-4">Welcome to Rent189</h3>
+                
+                <!-- Mode selection buttons -->
+                <ul class="nav nav-tabs mb-3" id="formTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login" type="button" role="tab" aria-controls="login" aria-selected="true">登入</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#register" type="button" role="tab" aria-controls="register" aria-selected="false">註冊</button>
+                    </li>
+                </ul>
+                
+                <!-- Tab contents -->
+                <div class="tab-content" id="formTabContent">
+                    <!-- Login form -->
+                    <div class="tab-pane fade show active" id="login" role="tabpanel" aria-labelledby="login-tab">
+                        <form action="/login" method="POST">
+                            <div class="mb-3">
+                                <label for="loginEmail" class="form-label">電子信箱</label>
+                                <input type="email" class="form-control" id="loginEmail" name="email" placeholder="請輸入電子信箱" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="loginPassword" class="form-label">密碼</label>
+                                <input type="password" class="form-control" id="loginPassword" name="password" placeholder="請輸入密碼" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">登入</button>
+                            <a href="#" class="d-block mt-2 text-center forgot-password">忘記密碼？</a>
+                        </form>
+                    </div>
+                    
+                    <!-- Register form -->
+                    <div class="tab-pane fade" id="register" role="tabpanel" aria-labelledby="register-tab">
+                        <form action="/register" method="POST">
+                            <!-- 姓名欄位 -->
+                            <div class="mb-3">
+                                <label for="registerName" class="form-label">姓名</label>
+                                <input type="text" class="form-control" id="registerName" name="name" placeholder="請輸入姓名" required>
+                            </div>
+
+                            <!-- 電子信箱欄位 -->
+                            <div class="mb-3">
+                                <label for="registerEmail" class="form-label">電子信箱</label>
+                                <input type="email" class="form-control" id="registerEmail" name="email" placeholder="請輸入電子信箱" required>
+                            </div>
+
+                            <!-- 密碼欄位 -->
+                            <div class="mb-3">
+                                <label for="registerPassword" class="form-label">密碼</label>
+                                <input type="password" class="form-control" id="registerPassword" name="password" placeholder="請輸入密碼" required>
+                                <small class="form-text text-muted">密碼至少8個字母</small>
+                            </div>
+
+                            <!-- 手機號碼欄位 -->
+                            <div class="mb-3">
+                                <label for="registerPhone" class="form-label">手機號碼</label>
+                                <input type="tel" class="form-control" id="registerPhone" name="phone" placeholder="請輸入手機號碼" required>
+                            </div>
+
+                            <!-- 性別欄位 -->
+                            <div class="mb-3">
+                                <label class="form-label">性別</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="gender" id="genderMale" value="0" required>
+                                    <label class="form-check-label" for="genderMale">男性</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="gender" id="genderFemale" value="1" required>
+                                    <label class="form-check-label" for="genderFemale">女性</label>
+                                </div>
+                            </div>
+
+                            <!-- 註冊按鈕 -->
+                            <button type="submit" class="btn btn-primary w-100">註冊</button>
+                        </form>
+                        <!-- 使用條款 -->
+                        <div class="terms mt-3 text-center">
+                            <p>提交註冊即表示您同意Rent189的
+                                <a href="/terms" class="terms-link" target="_blank">使用條款</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

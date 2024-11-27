@@ -1,44 +1,46 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org/">
 <head>
-<meta charset="UTF-8">
-<title></title>
-<link th:href="@{/css/styles.css}" rel="stylesheet"/>
-<link href="https://cdn.jsdelivr.net/npm/tailwindcss@^2.2.19/dist/tailwind.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet" />
+    <style>
+        /* 設定 Rent189 文字為藍色 */
+        .navbar-brand {
+            color: blue;
+			font-weight: bold;
+        }
+
+        /* 設定滑鼠懸停時變色 */
+        .navbar-brand:hover {
+            color: darkblue;
+        }
+    </style>
+    <title>Rent189</title>
 </head>
 <body>
-	<header id="header">
-        <ul class="nav-left">
-            <li><a href="#">Buy</a></li>
-            <li class="link"><a href="#">Rent</a></li>
-        </ul>
-
-        <ul class="link-list" id="link-list-1">
-            <a href="#" class="list-item">item 1</a>
-            <a href="#" class="list-item">item 2</a>
-            <a href="#" class="list-item">item 3</a>
-            <a href="#" class="list-item">item 4</a>
-        </ul>
-
-        <div class="nav-middle">
-            <img src="/img/Logo3.jpg" alt="">
-            
-            <div class="nav-title">
-                <h1>house</h1>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <!-- Left side: 房產選項 -->
+            <div class="navbar-nav me-auto">
+                <a class="nav-link" th:href="@{/buy}">買房</a>
+                <a class="nav-link" th:href="@{/rent}">租房</a>
+                <a class="nav-link" th:href="@{/sell}">賣房</a>
             </div>
-            
+
+            <!-- Center: 網站名稱 -->
+            <a class="navbar-brand mx-auto" href="#">Rent189</a>
+
+            <!-- Right side: 登入、幫助、廣告 -->
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" th:href="@{/ads}">廣告</a>
+                <a class="nav-link" th:href="@{/help}">幫助</a>
+                <a class="nav-link" th:href="@{/login}">登入</a>
+            </div>
         </div>
-        <div class="nav-right">
-            <li><a href="#">Manage Rentals</a></li>
-            <li><a href="#">Advertise</a></li>
-            <li><a href="#">Help</a></li>
-            <li><a href="#">Sign In</a></li>
-        </div>
-    </header>
-	
+    </nav>
+
+    <!-- Bootstrap JS -->
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
