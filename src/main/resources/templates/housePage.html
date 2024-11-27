@@ -3,19 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>房屋頁面</title>
-    <link rel="stylesheet" href="../static/css/styles.css">
-    <link rel="stylesheet" href="../static/css/housePage.css">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@^2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>租賃房屋網站</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #3579C0;
+            color: white;
+            padding: 10px 20px;
+        }
+
+        .header .logo {
+            font-size: 20px;
+        }
+
+        .header .nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        .header .nav a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 24px;
+            margin: 20px 0;
+        }
+
+        /* Slideshow */
+        .slideshow {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #ccc;
+            height: 200px;
+            margin: 20px;
+        }
+
+        .slideshow .arrow {
+            font-size: 30px;
+            cursor: pointer;
+            padding: 0 20px;
+        }
+
+        .slideshow .images {
+            display: flex;
+            gap: 10px;
+        }
+
+        .slideshow .images img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+        }
+
+        /* Google Map */
+        .map {
+            background-color: #fff;
+            padding: 50px;
+            margin: 20px;
+            text-align: center;
+        }
+
+        /* Owner Info */
+        .owner-section {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px;
+            background-color: #fff;
+            padding: 20px;
+        }
+
+        .owner-intro {
+            flex: 2;
+            padding: 0 20px;
+        }
+
+        .owner-details {
+            flex: 1;
+            padding: 0 20px;
+        }
+
+        .owner-details button {
+            background-color: #3579C0;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        /* Comments Section */
+        .comments-section {
+            background-color: #fff;
+            margin: 20px;
+            padding: 20px;
+        }
+
+        /* Recommended Houses */
+        .recommended-section {
+            background-color: #fff;
+            margin: 20px;
+            padding: 20px;
+        }
+
+        .recommended-list {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .recommended-list .recommended-item {
+            background-color: #f5f5f5;
+            padding: 20px;
+            width: 150px;
+            text-align: center;
+        }
+
+        .recommended-list .recommended-item:hover {
+            background-color: #3579C0;
+            color: white;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #3579C0;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <!-- Header 區域 -->
-    <div class="header">
-
 
     <!-- Title 標題 -->
-    <div class="title">網站標題</div>
+    <div class="title">房屋標題</div>
 
     <!-- 圖片輪播區域 -->
     <div class="slideshow">
@@ -37,8 +170,11 @@
             <li>租金：每月 NT$ 25,000</li>
             <li>面積：50 平方公尺</li>
             <li>房型：2 房 1 廳 1 衛</li>
-            <li>家電：冷氣、洗衣機、冰箱、電視</li>
         </ul>
+        <hr>
+        <div>限制：</div>
+        <hr>
+        <div>家具與服務：</div>
     </div>
 
     <!-- Google 地圖 -->

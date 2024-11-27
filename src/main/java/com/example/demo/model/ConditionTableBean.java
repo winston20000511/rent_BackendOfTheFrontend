@@ -42,6 +42,13 @@ public class ConditionTableBean {
 		
 	}
 
+	public Long getHouseId() {
+		return houseId;
+	}
+
+	public void setHouseId(Long houseId) {
+		this.houseId = houseId;
+	}
 
 	public Boolean getPet() {
 		return pet;
@@ -79,8 +86,8 @@ public class ConditionTableBean {
 		return shortTerm;
 	}
 
-	public void setShortTern(Boolean shortTern) {
-		this.shortTerm = shortTern;
+	public void setShortTerm(Boolean shortTerm) {
+		this.shortTerm = shortTerm;
 	}
 
 	public Boolean getCooking() {
@@ -122,6 +129,5 @@ public class ConditionTableBean {
 	public void setHouse(HouseTableBean house) {
 		this.house = house;
 	}
-
 
 }
