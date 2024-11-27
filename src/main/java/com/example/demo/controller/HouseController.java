@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.dto.HouseDetailsDTO;
 import com.example.demo.model.ConditionTableBean;
 import com.example.demo.model.FurnitureTableBean;
+import com.example.demo.model.HouseImageTableBean;
 import com.example.demo.model.HouseTableBean;
 import com.example.demo.model.UserTableBean;
 import com.example.demo.service.HouseService;
@@ -20,7 +23,8 @@ public class HouseController {
 	@Autowired
 	private HouseService houseService;
 	
-    @PostMapping("/houses")
+    @SuppressWarnings("unchecked")
+	@PostMapping("/houses")
     public String addHouse(@RequestBody HouseDetailsDTO detail ) {
         // 在這裡處理接收到的數據，例如保存到資料庫
     	
@@ -72,6 +76,11 @@ public class HouseController {
         condition.setHouse(house);
         house.setCondition(condition);
       
+        HouseImageTableBean image =new HouseImageTableBean();
+        image.setImageUrl(detail.getImageUrl());
+        image.setHouse(house);
+        image.setUser(user);
+        house.setImages((List<HouseImageTableBean>) image);
        // 處理圖片上傳邏輯（例如儲存圖片）
         
         houseService.addHouse(house);
