@@ -4,7 +4,7 @@ $(document).ready(function() {
 	var houseId = url[url.length - 1];
 
 	$.ajax({
-		url: '/booking/timeSlot',
+		url: '/api/booking/add',
 		type: 'GET',
 		dataType: 'json',
 		data: {
@@ -13,15 +13,18 @@ $(document).ready(function() {
 		success: function(response) {
 			console.log(response);
 			var weekDay = response.weekDay;
-			var fromTime = response.fromTime; // "09:00:00"
-			var toTime = response.toTime; // "21:00:00"
-			var duration = response.duration; // 30
+			var fromDate = response.fromDate;
+			var toDate = response.toDate;
+			var fromTime = response.fromTime;
+			var toTime = response.toTime;
+			var duration = response.duration;
 
 			generateTimeSlots(duration);
-			disableUnavailableTimes(fromTime, toTime, duration, weekDay);
+		/*	disableUnavailableTimes(fromTime, toTime, duration, weekDay); */
 
-
-
+			
+			
+			
 			$(".owl").timepicker({
 				
 			});
@@ -52,7 +55,7 @@ $(document).ready(function() {
 					setTimeout(function() {
 						$(".ui-datepicker-calendar tbody tr").each(function() {
 							if ($(this).find(".ui-datepicker-current-day").length) {
-								index = $(this).index() + 1;
+								index = $(this).index();
 							}
 						});
 
@@ -63,7 +66,7 @@ $(document).ready(function() {
 
 						var top = $(".timepicker-cf").offset().top - 2;
 
-						if ($(".timepicker").css("height") == "60px") {
+						if ($(".timepicker").css("height") == "120px") {
 							$(".timepicker-cf").animate(
 								{
 									height: "0px",
@@ -78,7 +81,7 @@ $(document).ready(function() {
 							);
 							$(".timepicker-cf").animate(
 								{
-									height: "60px",
+									height: "120px",
 								},
 								200
 							);
@@ -86,7 +89,7 @@ $(document).ready(function() {
 							$(".timepicker").css("top", top);
 							$(".timepicker, .timepicker-cf").animate(
 								{
-									height: "60px",
+									height: "120px",
 								},
 								200
 							);
