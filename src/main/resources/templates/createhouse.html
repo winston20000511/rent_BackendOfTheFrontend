@@ -1,194 +1,304 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hans">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>新增房屋</title>
-<!-- Bootstrap CSS -->
-<link rel="stylesheet"
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新增房屋</title>
+    <!-- 引入 Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+        }
+        .container {
+            width: 60%;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .image-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .image-preview img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body>
-	<div>
-		<div class="container">
-			<div class="container mt-5" style="width: 60%">
-				<h2 class="text-center">新增房屋</h2>
-				<form id="addHouseForm" enctype="multipart/form-data">
-					<div class="form-group">
-						<label for="title">標題</label> <input type="text"
-							class="form-control" id="title" name="title" required>
-					</div>
-					<div class="form-group">
-						<label for="price">價格</label> <input type="number"
-							class="form-control" id="price" name="price" required>
-					</div>
-					<div class="form-group">
-						<label for="size">坪數</label> <input type="number"
-							class="form-control" id="size" name="size" required>
-					</div>
-					  <div class="form-group">
-                <label for="address">詳細地址:</label>
-                <div id="twzipcode"></div>
-                <input type="text" id="addressDetail" name="addressDetail" placeholder="請輸入詳細地址" required class="form-control mt-2">
-            </div>
+    <div id="app">
+        <div class="container mt-5">
+            <h2 class="text-center">新增房屋</h2>
+            <form @submit.prevent="submitForm">
+                <div class="form-group">
+                    <label for="title">標題</label>
+                    <input type="text" class="form-control" v-model="form.title" required>
+                </div>
+                <div class="form-group">
+                    <label for="price">價格</label>
+                    <input type="number" class="form-control" v-model.number="form.price" required>
+                </div>
+                <div class="form-group">
+                    <label for="size">坪數</label>
+                    <input type="number" class="form-control" v-model.number="form.size" required>
+                </div>
+                <div class="form-group">
+                    <label for="addressDetail">詳細地址:</label>
+                    <input type="text" v-model="form.addressDetail" placeholder="請輸入詳細地址" required class="form-control mt-2">
+                </div>
+                <div class="form-group">
+                    <label for="room">房間數</label>
+                    <input type="number" class="form-control" v-model.number="form.room" required>
+                </div>
+                <div class="form-group">
+                    <label for="bathroom">裕廁數量</label>
+                    <input type="number" class="form-control" v-model.number="form.bathroom" required>
+                </div>
+                <div class="form-group">
+                    <label for="livingroom">客廳數量</label><br/>
+                    <input type="number" class="form-control" v-model.number="form.livingroom" required>
+                </div>
+                <div class="form-group">
+                    <label for="kitchen">廚房數量</label>
+                    <input type="number" class="form-control" v-model.number="form.kitchen" required>
+                </div>
+                <div class="form-group">
+                    <label for="floor">樓層</label>
+                    <input type="number" class="form-control" v-model.number="form.floor" required>
+                </div>
+                <div class="form-group form-check">
+                    <input type='checkbox' v-model='form.atticAddition' class='form-check-input'>
+                    <label class='form-check-label'>是否為頂樓加蓋</label>
+                </div>
 
-					<div class="form-group">
-						<label for="room">房間數</label> <input type="number"
-							class="form-control" id="room" name="room" required>
-					</div>
-					<div class="form-group">
-						<label for="bathroom">裕廁數量</label> <input type="number"
-							class="form-control" id="bathroom" name="bathroom" required>
-					</div>
-					<div class="form-group">
-						<label for="livingroom">客廳數量</label><br/><input type="number"
-						class="form-control" id="livingroom" name="livingroom" required>
-					</div>
-					<div class="form-group">
-						<label for="kitchen">廚房數量</label> <input type="number"
-							class="form-control" id="kitchen" name="kitchen" required>
-					</div>
-					<div class="form-group">
-						<label for="floor">樓層</label> <input type="number"
-							class="form-control" id="floor" name="floor" required>
-					</div>
-					<div class="form-group">
-						<p for="atticAddition">是否為頂樓加蓋</p> <input type="checkbox"
-							class="form-control" id="atticAddition" name="atticAddition"
-							required>
-					</div>
+                <!-- 提供家具與服務 -->
+                <hr />
+                <h3>提供家具與服務</h3>
+                <div id='checkboxContainer'>
+                    <label><input type='checkbox' v-model='furnitureServices.washingMachine'>洗衣機<img src="../static/icon/house-on/washingMachine-on.ico" alt='洗衣機'></label> 
+                    <label><input type='checkbox' v-model='furnitureServices.airConditioner'>空調</label> 
+                    <label><input type='checkbox' v-model='furnitureServices.network'>網路</label> 
+                    <label><input type='checkbox' v-model='furnitureServices.bedstead'>床架</label> 
+                    <label><input type='checkbox' v-model='furnitureServices.mattress'>床墊</label> 
+                    <label><input type='checkbox' v-model='furnitureServices.refrigerator'>冰箱</label> 
+                    <label><input type='checkbox' v-model='furnitureServices.ewaterHeater'>電熱水器</label> 
+                    <label><input type='checkbox' v-model='furnitureServices.gwaterHeater'>瓦斯熱水器</label> 
+                    <label><input type='checkbox' v-model='furnitureServices.television'>電視</label> 
+                    <label><input type='checkbox' v-model='furnitureServices.channel4'>第四台</label> 
+                    <label><input type='checkbox' v-model='furnitureServices.sofa'>沙發</label> 
+                    <label><input type='checkbox' v-model='furnitureServices.tables'>桌椅</label> 
+                </div>
 
-					<hr>
-					<h3>提供家具與服務</h3>
-					<div id="checkboxContainer">
-						<label><input type="checkbox" name="washingMachine"
-							value="washingMachine">洗衣機<img src="../static/icon/house-on/washingMachine-on.ico" alt="洗衣機"></label> <label><input
-							type="checkbox" name="airConditioner" value="airConditioner">空調</label>
-						<label><input type="checkbox" name="network"
-							value="network">網路</label> <label><input type="checkbox"
-							name="bedstead" value="bedstead">床架</label> <label><input
-							type="checkbox" name="mattress" value="mattress"> 床墊</label> <label><input
-							type="checkbox" name="refrigerator" value="refrigerator">冰箱</label>
-						<label><input type="checkbox" name="ewaterHeater"
-							value="ewaterHeater">電熱水器</label> <label><input
-							type="checkbox" name="gwaterHeater" value="gwaterHeater">
-							瓦斯熱水器</label> <label><input type="checkbox" name="television"
-							value="television">電視</label> <label><input
-							type="checkbox" name="channel4" value="channel4">第四台</label> <label><input
-							type="checkbox" name="sofa" value="sofa">沙發</label> <label><input
-							type="checkbox" name="tables" value="tables">桌椅</label>
-					</div>
-					<hr>
-					<h3>房屋限制</h3>
-					<div id="checkboxContainer">
-						<label><input type="checkbox" name="pet" value="pet">是否可以養寵物</label>
-						<label><input type="checkbox" name="parkingSpace"
-							value="parkingSpace"> 停車空間</label> <label><input
-							type="checkbox" name="elevator" value="elevator">電梯</label> <label><input
-							type="checkbox" name="balcony" value="balcony">陽台</label> <label><input
-							type="checkbox" name="shortTerm" value="shortTerm">是否可以接受短期租賃</label>
-						<label><input type="checkbox" name="cooking"
-							value="cooking">是否可以開伙</label> <label><input
-							type="checkbox" name="waterDispenser" value="waterDispenser">是否有飲水機</label>
-						<label><input type="checkbox" name="fee" value="fee">是否有管理費</label>
-						<label> <input type="checkbox" id="genderRestrictions"
-							name="genderRestrictions" value="genderRestrictions">
-							是否有性別限制
-						</label>
+                <!-- 房屋限制 -->
+                <hr />
+                <h3>房屋限制</h3>
+                <div id='checkboxContainer'>
+                    <label><input type='checkbox' v-model='houseRestrictions.pet'>是否可以養寵物</label> 
+                    <label><input type='checkbox' v-model='houseRestrictions.parkingSpace'>停車空間</label> 
+                    <label><input type='checkbox' v-model='houseRestrictions.elevator'>電梯</label> 
+                    <label><input type='checkbox' v-model='houseRestrictions.balcony'>陽台</label> 
+                    <label><input type='checkbox' v-model='houseRestrictions.shortTerm'>是否可以接受短期租賃</label> 
+                    <label><input type='checkbox' v-model='houseRestrictions.cooking'>是否可以開伙</label> 
+                    <label><input type='checkbox' v-model='houseRestrictions.waterDispenser'>是否有飲水機</label> 
+                    <label><input type='checkbox' v-model='houseRestrictions.fee'>是否有管理費</label> 
+                    
+                     <!-- 性別限制 -->
+                     <!-- 使用v-if來控制性別選項的顯示 -->
+                     <!-- 可以根據需要進行調整 -->
+                     
 
-						<!-- 性別選項 -->
-						<div id="genderOptions" style="display: none;">
-							<label><input type="radio" name="genderOption" value="1">
-								男</label> <label><input type="radio" name="genderOption"
-								value="2"> 女</label>
-						</div>
-					</div>
-					 <div class= "form-group"> 
-               <label for= "description">簡介</label> 
-               <textarea class= "form-control"id= "description"name= "description"></textarea> 
-           </div>
+       
+<!-- 性別限制 -->
+<label><input type='checkbox' id='genderRestrictions' v-model.lazy.number= 'houseRestrictions.genderRestrictions'>
+    是否有性別限制
+</labe>
 
-           <!-- 圖片上傳 -->
-           <hr> 
-           <label for= "fileInput">上傳圖片:</label> 
-           <input type= "file"id= "fileInput"name= "images[]"accept= "image/*multiple" required><br><br>
-					<button type="submit" class="btn btn-primary">Submit</button>
-				</form>
-				<div id="imagePreviewContainer"></div>
-			</div>
-		</div>
-	</div>
-	<script
-		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<script src="https://code.essoduke.org/js/twzipcode/twzipcode.js"></script>
-	<script>
-	$(function() {
-    $("#twzipcode").twzipcode({
-        zipcodeIntoDistrict: false, // 郵遞區號自動顯示在區別選單中
-        css: ["county form-control", "district form-control"], // 自訂 CSS 類別名稱
-        countyName: "county", // 自訂城市 select 標籤的 name 值
-        districtName: "district" // 自訂區別 select 標籤的 name 值
-    });
+<!-- 性別選項 -->
+<div id = "genderOptions"
+style = "display: none;">
+<label><input
+type = "radio"
+name = "genderOption"
+value = "1"
+v-model = "genderOption">男
+<label><input
+type = "radio"
+name = "genderOption"
+value = "2"
+v-model = "genderOption">女
+</labe>
+
+<hr />
+<h3>簡介</h3>
+
+<div class= "form-group"> 
+   <
+   label for= "description">簡介
+   </labe > 
+   <
+   textarea
+   class= "form-control"
+   v-model= ' form.description'></textarea > 
+   </ div >
+
+   <!-- 圖片上傳 -->
+   <
+   hr />
+   <
+   label for= "fileInput">上傳圖片:
+   </labe > 
+   <
+   input
+   type= "file"
+   multiple
+   @change= 'handleFileUpload'
+   accept= "image/*"><br><br>
+
+   <!-- 顯示上傳的圖片 -->
+   <
+   div
+   class= 'image-preview'>
+       <
+       img
+       v-for= '( image, index) in images'
+       : key= 'index'
+       : src= 'image'
+       @click= 'removeImage( index)' />
+   </ div >
+
+   <!-- 提交按鈕 -->
+   <
+   button
+   type= 'submit'
+   class= 'btn btn-primary mt-3'>提交
+   </button >
+
+/* 引入 Vue 和 Bootstrap JS */
+<script src= 'https://cdn.jsdelivr.net/npm/vue@3'></script>
+
+<!-- Bootstrap JS -->
+<script src= 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js'></script>
+
+<!-- Vue 實例 -->
+<script setup lang= 'js'>
+import { ref, reactive } from 'vue';
+
+const form = reactive({
+    title: '',
+    price: null,
+    size: null,
+    addressDetail: '',
+    room: null,
+    bathroom: null,
+    livingroom: null,
+    kitchen: null,
+    floor: null,
+    atticAddition: false,
+    description: '',
 });
-document.getElementById('genderRestrictions').addEventListener('change', function() {
-    const genderOptions = document.getElementById('genderOptions');
-    
-    // 根據性別限制複選框的狀態顯示或隱藏性別選項
-    if (this.checked) {
-        genderOptions.style.display = 'block';
-    } else {
-        genderOptions.style.display = 'none';
-        // 重置性別選擇
-        const radios = genderOptions.querySelectorAll('input[type=radio]');
-        radios.forEach(radio => {
-            radio.checked = false;
-        });
-    }
+
+const images = ref([]);
+
+// 家具與服務選項
+const furnitureServices = reactive({
+    washingMachine: false,
+    airConditioner: false,
+    network: false,
+    bedstead: false,
+    mattress: false,
+    refrigerator: false,
+    ewaterHeater: false,
+    gwaterHeater: false,
+    television: false,
+    channel4: false,
+    sofa: false,
+    tables: false
 });
-document.getElementById('addHouseForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // 防止默認提交行為
 
-    const formData = new FormData(this); // 使用 FormData 將表單資料封裝
-
-    // 處理複選框的布林值
-    const booleanFields = [
-        'washingMachine', 'airConditioner', 'network', 'bedstead', 
-        'mattress', 'refrigerator', 'ewaterHeater', 'gwaterHeater', 
-        'television', 'channel4', 'sofa', 'tables',
-        'pet', 'parkingSpace', 'elevator', 'balcony',
-        'shortTerm', 'cooking', 'waterDispenser', 'fee',
-        'atticAddition' // 包含 atticAddition
-    ];
-
-    booleanFields.forEach(field => {
-        formData.append(field, document.querySelector(`input[name="${field}"]`).checked);
-    });
-
-    // 處理性別限制
-    const genderRadio = document.querySelector('input[name="genderOption"]:checked');
-    if (genderRadio) {
-        formData.append('genderRestrictions', genderRadio.value);
-    } else {
-        formData.append('genderRestrictions', 0); // 沒有限制
-    }
-
-    // 使用 Fetch API 發送請求
-    fetch('/api/houses', { // 替換為你的伺服器端點
-        method: 'POST',
-        body: formData,
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log(data); // 處理伺服器回應
-        alert('房屋資訊已成功提交！');
-    })
-    .catch(error => {
-        console.error('提交失敗:', error);
-        alert('提交失敗！');
-    });
+// 房屋限制選項
+const houseRestrictions = reactive({
+    pet: false,
+    parkingSpace: false,
+    elevator: false,
+    balcony: false,
+    shortTerm: false,
+    cooking: false,
+    waterDispenser: false,
+    fee: false,
+    genderRestrictions: false // 性別限制
 });
-</script>
-</body>
-</html>
+
+const genderOption = ref(null);
+
+function handleFileUpload(event) {
+   const files = Array.from(event.target.files);
+   images.value = []; // 清空之前的圖片
+   files.forEach(file => {
+       if (file && file.type.startsWith('image/')) { // 確保是圖片格式
+           images.value.push(URL.createObjectURL(file));
+       } else {
+           alert('只能上傳圖片檔案！');
+       }
+   });
+}
+
+function removeImage(index) {
+   images.value.splice(index, 1); // 移除選定的圖片
+}
+
+function submitForm() {
+   const formData = new FormData();
+   
+   // 添加表單數據
+   Object.keys(form).forEach(key => {
+       formData.append(key, form[key]);
+   });
+
+   // 添加家具服務到 FormData
+   Object.keys(furnitureServices).forEach(key => {
+       formData.append(key, furnitureServices[key]);
+   });
+
+   // 添加房屋限制到 FormData
+   Object.keys(houseRestrictions).forEach(key => {
+       formData.append(key, houseRestrictions[key]);
+   });
+
+   // 添加圖片到 FormData
+   images.value.forEach((image, index) => {
+       formData.append(`images[${index}]`, image); // 根據需要調整這裡的名稱
+   });
+
+   // 使用 Fetch API 發送請求
+   fetch('/api/houses', {
+       method:'POST',
+       body: formData
+   })
+   .then(response => response.json())
+   .then(data => {
+       console.log(data);
+       alert('房屋資訊已成功提交！');
+       // 清空表單和圖片預覽（可選）
+       resetForm();
+   })
+   .catch(error => {
+       console.error('提交失敗:', error);
+       alert('提交失敗！');
+   });
+}
+
+function resetForm() {
+    Object.keys(form).forEach(key => {
+        form[key] = '';
+    });
+    images.value = [];
+}
