@@ -62,6 +62,9 @@ public class HouseTableBean {
 
     @OneToOne(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private ConditionTableBean condition;
+    
+    @OneToOne(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private CollectTableBean collect;
 
     @OneToOne(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private FurnitureTableBean furniture;
@@ -261,6 +264,14 @@ public class HouseTableBean {
 
 	public void setAds(List<AdBean> ads) {
 		this.ads = ads;
+	}
+
+	public CollectTableBean getCollect() {
+		return collect;
+	}
+
+	public void setCollect(CollectTableBean collect) {
+		this.collect = collect;
 	}
 
 }

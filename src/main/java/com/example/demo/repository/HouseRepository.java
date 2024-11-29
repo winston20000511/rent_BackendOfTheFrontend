@@ -9,4 +9,5 @@ public interface HouseRepository extends JpaRepository<HouseTableBean, Long> {
 
 	void save(HouseDetailsDTO house);
 	
+	
 }

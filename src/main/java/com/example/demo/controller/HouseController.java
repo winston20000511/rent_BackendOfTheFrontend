@@ -3,6 +3,8 @@ package com.example.demo.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +17,9 @@ import com.example.demo.model.HouseImageTableBean;
 import com.example.demo.model.HouseTableBean;
 import com.example.demo.model.UserTableBean;
 import com.example.demo.service.HouseService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
@@ -24,7 +29,7 @@ public class HouseController {
 	private HouseService houseService;
 	
     @SuppressWarnings("unchecked")
-	@PostMapping("/houses")
+	@PostMapping("/addhouses")
     public String addHouse(@RequestBody HouseDetailsDTO detail ) {
         // 在這裡處理接收到的數據，例如保存到資料庫
     	
@@ -86,4 +91,5 @@ public class HouseController {
         houseService.addHouse(house);
        return "房屋資訊已成功儲存";
    }
+    
 }

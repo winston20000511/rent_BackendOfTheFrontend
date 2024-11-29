@@ -24,8 +24,7 @@ public class HouseService {
         return houseDetailsDTO;
     }
 
-
-
+   
    public HouseTableBean addHouse(HouseTableBean house) {            
 
           return  houseRepository.save(house);
