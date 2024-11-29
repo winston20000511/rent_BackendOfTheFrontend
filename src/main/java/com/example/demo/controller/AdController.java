@@ -23,6 +23,7 @@ public class AdController {
 		if(loginUserId == null || userId == null || userId != loginUserId) {
 			return "redirect:/loginView";
 		}*/
+		
 		return "/adPage.html";
 	}
 }

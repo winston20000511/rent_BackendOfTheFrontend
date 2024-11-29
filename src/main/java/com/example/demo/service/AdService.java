@@ -33,31 +33,8 @@ public class AdService {
 		this.adtypeRepository = adtypeRepository;
 	}
 	
-	/* CRUD */
-	
-	// get ads by user id and page
-	public List<AdDetailsResponseDTO> findAdsByUserIdAndIsPaidAndPage(Long userId, Boolean isPaid, Integer pageNumber){
-		Pageable pageable = PageRequest.of(pageNumber-1, 10, Sort.Direction.DESC, "adId");
-		List<AdBean> ads = adRepository.findAdsByUserIdAndIsPaidAndPage(userId, isPaid, pageable);
-		
-		List<AdDetailsResponseDTO> detailList = new ArrayList<>();
-		for(AdBean ad : ads) {
-			AdDetailsResponseDTO detail = new AdDetailsResponseDTO();
-			detail.setAdId(ad.getAdId());
-			detail.setHouseTitle(ad.getHouse().getTitle());
-			detail.setAdPrice(ad.getAdPrice());
-			detailList.add(detail);
-		}
-		
-		return detailList;
-	}
-	
-	// get all ad types
-	public List<AdtypeBean> findAllAdType(){
-		return adtypeRepository.findAll();
-	}
-	
-	// create a new ad
+
+	/* AdBean */
 	public boolean createAds(List<AdCreationRequestDTO> adCreationRequestDTOs) {
 		
 		for(AdCreationRequestDTO dto : adCreationRequestDTOs) {
@@ -65,7 +42,7 @@ public class AdService {
 			adBean.setIsPaid(false);
 			adBean.setUserId(dto.getUserId());
 			adBean.setHouseId(dto.getHouseId());
-			List<Tuple> results = adtypeRepository.findAdtypeIdAndPriceByadtype(dto.getAdName());
+			List<Tuple> results = adtypeRepository.findAdtypeIdAndPriceByAdtype(dto.getAdName());
 			
 			Map<String, Integer> adtypeMap = new HashMap<>();
 			for(Tuple tuple : results) {
@@ -85,7 +62,7 @@ public class AdService {
 		return true;
 	}
 	
-	// udpate the adtype of an ad by ad id
+
 	public AdBean updateAdtypeById(Long adId, Integer newAdtypeId) {
 		
 		Optional<AdBean> adOptional = adRepository.findById(adId);
@@ -108,7 +85,7 @@ public class AdService {
 		return null;
 	}
 	
-	// delete an order by id
+
 	public boolean deleteAdById(Long adId) {
 		Optional<AdBean> optional = adRepository.findById(adId);
 		if(optional.isPresent()) {
@@ -117,6 +94,12 @@ public class AdService {
 		}
 		
 		return false;
+	}
+	
+	
+	/* AdtypeBean */
+	public List<AdtypeBean> findAllAdType(){
+		return adtypeRepository.findAll();
 	}
 	
 	

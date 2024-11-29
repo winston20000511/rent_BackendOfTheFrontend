@@ -35,46 +35,29 @@ public class AdRestController {
 		this.houseService = houseService;
 	}
 	
-	/* read */
-	// get ads by user id and is paid and page
-	@PostMapping("/search")
-	public List<AdDetailsResponseDTO> findAdsBydAndIsPaidAndPage(
-			@RequestBody Map<String, Object> filter
-			//, HttpSession session
-			) {
-		
-//		Long loginUserId = (Long)session.getAttribute("loginUserId");
-		
-		Long userId = Long.valueOf(((Integer)filter.get("userId")).longValue());
-		Boolean isPaid = (Boolean)filter.get("isPaid");
-		Integer pageNumber = (Integer)filter.get("pageNumber")==null? 1 : (Integer)filter.get("pageNumber");
-		System.out.println(filter);
-		
-		return adService.findAdsByUserIdAndIsPaidAndPage(userId, isPaid, pageNumber);
-	}
-	
-	// get houses that do not have ads
+
 	@GetMapping("/noadhouses/{userId}")
-	public List<Map<String,Object>> findNoAdHouses(@PathVariable("userId") Long userId){
-		return houseService.findNoAdHouses(userId);
+	public List<Map<String,Object>> findNoAdHousesByUserId(@PathVariable("userId") Long userId){
+		return houseService.findNoAdHousesByUserId(userId);
 	}
 	
-	// get the ad type information
+	
 	@GetMapping("/adtype")
 	public List<AdtypeBean> findAdType() {
 		return adService.findAllAdType();
 	}
 	
 	
-	// create a new ad
 	@PostMapping
 	public boolean createAds(@RequestBody List<AdCreationRequestDTO> adCreationRequestDTOs) {
 		return adService.createAds(adCreationRequestDTOs);
 	}
 	
-	// update an ad by ad id
 	@PutMapping("/{adId}/{newAdtypeId}")
 	public ResponseEntity<?> updateAdtypeById(@PathVariable("adId") Long adId, @PathVariable("newAdtypeId") Integer newAdtypeId) {
+		
+		// 會員登入驗證
+		
 		System.out.println(newAdtypeId);
 		AdBean updatedAd = adService.updateAdtypeById(adId, newAdtypeId);
 		if(updatedAd == null) {
@@ -93,8 +76,8 @@ public class AdRestController {
 	}
 	
 	
+	
 	/* DTO: get ad details */
-	// get an ad by ad id
 	@GetMapping("/details/{adId}")
 	public AdDetailsResponseDTO findAdsByAdId(@PathVariable("adId") Long adId) {
 		AdDetailsResponseDTO adDetails = adService.findAdDetailsByAdId(adId);
@@ -102,12 +85,21 @@ public class AdRestController {
 		return adDetails;
 	}
 	
-	@GetMapping("/tabledata/{userId}/{isPaid}/{pageNumber}")
+	
+	@PostMapping("/search")
 	public List<AdDetailsResponseDTO> findAdTableDataByAdIdAndIsPaid(
-			@PathVariable("userId") Long userId,
-			@PathVariable("isPaid") Boolean isPaid,
-			@PathVariable("pageNumber") Integer pageNumber){
+			@RequestBody Map<String, Object> filter //, HttpSession session
+			){
+		
+		//		Long loginUserId = (Long)session.getAttribute("loginUserId");
+
+		Long userId = Long.valueOf(((Integer)filter.get("userId")).longValue());
+		Boolean isPaid = (Boolean)filter.get("isPaid");
+		Integer pageNumber = (Integer)filter.get("pageNumber")==null? 1 : (Integer)filter.get("pageNumber");
+		System.out.println(filter);
+		
 		List<AdDetailsResponseDTO> dtos = adService.findAdTableDataByUserIdAndIsPaid(userId, isPaid, pageNumber);
+		
 		return dtos;
 	}
 	

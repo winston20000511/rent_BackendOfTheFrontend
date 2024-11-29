@@ -12,5 +12,5 @@ import jakarta.persistence.Tuple;
 public interface AdtypeRepository extends JpaRepository<AdtypeBean, Integer>{
 
 	@Query("select a.adtypeId, a.adPrice from AdtypeBean a where a.adName = :adName")
-	public List<Tuple> findAdtypeIdAndPriceByadtype(String adName);
+	public List<Tuple> findAdtypeIdAndPriceByAdtype(String adName);
 }

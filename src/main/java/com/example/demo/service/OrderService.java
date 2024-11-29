@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,10 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.dto.OrderResponseDTO;
+import com.example.demo.dto.OrderSearchRequestDTO;
 import com.example.demo.model.OrderBean;
 import com.example.demo.repository.OrderRepository;
+import com.example.demo.repository.OrderSpecification;
 
 import ecpay.payment.integration.AllInOne;
 import ecpay.payment.integration.domain.AioCheckOutALL;
@@ -26,16 +31,46 @@ public class OrderService {
 	}
 	
 	// get orders by page
-	public List<OrderBean> findOrdersByUserIdAndPageNumber(Integer userId, Integer pageNumber){
+	public List<OrderBean> findOrdersByUserIdAndPageNumber(Long userId, Integer pageNumber){
 		Pageable pageable = PageRequest.of(pageNumber-1, 10, Sort.Direction.DESC, "merchantTradDate");
 		List<OrderBean> orders = orderRepository.findOrdersByUserIdAndPageNumber(userId, pageable);
 		return orders;
 	}
 	
-	// get orders by merchantTradNo
-	public List<OrderBean> findOrdersByUserIdAndMerchantTradNo(Integer userId, String merchantTradNo){
-		return orderRepository.findOrdersByUserIdAndMerchantTradNo(userId, merchantTradNo);
+	// get orders by conditions and page
+	// 要加分頁
+	public List<OrderResponseDTO> findOrdersByConditions(OrderSearchRequestDTO requestDTO){
+		
+		System.out.println(requestDTO);
+		
+		Specification<OrderBean> spec = OrderSpecification.filter(requestDTO);
+		
+		List<OrderBean> orders = orderRepository.findAll(spec);
+		
+		List<OrderResponseDTO> responseDTOList = new ArrayList<>();
+		
+		for(OrderBean order : orders) {
+			OrderResponseDTO responseDTO = new OrderResponseDTO();
+			responseDTO.setMerchantTradNo(order.getMerchantTradNo());
+			responseDTO.setOrderStatus(order.getOrderStatus() == 0? "已取消" : "一般訂單");
+			
+			List<String> houseTitles = new ArrayList<>();
+			for(int i = 0; i< order.getAds().size(); i++) {
+				String title = order.getAds().get(i).getHouse().getTitle();
+				houseTitles.add(title);
+			}
+		    responseDTO.setHouseTitles(houseTitles);
+		    responseDTO.setMerchantTradDate(order.getMerchantTradDate());
+		    
+		    responseDTOList.add(responseDTO);
+
+		}
+		
+		System.out.println("responseDTOList: " + responseDTOList);
+		
+		return responseDTOList;
 	}
+	
 	
 	// create a new order
 	public OrderBean createOrder(OrderBean orderBean) {

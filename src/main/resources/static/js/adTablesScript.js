@@ -57,12 +57,18 @@ export function showSelectedTable(clickedBtn) {
   if (clickedBtn === paidAdsBtn) {
     paidAdTable.classList.remove("hidden");
     
-    // 測試資料
-    // userId = 5;
+    //測試資料
+    const searchCondition = {"userId" : userId, "isPaid" : isPaid};
+    const searchConditionJson = JSON.stringify(searchCondition);
+
     fetch(
-      `http://localhost:8080/advertisements/tabledata/${userId}/${isPaid}/${pageNumber}`,
+      `http://localhost:8080/advertisements/search`,
       {
-        method: "GET",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: searchConditionJson,
       }
     )
       .then((response) => {
@@ -427,7 +433,7 @@ export function showSelectedTable(clickedBtn) {
                 );
 
                 /*
-                fetch("http://localhost:8080/advertisements", {
+                fetch("http://localhost:8080/advertisements/", {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
@@ -514,7 +520,7 @@ export function clickConfirmBtn(onclickConfirmButtonClick) {
       if (clickedBtn) {
         onclickConfirmButtonClick();
       }
-      
+
     });
   });
 }
