@@ -14,25 +14,60 @@ export function showAdDetailsModal(adDetails) {
 
   // 處理顯示文字
   const paymentStatus = isPaid? "已付款" : "未付款";
-  const paidDateYYMMDD = paidDate? paidDate.substring(0, 10) : "無";
+  const paidDateYYYYMMDD = paidDate? paidDate.substring(0, 10) : "無";
   const shownOrderId = orderId? orderId : "無";
+
+  // 處理廣告起訖日
+  const adDurationMap = {
+    "30天": 30,
+    "60天": 60
+  };
+  const daysToAdd = adDurationMap[adName] || 0;
+  const endDateYYYYDDMM = addDaysToDate(paidDate, daysToAdd);
+
+  let period = paidDate? `${paidDateYYYYMMDD} ~ ${endDateYYYYDDMM}` : "無";
 
   document.getElementById("ad-details-body").innerHTML=
   `
-    <tbody id="ad-details-body">
-      <tr class="text-center">
-        <td>${adId}</td>
-        <td>${houseTitle}</td>
-        <td>${adName}</td>
-        <td>${adPrice}</td>
-        <td>${paymentStatus}</td>
-        <td>${shownOrderId}</td>
-        <td>${paidDateYYMMDD}</td>
-      </tr>
-    </tbody>
-  `
+    <table class="border border-gray-400 w-full">
+      <tbody id="ad-details-body" class="text-center">
+        <tr class="px-2 py-4">
+          <th class="bg-gray-200 w-1/4 border border-gray-400 px-2 py-2">廣告編號</th>
+          <td class="border border-gray-400">${adId}</td>
+        </tr>
+        <tr>
+          <th class="bg-gray-200 w-1/4 border border-gray-400 px-2 py-2">房屋標題</th>
+          <td class="border border-gray-400">${houseTitle}</td>
+        </tr>
+        <tr>
+          <th class="bg-gray-200 w-1/4 border border-gray-400 px-2 py-2">廣告種類</th>
+          <td class="border border-gray-400">${adName}</td>
+        </tr>
+        <tr>
+          <th class="bg-gray-200 w-1/4 border border-gray-400 px-2 py-2">廣告金額</th>
+          <td class="border border-gray-400">${adPrice}</td>
+        </tr>
+        <tr>
+          <th class="bg-gray-200 w-1/4 border border-gray-400 px-2 py-2">付款狀態</th>
+          <td class="border border-gray-400">${paymentStatus}</td>
+        </tr>
+        <tr>
+          <th class="bg-gray-200 w-1/4 border border-gray-400 px-2 py-2">訂單號碼</th>
+          <td class="border border-gray-400">${shownOrderId}</td>
+        </tr>
+        <tr>
+          <th class="bg-gray-200 w-1/4 border border-gray-400 px-2 py-2">付款日期</th>
+          <td class="border border-gray-400">${paidDateYYYYMMDD}</td>
+        </tr>
+        <tr>
+          <th class="bg-gray-200 w-1/4 border border-gray-400 px-2 py-2">起訖日期</th>
+          <td class="border border-gray-400">${period}</td>
+        </tr>
+    </tbody>`;
 
   adDetailModal.addEventListener("click", handleAdDetailModalClose);
+
+  // 建置修改按鈕
 }
 
 function handleAdDetailModalClose(event){
@@ -72,6 +107,14 @@ function toggleModalBackground() {
    modalBackground.classList.toggle("overlay");
 }
 
+// 計算起訖日
+function addDaysToDate(startDate, daysToAdd){
+  const resultDate = new Date(startDate);
+  resultDate.setDate(resultDate.getDate() + daysToAdd);
+
+  const formattedDate = resultDate.toISOString().substring(0,10);
+  return formattedDate;
+}
 
 // 之後再想
 /*

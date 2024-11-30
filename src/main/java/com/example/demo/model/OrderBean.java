@@ -1,10 +1,17 @@
 package com.example.demo.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -44,6 +51,15 @@ public class OrderBean {
 	
 	@Column(name = "checkMacValue")
 	private String checkMacValue;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="user_id", insertable=false, updatable=false)
+	@JsonIgnore
+	private UserTableBean user;
+	
+	@OneToMany(mappedBy="order", fetch = FetchType.LAZY)
+	@JsonIgnore
+	private List<AdBean> ads;
 	
 	public OrderBean() {
 	}
@@ -134,6 +150,22 @@ public class OrderBean {
 
 	public void setCheckMacValue(String checkMacValue) {
 		this.checkMacValue = checkMacValue;
+	}
+
+	public UserTableBean getUser() {
+		return user;
+	}
+
+	public void setUser(UserTableBean user) {
+		this.user = user;
+	}
+
+	public List<AdBean> getAds() {
+		return ads;
+	}
+
+	public void setAds(List<AdBean> ads) {
+		this.ads = ads;
 	}
 
 }

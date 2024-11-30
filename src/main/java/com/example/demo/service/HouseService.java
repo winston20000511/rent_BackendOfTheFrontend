@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,28 +13,26 @@ import com.example.demo.repository.HouseRepository;
 @Service
 public class HouseService {
 
-    @Autowired
-    private HouseRepository houseRepository;
+	@Autowired
+	private HouseRepository houseRepository;
 
-    public HouseDetailsDTO getHouseDetails(Long houseId) {
-        HouseTableBean house = houseRepository.findById(houseId)
-                                     .orElseThrow();
+	public HouseDetailsDTO getHouseDetails(Long houseId) {
+		HouseTableBean house = houseRepository.findById(houseId).orElseThrow();
 
-        HouseDetailsDTO houseDetailsDTO = new HouseDetailsDTO();
-        houseDetailsDTO.setHouseId(house.getHouseId());
+		HouseDetailsDTO houseDetailsDTO = new HouseDetailsDTO();
+		houseDetailsDTO.setHouseId(house.getHouseId());
 
+		return houseDetailsDTO;
+	}
 
-        return houseDetailsDTO;
-    }
+	public void addHouse(Map<String, String> params) {
+		HouseDetailsDTO house = new HouseDetailsDTO();
 
+		houseRepository.save(house);
+	}
 
+	public List<Map<String, Object>> findNoAdHousesByUserId(Long userId) {
+		return houseRepository.findNoAdHouses(userId);
+	}
 
-   public void addHouse(Map<String, String> params) {
-            HouseDetailsDTO house = new HouseDetailsDTO();
-            
-
-            houseRepository.save(house);
-        }
-    }
-
-
+}
