@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>租賃房屋網站</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -144,6 +147,47 @@
             margin-top: 20px;
         }
     </style>
+     <style scoped>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 0;
+          background-color: #f2f2f2;
+        }
+        
+        /* Header */
+        .title {
+          text-align: center;
+          font-size: 24px;
+          margin: 20px 0;
+        }
+        
+        /* Swiper */
+        .swiper-slide img {
+          width: 100%;
+          height: auto;
+        }
+        
+        /* 房屋資料、地圖、屋主介紹、評論、推薦等樣式保持不變 */
+        .house-info-section,
+        .map-section,
+        .owner-section,
+        .comments-section,
+        .recommended-section {
+          background-color: #fff;
+          margin: 20px;
+          padding: 20px;
+        }
+        
+        .footer {
+          background-color: #3579C0;
+          color: white;
+          text-align: center;
+          padding: 10px 0;
+        }
+        </style>
+        
+  
 </head>
 <body>
 
@@ -151,106 +195,102 @@
     <div class="title">房屋標題</div>
 
     <!-- 圖片輪播區域 -->
-    <div class="slideshow">
-        <button class="arrow left-arrow">←</button>
-        <div class="image-slider">
-            <div class="thumbnail"><img src="image1.jpg" alt="縮圖1"></div>
-            <div class="thumbnail"><img src="image2.jpg" alt="縮圖2"></div>
-            <div class="thumbnail"><img src="image3.jpg" alt="縮圖3"></div>
-            <div class="thumbnail"><img src="image4.jpg" alt="縮圖4"></div>
+    <template>
+        <div id="app">
+          <!-- Title 標題 -->
+          <div class="title">房屋標題</div>
+      
+          <!-- 圖片輪播區域 -->
+          <swiper :slides-per-view="1" pagination navigation>
+            <swiper-slide v-for="(image, index) in images" :key="index">
+              <img :src="image" alt="房屋圖片" />
+            </swiper-slide>
+          </swiper>
+      
+          <!-- 房屋資料區塊 -->
+          <div class="house-info-section">
+            <h3>房屋資料</h3>
+            <ul>
+              <li>位置：台北市大安區</li>
+              <li>租金：每月 NT$ 25,000</li>
+              <li>面積：50 平方公尺</li>
+              <li>房型：2 房 1 廳 1 衛</li>
+            </ul>
+            <hr />
+            <div>限制：</div>
+            <hr />
+            <div>家具與服務：</div>
+          </div>
+      
+          <!-- Google 地圖 -->
+          <div class="map-section">
+            <h2>Google 地圖</h2>
+            <div class="map-placeholder">這裡是 Google 地圖的佔位區</div>
+          </div>
+      
+          <!-- 屋主介紹與簡介 -->
+          <div class="owner-section">
+            <div class="owner-description">
+              <h3>屋主對房屋的介紹</h3>
+              <p>這裡可以展示屋主對房屋的詳細描述，包含周圍環境和屋內設施的說明。</p>
+            </div>
+            <div class="owner-info">
+              <h3>屋主簡介</h3>
+              <p>屋主姓名：王小明</p>
+              <p>屋主電話：0987-654-321</p>
+              <button @click="contactOwner">預約房屋</button>
+            </div>
+          </div>
+      
+          <!-- 評價與留言功能 -->
+          <div class="comments-section">
+            <h3>評價與留言</h3>
+            <p>此區域可顯示租客的評價和留言。</p>
+          </div>
+      
+          <!-- 推薦房屋區域 -->
+          <div class="recommended-section">
+            <h3>推薦房屋列表</h3>
+            <div class="recommended-list">
+              <div class="recommended-item" v-for="item in recommendedHouses" :key="item.id">{{ item.name }}</div>
+            </div>
+          </div>
+      
+          <!-- Footer 底部 -->
+          <div class="footer">
+            <p>&copy; 2024 租賃房屋網站. 版權所有.</p>
+          </div>
         </div>
-        <button class="arrow right-arrow">→</button>
-    </div>
+      </template>
+      
+      <script>
+      // 引入 Swiper 的組件
 
-    <!-- 房屋資料區塊 -->
-    <div class="house-info-section">
-        <h3>房屋資料</h3>
-        <ul>
-            <li>位置：台北市大安區</li>
-            <li>租金：每月 NT$ 25,000</li>
-            <li>面積：50 平方公尺</li>
-            <li>房型：2 房 1 廳 1 衛</li>
-        </ul>
-        <hr>
-        <div>限制：</div>
-        <hr>
-        <div>家具與服務：</div>
-    </div>
-
-    <!-- Google 地圖 -->
-    <div class="map-section">
-        <h2>Google 地圖</h2>
-        <div class="map-placeholder">這裡是 Google 地圖的佔位區</div>
-    </div>
-
-    <!-- 屋主介紹與簡介 -->
-    <div class="owner-section">
-        <div class="owner-description">
-            <h3>屋主對房屋的介紹</h3>
-            <p>這裡可以展示屋主對房屋的詳細描述，包含周圍環境和屋內設施的說明。</p>
-        </div>
-        <div class="owner-info">
-            <h3>屋主簡介</h3>
-            <p>屋主姓名：王小明</p>
-            <p>屋主電話：0987-654-321</p>
-            <button class="contact-button">預約房屋</button>
-        </div>
-    </div>
-
-    <!-- 評價與留言功能 -->
-    <div class="comments-section">
-        <h3>評價與留言</h3>
-        <p>此區域可顯示租客的評價和留言。</p>
-    </div>
-
-    <!-- 推薦房屋區域 -->
-    <div class="recommended-section">
-        <h3>推薦房屋列表</h3>
-        <div class="recommended-list">
-            <div class="recommended-item">推薦房屋1</div>
-            <div class="recommended-item">推薦房屋2</div>
-            <div class="recommended-item">推薦房屋3</div>
-        </div>
-    </div>
-
-    <!-- Footer 底部 -->
-    <div class="footer">
-        <p>&copy; 2024 租賃房屋網站. 版權所有.</p>
-    </div>
-</body>
-<script type="text/javascript">
-function getQueryParams() {
-    const params = {};
-    const queryString = window.location.search.substring(1);
-    const regex = /([^&=]+)=([^&]*)/g;
-    let m;
-
-    while (m = regex.exec(queryString)) {
-        params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
-    }
-    return params;
-}
-
-// On page load, retrieve houseId and use it
-window.onload = function() {
-    const params = getQueryParams();
-    const houseId = params.houseId;
-
-    if (houseId) {
-        // Use houseId for data retrieval
-        console.log("House ID:", houseId);
-        // Call your function to load data based on houseId
-        loadHouseData(houseId);
-    } else {
-        console.error("No house ID provided.");
-    }
-};
-
-// Example function to load house data
-function loadHouseData(houseId) {
-    // Make an AJAX call or similar method to retrieve data using houseId
-}
-</script>
-
-
+      export default {
+        components: {
+          Swiper,
+          SwiperSlide,
+        },
+        data() {
+          return {
+            images: [
+              'image1.jpg',
+              'image2.jpg',
+              'image3.jpg',
+              'image4.jpg',
+            ],
+            recommendedHouses: [
+              { id: 1, name: '推薦房屋1' },
+              { id: 2, name: '推薦房屋2' },
+              { id: 3, name: '推薦房屋3' },
+            ],
+          };
+        },
+        methods: {
+          contactOwner() {
+            alert('預約功能尚未實作！');
+          },
+        },
+      };
+      </script>
 </html>

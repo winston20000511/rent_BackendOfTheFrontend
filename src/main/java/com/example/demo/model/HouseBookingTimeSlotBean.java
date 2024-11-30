@@ -21,7 +21,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "houseBookingTimeSlot_tabel")
+@Table(name = "houseBookingTimeSlot_table")
 public class HouseBookingTimeSlotBean {
 
 	@Id
@@ -36,7 +36,7 @@ public class HouseBookingTimeSlotBean {
 	private Time toTime;
 	@Column(name = "duration")
 	private Short duration;
-	@Column(name = "week_day")
+	@Column(name = "weekDay")
 	private String weekDay;
 
 	@OneToOne(fetch = FetchType.LAZY)

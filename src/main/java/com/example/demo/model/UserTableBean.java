@@ -47,7 +47,14 @@ public class UserTableBean {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<HouseImageTableBean> images;
     
+<<<<<<< HEAD
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+=======
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<CollectTableBean> collect;
+    
+    @OneToMany(mappedBy = "user")
+>>>>>>> chen
     private List<AdBean> ads;
     
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
@@ -159,6 +166,22 @@ public class UserTableBean {
 
 	public void setImages(List<HouseImageTableBean> images) {
 		this.images = images;
+	}
+
+	public List<CollectTableBean> getCollect() {
+		return collect;
+	}
+
+	public void setCollect(List<CollectTableBean> collect) {
+		this.collect = collect;
+	}
+
+	public List<AdBean> getAds() {
+		return ads;
+	}
+
+	public void setAds(List<AdBean> ads) {
+		this.ads = ads;
 	}
 
 

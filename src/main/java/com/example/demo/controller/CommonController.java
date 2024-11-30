@@ -27,4 +27,11 @@ public class CommonController {
     public String login(Model model) {
         return "users/login"; // 渲染 src/main/resources/templates/users/login.html
     }
+
+    @GetMapping("/Collect")
+    public String collect(Model model) {
+        return "housecollect"; // 渲染 src/main/resources/templates/users/login.html
+    }
+    
 }
+
