@@ -37,16 +37,6 @@
       <table style="width: 100%">
         <tr>
           <td style="width: 50%">
-            <button
-              type="button"
-              class="btn btn-primary"
-              data-bs-toggle="modal"
-              data-bs-target="#insertModalPage"
-            >
-              新增員工記錄
-            </button>
-          </td>
-          <td style="width: 50%">
             <label class="form-label">篩選關鍵字:</label>
             <input
               type="text"
@@ -64,42 +54,77 @@
         table-class-name="customize-table"
         alternating
         :headers="headers"
-        :items="employees"
+        :items="houses"
         buttons-pagination
-        :rows-per-page="3"
+        :rows-per-page="10"
         :search-value="searchValue"
       >
         <template #loading>
           <img
-            src="https://i.pinimg.com/originals/94/fd/2b/94fd2bf50097ade743220761f41693d5.gif"
+            src="../static/preLoading.gif"
             style="width: 100px; height: 80px"
           />
         </template>
         <template #empty-message>
           <h5>未發現符合條件的記錄!</h5>
         </template>
-        <template #item-Name="{ EmployeeID, FirstName, LastName }">
-          <div class="player-wrapper">
-            <img class="avator img-fluid"
-            v-bind:src=`${baseAddress}/api/Employees/GetPhoto/${EmployeeID}?rand=${rand}`
-            v-bind:title="LastName" />
-            <p class="text-center">{{ FirstName + ' ' + LastName }}</p>
+        <template #item-Name="{ HouseID, Title,Price}">
+          <div class="house-photo-carousel" v-if="photos.length > 0">
+            <div class="carousel-container">
+              <div class="main-image">
+                <img 
+                  :src="currentPhoto" 
+                  :key="currentPhoto"
+                  class="img-fluid"
+                  alt="House Photo"
+                />
+              </div>
+              
+              <div class="thumbnail-navigation">
+                <button 
+                  @click="previousPhoto" 
+                  class="nav-button prev-button"
+                >
+                  &lt;
+                </button>
+                
+                <div class="thumbnails">
+                  <img 
+                    v-for="(photo, index) in photos" 
+                    :key="index"
+                    :src="photo"
+                    @click="selectPhoto(index)"
+                    :class="{ 'active': currentPhotoIndex === index }"
+                    class="thumbnail"
+                  />
+                </div>
+                
+                <button 
+                  @click="nextPhoto" 
+                  class="nav-button next-button"
+                >
+                  &gt;
+                </button>
+              </div>
+            </div>
+          </div>
+          <div v-else-if="loading" class="loading">
+            載入中...
+          </div>
+          <div v-else class="no-photos">
+            無可用照片
           </div>
         </template>
         <template #item-operation="item">
           <div class="operation-wrapper">
             <img
-              src="images/edit.png"
-              class="operation-icon"
-              @click="updateItem(item)"
-            />
-            <img
-              src="images/delete.png"
+              src="../static/delete-24.png"
               class="operation-icon"
               @click="deleteItem(item)"
             />
           </div>
         </template>
+        <!-- 下拉擴增是格式 -->
         <template #expand="item">
           <div style="padding: 15px">
             Address : {{item.Address + ' ' + item.City + ' ' + item.PostalCode +
@@ -107,483 +132,20 @@
           </div>
         </template>
       </easy-data-table>
-      <!--新增員工記錄的使用者介面 -->
-
-      <div
-        class="modal fade"
-        id="insertModalPage"
-        tabindex="-1"
-        data-bs-backdrop="static"
-        data-bs-keyboard="false"
-        role="dialog"
-        aria-labelledby="modalTitleId"
-        aria-hidden="true"
-      >
-        <div
-          class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg"
-          role="document"
-        >
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="modalTitleId">新增員工</h5>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div class="modal-body">
-              <div class="container">
-                <div class="mb-3">
-                  <label class="form-label">FirstName:</label>
-                  <input v-model="insertModel.FirstName" class="form-control" />
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">LastName:</label>
-                  <input v-model="insertModel.LastName" class="form-control" />
-                </div>
-                <div class="mb-3">
-                  <img
-                    class="img-fluid"
-                    id="insertPreview"
-                    src="images/NoImage.png"
-                    title="待上傳"
-                    style="width: 320px; width: 240px"
-                  />
-                  <input
-                    type="file"
-                    id="insertFile"
-                    class="form-control"
-                    v-on:change="insertFileChange($event.target)"
-                    accept="image/*"
-                  />
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Title:</label>
-                  <select v-model="insertModel.Title">
-                    <option v-for="title in titles" :value="title">
-                      {{ title }}
-                    </option>
-                  </select>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">BirthDate:</label>
-                  <input
-                    v-model="insertModel.BirthDate"
-                    type="date"
-                    class="form-control"
-                  />
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">HireDate:</label>
-                  <input
-                    v-model="insertModel.HireDate"
-                    type="date"
-                    class="form-control"
-                  />
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">City:</label>
-                  <input v-model="insertModel.City" class="form-control" />
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Country:</label>
-                  <input v-model="insertModel.Country" class="form-control" />
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">HomePhone:</label>
-                  <input v-model="insertModel.HomePhone" class="form-control" />
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Address:</label>
-                  <input v-model="insertModel.Address" class="form-control" />
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">PostalCode:</label>
-                  <input
-                    v-model="insertModel.PostalCode"
-                    class="form-control"
-                  />
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-info"
-                data-bs-dismiss="modal"
-              >
-                取消
-              </button>
-              <button
-                id="insert"
-                type="button"
-                class="btn btn-primary"
-                data-bs-dismiss="modal"
-                v-on:click="insertEmployee"
-              >
-                新增
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!--編輯員工記錄的使用者介面 -->
-      <div
-        class="modal fade"
-        id="editModalPage"
-        tabindex="-1"
-        data-bs-backdrop="static"
-        data-bs-keyboard="false"
-        role="dialog"
-        aria-labelledby="modalTitleId"
-        aria-hidden="true"
-      >
-        <div
-          class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg"
-          role="document"
-        >
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="modalTitleId">編輯員工</h5>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div class="modal-body">
-              <div class="container">
-                <div class="mb-3">
-                  <label class="form-label">FirstName:</label>
-                  <input v-model="updateModel.FirstName" class="form-control" />
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">LastName:</label>
-                  <input v-model="updateModel.LastName" class="form-control" />
-                </div>
-                <div class="mb-3">
-                  <img class="img-fluid" id="insertPreview"
-                  src=`${baseAddress}/api/Employees/GetPhoto/${updateModel.EmployeeID}?rand=${rand}`
-                  title="待上傳" style="width:320px;width:240px"/>
-                  <input
-                    type="file"
-                    id="editFile"
-                    class="form-control"
-                    v-on:change="editFileChange($event.target)"
-                    accept="image/*"
-                  />
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Title:</label>
-                  <select v-model="updateModel.Title">
-                    <option v-for="title in titles" :value="title">
-                      {{ title }}
-                    </option>
-                  </select>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">BirthDate:</label>
-                  <input
-                    v-model="updateModel.BirthDate"
-                    type="date"
-                    class="form-control"
-                  />
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">HireDate:</label>
-                  <input
-                    v-model="updateModel.HireDate"
-                    type="date"
-                    class="form-control"
-                  />
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">City:</label>
-                  <input v-model="updateModel.City" class="form-control" />
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Country:</label>
-                  <input v-model="updateModel.Country" class="form-control" />
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">HomePhone:</label>
-                  <input v-model="updateModel.HomePhone" class="form-control" />
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Address:</label>
-                  <input v-model="updateModel.Address" class="form-control" />
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">PostalCode:</label>
-                  <input
-                    v-model="updateModel.PostalCode"
-                    class="form-control"
-                  />
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-info"
-                data-bs-dismiss="modal"
-              >
-                取消
-              </button>
-              <button
-                id="update"
-                type="button"
-                class="btn btn-primary"
-                data-bs-dismiss="modal"
-                v-on:click="updateEmployee"
-              >
-                更新
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
+    <script type="module" src="js/CollectHouse.js"></script>
     <script
       src="https://code.jquery.com/jquery-3.7.1.min.js"
       integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
       crossorigin="anonymous"
     ></script>
     <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.0/axios.min.js"
-      integrity="sha512-WrdC3CE9vf1nBf58JHepuWT4x24uTacky9fuzw2g/3L9JkihgwZ6Cfv+JGTtNyosOhEmttMtEZ6H3qJWfI7gIQ=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    ></script>
-    <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
       integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
       crossorigin="anonymous"
     ></script>
-    <script src="https://unpkg.com/vue@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
     <script src="https://unpkg.com/vue3-easy-data-table"></script>
-    <script>
-      const vueApp = {
-        components: {
-          EasyDataTable: window["vue3-easy-data-table"],
-        },
-        data() {
-          return {
-            baseAddress: "http://localhost:8001",
-            headers: [
-              // { text: "EmployeeId", value: "EmployeeID", sortable: true, fixed: true },
-              { text: "Name", value: "Name", sortable: true, fixed: true },
-              { text: "Title", value: "Title", sortable: true },
-              {
-                text: "BirthDate",
-                value: "BirthDate",
-                sortable: true,
-                width: 100,
-              },
-              {
-                text: "HireDate",
-                value: "HireDate",
-                sortable: true,
-                width: 100,
-              },
-              { text: "City", value: "City", sortable: true },
-              { text: "Country", value: "Country", sortable: true },
-              { text: "HomePhone", value: "HomePhone", sortable: true },
-              { text: "編輯", value: "operation" },
-            ],
-            employees: [],
-            insertModel: {
-              FirstName: null,
-              LastName: null,
-              Title: null,
-              BirthDate: new Date().toISOString().split("T")[0],
-              HireDate: new Date().toISOString().split("T")[0],
-              City: null,
-              Country: null,
-              HomePhone: null,
-              Address: null,
-              PostalCode: null,
-            },
-            updateModel: {
-              EmployeeID: null,
-              FirstName: null,
-              LastName: null,
-              Title: null,
-              BirthDate: null,
-              HireDate: null,
-              City: null,
-              Country: null,
-              HomePhone: null,
-              Address: null,
-              PostalCode: null,
-            },
-            searchValue: "",
-            titles: [],
-            rand: 1,
-          };
-        },
-        methods: {
-          filterEmployees: async function () {
-            let _this = this;
-            var request = {};
-            request.EmployeeID =
-              isNaN(Number(_this.searchValue)) || _this.searchValue == ""
-                ? -1
-                : Number(_this.searchValue);
-            request.FirstName =
-              request.LastName =
-              request.Title =
-                _this.searchValue;
-            var response = await fetch(
-              `${_this.baseAddress}/api/Employees/filter`,
-              {
-                method: "POST",
-                body: JSON.stringify(request),
-                headers: {
-                  "content-type": "application/json",
-                },
-              }
-            );
-            var data = await response.json();
-            //alert(JSON.stringify(data));
-            _this.titles = [...new Set(data.map((obj) => obj.Title))]; //prepare distinct titles
-            _this.employees = data;
-          },
-          insertEmployee: async function () {
-            //alert("insert");
-            let _this = this;
-            var form = new FormData();
-            form.append("FirstName", _this.insertModel.FirstName);
-            form.append("LastName", _this.insertModel.LastName);
-            form.append(
-              "Photo",
-              document.querySelector("#insertFile").files[0]
-            );
-            form.append("Title", _this.insertModel.Title);
-            form.append("BirthDate", _this.insertModel.BirthDate);
-            form.append("HireDate", _this.insertModel.HireDate);
-            form.append("City", _this.insertModel.City);
-            form.append("Country", _this.insertModel.Country);
-            form.append("HomePhone", _this.insertModel.HomePhone);
-            form.append("Address", _this.insertModel.Address);
-            form.append("PostalCode", _this.insertModel.PostalCode);
-            var response = await fetch(`${_this.baseAddress}/api/Employees`, {
-              method: "POST",
-              body: form,
-            });
-            var data = await response.text();
-            alert(data);
-            _this.filterEmployees();
-            _this.insertModel.FirstName =
-              _this.insertModel.LastName =
-              _this.insertModel.Title =
-              _this.insertModel.BirthDate =
-              _this.insertModel.HireDate =
-              _this.insertModel.City =
-              _this.insertModel.Country =
-              _this.insertModel.HomePhone =
-              _this.insertModel.Address =
-              _this.insertModel.PostalCode =
-              document.querySelector("#insertFile").value =
-                "";
-            $("#insertPreview").attr("src", "images/NoImage.jpg");
-          },
-          updateEmployee: async function () {
-            //alert(`edit:${item.EmployeeID}`);
-            let _this = this;
-            var form = new FormData();
-            form.append("EmployeeID", _this.updateModel.EmployeeID);
-            form.append("FirstName", _this.updateModel.FirstName);
-            form.append("LastName", _this.updateModel.LastName);
-            form.append("Photo", document.querySelector("#editFile").files[0]);
-            form.append("Title", _this.updateModel.Title);
-            form.append("BirthDate", _this.updateModel.BirthDate);
-            form.append("HireDate", _this.updateModel.HireDate);
-            form.append("City", _this.updateModel.City);
-            form.append("Country", _this.updateModel.Country);
-            form.append("HomePhone", _this.updateModel.HomePhone);
-            form.append("Address", _this.updateModel.Address);
-            form.append("PostalCode", _this.updateModel.PostalCode);
-
-            var response = await fetch(`${_this.baseAddress}/api/Employees`, {
-              method: "PUT",
-              body: form,
-            });
-            var data = await response.text();
-            alert(data);
-            _this.rand = new Date().getTime();
-            _this.filterEmployees();
-          },
-          updateItem: function (item) {
-            //alert(`update:${item.EmployeeID}`);
-            let _this = this;
-            _this.updateModel = item;
-            _this.updateModel.BirthDate = item.BirthDate.split("T")[0];
-            _this.updateModel.HireDate = item.HireDate.split("T")[0];
-            $("#editModalPage").modal("show");
-          },
-          deleteItem: async function (item) {
-            //alert(`delete:${item.EmployeeID}`);
-            var ret = confirm("確定要刪除嗎?");
-            if (ret) {
-              let _this = this;
-              var response = await fetch(
-                `${_this.baseAddress}/api/Employees/${item.EmployeeID}`,
-                {
-                  method: "DELETE",
-                }
-              );
-              var data = await response.text();
-              alert(data);
-              _this.filterEmployees();
-            }
-          },
-          editFileChange: function (inputFile) {
-            //alert("editFileChange");
-            let _this = this;
-            this.readURL(
-              inputFile,
-              inputFile.previousElementSibling,
-              $("#update")
-            );
-          },
-          insertFileChange: function (inputFile) {
-            //alert("insertFileChange");
-            let _this = this;
-            this.readURL(
-              inputFile,
-              inputFile.previousElementSibling,
-              $("#insert")
-            );
-          },
-          readURL: function (inputFile, img, btn) {
-            if (inputFile.files && inputFile.files[0]) {
-              var allowType = "image.*";
-              if (inputFile.files[0].type.match(allowType)) {
-                var reader = new FileReader();
-                reader.onload = function (e) {
-                  img.src = e.target.result;
-                  img.title = inputFile.files[0].name;
-                };
-                reader.readAsDataURL(inputFile.files[0]);
-                btn.prop("disabled", false);
-              } else {
-                alert("不支援的檔案上傳格式!");
-                btn.prop("disabled", true);
-                inputFile.value = "";
-              }
-            }
-          },
-        },
-        mounted: async function () {
-          let _this = this;
-          _this.filterEmployees();
-        },
-      };
-      var app = Vue.createApp(vueApp).mount("#app");
-    </script>
+    
   </body>
 </html>

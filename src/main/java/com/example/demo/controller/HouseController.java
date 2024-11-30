@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,19 +18,24 @@ import com.example.demo.model.HouseImageTableBean;
 import com.example.demo.model.HouseTableBean;
 import com.example.demo.model.UserTableBean;
 import com.example.demo.service.HouseService;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/houses")
 public class HouseController {
 	@Autowired
 	private HouseService houseService;
 	
+	
+	
     @SuppressWarnings("unchecked")
-	@PostMapping("/addhouses")
+	@PostMapping("/add")
     public String addHouse(@RequestBody HouseDetailsDTO detail ) {
         // 在這裡處理接收到的數據，例如保存到資料庫
     	
@@ -92,4 +98,32 @@ public class HouseController {
        return "房屋資訊已成功儲存";
    }
     
+    
+    @GetMapping("/getPhotos/{houseId}")
+    public ResponseEntity<List<String>> getHousePhotos(@PathVariable Long houseId) {
+        List<String> base64Images = houseService.getHouseImagesByHouseId(houseId);
+        
+        if (base64Images.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        
+        return ResponseEntity.ok(base64Images);
+    }
+    
+    @GetMapping("/details/{houseId}")
+    public ResponseEntity<HouseDetailsDTO> getHouseDetails(@PathVariable Long houseId) {
+        HouseDetailsDTO houseDetails = houseService.getHouseDetails(houseId);
+        return ResponseEntity.ok(houseDetails);
+    }
+    
+    @DeleteMapping("/deleteCollecthouse/{houseId}")
+    public ResponseEntity<String> deleteCollectByHouseId(@PathVariable Long houseId) {
+        try {
+            houseService.deleteCollectByHouseId(houseId);
+            return ResponseEntity.ok("Collect data deleted successfully for houseId: " + houseId);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body("Failed to delete collect data: " + e.getMessage());
+        }
+    }
 }
