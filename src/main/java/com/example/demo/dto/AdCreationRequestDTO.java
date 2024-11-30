@@ -6,7 +6,7 @@ public class AdCreationRequestDTO {
 	
 	private Long houseId;
 	
-	private String adName;
+	private Integer adtypeId;
 	
 	private Integer adPrice;
 	
@@ -14,10 +14,10 @@ public class AdCreationRequestDTO {
 		
 	}
 
-	public AdCreationRequestDTO(Long userId, Long houseId, String adName, Integer adPrice) {
+	public AdCreationRequestDTO(Long userId, Long houseId, Integer adtypeId, Integer adPrice) {
 		this.userId = userId;
 		this.houseId = houseId;
-		this.adName = adName;
+		this.adtypeId = adtypeId;
 		this.adPrice = adPrice;
 	}
 
@@ -30,8 +30,8 @@ public class AdCreationRequestDTO {
 		return houseId;
 	}
 
-	public String getAdName() {
-		return adName;
+	public Integer getAdtypeId() {
+		return adtypeId;
 	}
 
 	public Integer getAdPrice() {

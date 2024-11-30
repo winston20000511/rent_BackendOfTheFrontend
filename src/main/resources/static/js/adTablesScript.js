@@ -36,10 +36,10 @@ function updateButtonStyles(clickedBtn) {
 /* 表格 */
 // 初始化表格
 export function initTable() {
-  const defualtBtn = paidAdsBtn;
-  updateButtonStyles(defualtBtn);
-  showSelectedTable(defualtBtn);
-  // 抓資料放進來
+    const defualtBtn = paidAdsBtn;
+    updateButtonStyles(defualtBtn);
+    showSelectedTable(defualtBtn);
+    // 抓資料放進來
 }
 
 // 顯示選定的表格
@@ -56,45 +56,37 @@ export function showSelectedTable(clickedBtn) {
 
   if (clickedBtn === paidAdsBtn) {
     paidAdTable.classList.remove("hidden");
-    
-    //測試資料
-    const searchCondition = {"userId" : userId, "isPaid" : isPaid};
-    const searchConditionJson = JSON.stringify(searchCondition);
+    isPaid = true;
+    // userId = 5; //測試資料
+    fetch(`http://localhost:8080/advertisements/tabledata/${userId}/${isPaid}/${pageNumber}`,{
+      method: "GET"
+    }).then(response=>{
+      return response.json();
+    }). then(tableDetails =>{
 
-    fetch(
-      `http://localhost:8080/advertisements/search`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: searchConditionJson,
+      const tbody = document.querySelector("#paid-ads-table tbody");
+
+      tbody.innerHTML = '';
+
+      if(tableDetails.length === 0){
+
+        const div = document.createElement("div");
+        div.classList.add("px-4", "py-2");
+        div.textContent = "查無資料";
+
+        tbody.appendChild(div);
+
+        return;
       }
-    )
-      .then((response) => {
-        return response.json();
-      })
-      .then((tableDetails) => {
-        const tbody = document.querySelector("#paid-ads-table tbody");
 
-        tbody.innerHTML = "";
+      tableDetails.forEach(rowdata=>{
 
-        if (tableDetails.length === 0) {
-          const div = document.createElement("div");
-          div.classList.add("px-4", "py-2");
-          div.textContent = "查無資料";
+        /*
+        const{adId, adName, adPrice, houseTitle, isPaid, orderId, paidDate, userId, userName} = tableDetails[0];
+        */
 
-          tbody.appendChild(div);
-
-          return;
-        }
-
-        tableDetails.forEach((rowdata) => {
-          /*
-          const{adId, adName, adPrice, houseTitle, isPaid, orderId, paidDate, userId, userName} = tableDetails[0];
-          */
-
-          const rowdataHTML = `
+        const rowdataHTML =
+        `
           <tr>
             <td class="ad-id px-4 py-2">${rowdata.adId}</td>
             <td class="text-left">
@@ -107,14 +99,14 @@ export function showSelectedTable(clickedBtn) {
                 查看
               </button>
             </td>
-          </tr>`;
+          </tr>`; 
 
           tbody.innerHTML += rowdataHTML;
-        });
-      })
-      .catch((error) => {
-        console.log(error);
       });
+
+    }).catch(error=>{
+      console.log(error);
+    });
   }
 
   if (clickedBtn === unPaidAdsBtn) {
@@ -123,39 +115,32 @@ export function showSelectedTable(clickedBtn) {
 
     // 測試資料
     userId = 50;
-    const searchCondition = {"userId" : userId, "isPaid" : isPaid};
-    const searchConditionJson = JSON.stringify(searchCondition);
 
-    fetch(
-      `http://localhost:8080/advertisements/search`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: searchConditionJson,
+    fetch(`http://localhost:8080/advertisements/tabledata/${userId}/${isPaid}/${pageNumber}`,{
+      method: "GET"
+    }).then(response=>{
+      return response.json();
+    }). then(tableDetails =>{
+
+      const tbody = document.querySelector("#unpaid-ads-table tbody");
+
+      tbody.innerHTML = '';
+
+      if(tableDetails.length === 0){
+
+        const div = document.createElement("div");
+        div.classList.add("px-4", "py-2");
+        div.textContent = "查無資料";
+
+        tbody.appendChild(div);
+
+        return;
       }
-    )
-      .then((response) => {
-        return response.json();
-      })
-      .then((tableDetails) => {
-        const tbody = document.querySelector("#unpaid-ads-table tbody");
 
-        tbody.innerHTML = "";
-
-        if (tableDetails.length === 0) {
-          const div = document.createElement("div");
-          div.classList.add("px-4", "py-2");
-          div.textContent = "查無資料";
-
-          tbody.appendChild(div);
-
-          return;
-        }
-
-        tableDetails.forEach((rowdata) => {
-          const rowdataHTML = `
+      let totalAmount = 0;
+      tableDetails.forEach(rowdata=>{
+        const rowdataHTML =
+        `
           <tr>
             <td class="ad-id px-4 py-2">${rowdata.adId}</td>
             <td>
@@ -172,313 +157,120 @@ export function showSelectedTable(clickedBtn) {
             </td>
             <td class="px-4 py-2 text-center"><input type="checkbox" /></td>
           </tr>`;
+          
+      totalAmount += rowdata.adPrice;
 
-          tbody.innerHTML += rowdataHTML;
-        });
+      tbody.innerHTML += rowdataHTML;
 
-        const checkBoxesElements = document.querySelectorAll(
-          "#unpaid-ads-table input[type='checkbox']"
-        );
-        let totalAmount = 0;
+    });
 
-        checkBoxesElements.forEach((checkbox) => {
-          checkbox.addEventListener("change", function () {
-            getCheckedBoxes();
-            totalAmount = getTotalAmonunt();
+    const totalAmountHTML = 
+    `
+      <tr>
+        <td class="px-4 py-2 text-right border-t border-gray-400" colspan="2">
+          總計
+        </td>
+        <td id="total-amount" class="px-4 py-2 text-right border-t border-gray-400">
+          ${totalAmount}
+        </td>
+        <td class="px-10 border-t border-gray-400 text-right" colspan="2">
+          <a id="buy-link" href="#">
+          前往下單
+          <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </td>
+      </tr>
+    `
 
-            let totalAmountRow = document.getElementById("total-amount-row");
+    tbody.innerHTML += totalAmountHTML;
+      
+    }).catch(error=>{
+      console.log(error);
+    });
 
-            if (getCheckedBoxes().length > 0) {
-              if (totalAmountRow) {
-                totalAmountRow.querySelector("#total-amount").textContent =
-                  totalAmount;
-              } else {
-                const totalAmountHTML = `
-              <tr id="total-amount-row">
-                <td class="px-4 py-2 text-right border-t border-gray-400" colspan="2">
-                  總計
-                </td>
-                <td id="total-amount" class="px-4 py-2 text-right border-t border-gray-400">
-                  ${totalAmount}
-                </td>
-                <td class="px-10 border-t border-gray-400 text-right" colspan="2">
-                  <a id="buy-link" href="http://localhost:8080/orders/confirmpage">
-                  前往下單
-                  <i class="fa-solid fa-arrow-right"></i>
-                  </a>
-                </td>
-              </tr>
-            `;
-                tbody.insertAdjacentHTML("beforeend", totalAmountHTML);
-              }
-            } else {
-              if (totalAmountRow) {
-                totalAmountRow.remove();
-              }
-            }
-
-            const adIds = getCheckedBoxes().map((checked) => checked.adId);
-
-            // 如何將選擇的ads送到下一頁??
-          });
-        });
-
-        function getCheckedBoxes() {
-          let check = [];
-          checkBoxesElements.forEach((checkbox) => {
-            if (checkbox.checked) {
-              const row = checkbox.closest("tr");
-              const adId = row.querySelector(".ad-id").textContent;
-              const adPrice = row.querySelector(".ad-price").textContent;
-              check.push({ adId: adId, adPrice: adPrice });
-            }
-          });
-
-          return check;
-        }
-
-        // 取得所選廣告的總價
-        function getTotalAmonunt() {
-          const checkedBoxes = getCheckedBoxes();
-          let total = 0;
-
-          checkedBoxes.forEach((box) => {
-            total += parseInt(box.adPrice) || 0;
-          });
-
-          return total;
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
   }
 
   if (clickedBtn === addAdBtn) {
     addAdTable.classList.remove("hidden");
+    isPaid = false;
+    userId = 5; //測試資料
+    fetch(`http://localhost:8080/advertisements/tabledata/${userId}/${isPaid}/${pageNumber}`,{
+      method: "GET"
+    }).then(response=>{
+      return response.json();
+    }). then(tableDetails =>{
+      console.log(tableDetails);
 
-    userId = 54; //測試資料
-    fetch(`http://localhost:8080/advertisements/noadhouses/${userId}`, {
-      method: "GET",
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((tableDetails) => {
-        const tbody = document.querySelector("#add-ad-table tbody");
+      const tbody = document.querySelector("#add-ad-table tbody");
 
-        tbody.innerHTML = "";
+      tbody.innerHTML = '';
 
-        if (tableDetails.length === 0) {
-          const div = document.createElement("div");
-          div.classList.add("px-4", "py-2");
-          div.textContent = "查無資料";
+      if(tableDetails.length === 0){
 
-          tbody.appendChild(div);
+        const div = document.createElement("div");
+        div.classList.add("px-4", "py-2");
+        div.textContent = "查無資料";
 
-          return;
-        }
+        tbody.appendChild(div);
 
-        tableDetails.forEach((rowdata) => {
-          const rowdataHTML = `  
-            <tr>
-              <td class="house-id px-4 py-2">
-                ${rowdata.houseId}
-              </td>
-              <td class="px-4 py-2 underline">
-                <a href="#">${rowdata.houseTitle}</a>
-              </td>
-              <td class="px-4 py-2">
-                <select name="ad-duration" class="ad-duration"></select>
-              </td>
-              <td class="selected-ad-price px-4 py-2 text-right"></td>
-              <td class="px-4 py-2 text-center">
-                <input type="checkbox" />
-              </td>
-            </tr>`;
+        return;
+      }
 
-          tbody.innerHTML += rowdataHTML;
-        });
+      let totalAmount = 0;
+      tableDetails.forEach(rowdata=>{
 
-        const selectElements = tbody.querySelectorAll(".ad-duration");
+        const rowdataHTML = 
+      `
+        <tr>
+          <td class="px-4 py-2">${rowdata.adId}</td>
+          <td class="px-4 py-2 underline">
+            <a href="#">${rowdata.houseTitle}</a>
+          </td>
+          <td class="px-4 py-2">
+            <select name="ad-duration" id="ad-duration">
+              <option>30天</option>
+              <option>60天</option>
+            </select>
+          </td>
+          <td class="px-4 py-2 text-right">300</td>
+          <td class="px-4 py-2 text-center"><input type="checkbox" /></td>
+        </tr>
+        <tr>
+          <td
+            class="text-right border border-t border-gray-300"
+            colspan="5"
+          >
+            <button
+              class="confirm-add-btn bg-blue-500 text-white py-2 px-4 rounded m-2 hover:bg-blue-300"
+            >
+              確認新增廣告
+            </button>
+          </td>
+        </tr>`;
 
-        let adtypes = [];
-        let adData = [];
-        let selectedAdDataMap = new Map();
+        tbody.innerHTML += rowdataHTML;
 
-        fetch("http://localhost:8080/advertisements/adtype", {
-          method: "GET",
-        })
-          .then((response) => {
-            return response.json();
-          })
-          .then((json) => {
-            const adJsonArray = JSON.parse(JSON.stringify(json));
-            adJsonArray.forEach((data) => {
-              /* adName, adPrice, adTypeId*/
-              adData.push(data);
-              adtypes.push(data.adName);
-            });
+        const selectElement = tbody.querySelector("select[name='ad-duration']");
 
-            selectElements.forEach((selectElement) => {
-              adtypes.forEach((adtype) => {
-                const optionElement = document.createElement("option");
-                optionElement.textContent = adtype;
-                optionElement.value = adtype;
-                selectElement.appendChild(optionElement);
-              });
+        console.log(selectElement); //OK
 
-              const row = selectElement.closest("tr");
+        // 將靜態<option>刪除
+        // fetch 取得天數
 
-              const adPriceElement = row.querySelector(".selected-ad-price");
-
-              adPriceElement.textContent = adData[0].adPrice;
-
-              selectElement.addEventListener("change", function () {
-                const adName =
-                  selectElement.options[selectElement.options.selectedIndex]
-                    .value;
-
-                const adPrice =
-                  adData.find((item) => item.adName === adName)?.adPrice || 0;
-                adPriceElement.textContent = adPrice;
-
-                const houseId = parseInt(
-                  row.querySelector(".house-id").textContent
-                );
-
-                if (selectedAdDataMap.has(houseId)) {
-                  selectedAdDataMap.set(houseId, {
-                    userId: userId,
-                    houseId: houseId,
-                    adName: adName,
-                    adPrice: adPrice,
-                  });
-                }
-
-                // console.log(
-                //   "select改變時選取的當前物件: ",
-                //   Array.from(selectedAdDataMap.values())
-                // );
-              });
-            });
-
-            tbody.addEventListener("change", function (event) {
-              event.stopPropagation();
-
-              const checkbox = event.target;
-
-              if (event.target && event.target.type === "checkbox") {
-                const row = checkbox.closest("tr");
-                const houseId = parseInt(
-                  row.querySelector(".house-id").textContent
-                );
-
-                if (checkbox.checked) {
-                  const adName = row.querySelector("select").value;
-                  const adPrice =
-                    adData.find((item) => item.adName === adName)?.adPrice || 0;
-
-                  selectedAdDataMap.set(houseId, {
-                    userId: userId,
-                    houseId: houseId,
-                    adName: adName,
-                    adPrice: adPrice,
-                  });
-                } else {
-                  selectedAdDataMap.delete(houseId);
-                }
-
-                // 顯示確認行
-                const checkedBoxes = tbody.querySelectorAll(
-                  "#add-ad-table input[type='checkbox']"
-                );
-                const anyChecked = Array.from(checkedBoxes).some(
-                  (checkbox) => checkbox.checked
-                );
-                const confirmRowHTML = document.getElementById("confirm-row");
-
-                if (anyChecked) {
-                  const confirmRow = `
-                    <tr id="confirm-row">
-                      <td class="text-right border border-t border-gray-300" colspan="5">
-                        <button type="button" id="confirm-add-btn" class="bg-blue-500 text-white py-2 px-4 rounded m-2 hover:bg-blue-300">
-                          確認新增廣告
-                        </button>
-                      </td>
-                    </tr>`;
-
-                  if (confirmRowHTML) {
-                    confirmRowHTML.outerHTML = confirmRow;
-                  } else {
-                    tbody.insertAdjacentHTML("beforeend", confirmRow);
-                  }
-                } else {
-                  if (confirmRowHTML) {
-                    confirmRowHTML.remove();
-                  }
-                }
-              }
-
-              // console.log(
-              //   "選取物件陣列: ",
-              //   Array.from(selectedAdDataMap.values())
-              // );
-            });
-
-            tbody.addEventListener("click", function (event) {
-              if (event.target.id === "confirm-add-btn") {
-                const selectedAdJson = JSON.stringify(
-                  Array.from(selectedAdDataMap.values())
-                );
-
-                /*
-                fetch("http://localhost:8080/advertisements/", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: selectedAdJson,
-                })
-                  .then((response) => {
-                    return response.json();
-                  })
-                  .then((isSuccess) => {
-                    console.log(isSuccess);
-                    if (isSuccess) {
-                      // 確認完要把加好的house row刪掉
-                      const removedHouseIds = [...selectedAdDataMap.keys()];
-
-                      const houseIdTd = document.querySelectorAll(
-                        "#add-ad-table .house-id"
-                      );
-
-                      houseIdTd.forEach((td) => {
-                        const houseId = parseInt(td.textContent);
-                        if (removedHouseIds.includes(houseId)) {
-                          td.closest("tr").classList.add("hidden");
-                        }
-                      });
-                    }
-                  })
-                  .catch((error) => {
-                    console.log(error);
-                  });
-                  */
-
-                }
-            });
-          })
-          .catch((error) => {
-            console.log(error);
-          });
       });
+
+    }).catch(error=>{
+      console.log(error);
+    });
   }
+
+
 }
 
 /* 設定表格事件 */
 // 訂單詳細 Modal
 export function getDetailByclickAdDetailBtn(onDetailButtonClick) {
+
   Object.values(tables).forEach((table) => {
     table.addEventListener("click", function (event) {
       event.stopPropagation();
@@ -487,40 +279,68 @@ export function getDetailByclickAdDetailBtn(onDetailButtonClick) {
       if (clickedBtn) {
         const row = clickedBtn.closest("tr");
         const adId = row.querySelector(".ad-id").textContent;
+        
+        console.log(adId);
 
         // 將adId傳給server
-        fetch(`http://localhost:8080/advertisements/details/${adId}`, {
-          method: "GET",
+        fetch(`http://localhost:8080/advertisements/details/${adId}`,{
+          method:"GET",
         })
-          .then((response) => {
-            return response.json();
-          })
-          .then((adDetails) => {
-            if (onDetailButtonClick) {
-              onDetailButtonClick(adDetails);
-            } else {
-              console.log("沒有callback: onDetailButtonClick");
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        .then(response =>{
+          return response.json();
+        })
+        .then(adDetails =>{
+          if(onDetailButtonClick){
+            onDetailButtonClick(adDetails);
+          }else{
+            console.log("沒有callback: onDetailButtonClick");
+          }
+        })
+        .catch(error =>{
+          console.log("fetch error: " + error);
+        });
+
       }
     });
   });
 }
 
-// 點擊確認按鈕 => 顯示成功的Modal
+// 顯示成功的Modal
 export function clickConfirmBtn(onclickConfirmButtonClick) {
+
   Object.values(tables).forEach((table) => {
     table.addEventListener("click", function (event) {
       event.stopPropagation();
-      const clickedBtn = event.target.closest("#confirm-add-btn");
+      const clickedBtn = event.target.closest(".confirm-add-btn");
 
-      if (clickedBtn) {
+      if(clickedBtn) {
         onclickConfirmButtonClick();
       }
-
     });
   });
 }
+
+
+/* 向後端請求資料 */
+// 1. 求廣告表格們的資料
+
+// function fetchTableDataByConditions(isPaid, pageNumber){
+//   fetch(`http://localhost:8080/advertisements/${userId}/${isPaid}/${pageNumber}`,{
+//     method: "GET"
+//   }).then(response=>{
+//     return response.json();
+//   }). then(tableDetails =>{
+//     console.log(tableDetails);
+
+//     // 顯示已付款廣告
+
+//     // 顯示未付款廣告
+
+//     // 顯示新增廣告
+
+//   }).catch(error=>{
+//     console.log(error);
+//   });
+// }
+
+// 2. 求廣告詳細資料(寫在Modal中)

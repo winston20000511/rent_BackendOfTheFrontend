@@ -20,7 +20,7 @@ public class AdtypeBean {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
-	private Integer adtypeId;
+	private Integer adTypeId;
 	
 	@Column(name = "adname")
 	private String adName;
@@ -29,18 +29,17 @@ public class AdtypeBean {
 	private Integer adPrice;
 	
 	@OneToMany(mappedBy = "adtype", fetch = FetchType.LAZY)
-	@JsonIgnore
 	private List<AdBean> ads;
 
 	public AdtypeBean() {
 	}
 
 	public Integer getAdTypeId() {
-		return adtypeId;
+		return adTypeId;
 	}
 
 	public void setAdTypeId(Integer adTypeId) {
-		this.adtypeId = adTypeId;
+		this.adTypeId = adTypeId;
 	}
 
 	public String getAdName() {

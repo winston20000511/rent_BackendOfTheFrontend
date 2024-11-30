@@ -1,7 +1,10 @@
 package com.example.demo.service;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import java.util.List;
+=======
+>>>>>>> parent of cba30fb (Merge branch 'seiya' into devlop)
 import java.util.Map;
 =======
 import java.util.Base64;
@@ -25,29 +28,29 @@ import com.example.demo.repository.HouseRepository;
 @Service
 public class HouseService {
 
+<<<<<<< HEAD
 	@Autowired
 <<<<<<< HEAD
 	private HouseRepository houseRepository;
+=======
+    @Autowired
+    private HouseRepository houseRepository;
+>>>>>>> parent of cba30fb (Merge branch 'seiya' into devlop)
 
-	public HouseDetailsDTO getHouseDetails(Long houseId) {
-		HouseTableBean house = houseRepository.findById(houseId).orElseThrow();
+    public HouseDetailsDTO getHouseDetails(Long houseId) {
+        HouseTableBean house = houseRepository.findById(houseId)
+                                     .orElseThrow();
 
-		HouseDetailsDTO houseDetailsDTO = new HouseDetailsDTO();
-		houseDetailsDTO.setHouseId(house.getHouseId());
+        HouseDetailsDTO houseDetailsDTO = new HouseDetailsDTO();
+        houseDetailsDTO.setHouseId(house.getHouseId());
 
-		return houseDetailsDTO;
-	}
 
-	public void addHouse(Map<String, String> params) {
-		HouseDetailsDTO house = new HouseDetailsDTO();
+        return houseDetailsDTO;
+    }
 
-		houseRepository.save(house);
-	}
 
-	public List<Map<String, Object>> findNoAdHousesByUserId(Long userId) {
-		return houseRepository.findNoAdHouses(userId);
-	}
 
+<<<<<<< HEAD
 =======
     private CollectRepository collectRepository;
 	@Autowired
@@ -131,3 +134,14 @@ public class HouseService {
 	    }
 >>>>>>> chen
 }
+=======
+   public void addHouse(Map<String, String> params) {
+            HouseDetailsDTO house = new HouseDetailsDTO();
+            
+
+            houseRepository.save(house);
+        }
+    }
+
+
+>>>>>>> parent of cba30fb (Merge branch 'seiya' into devlop)

@@ -1,9 +1,6 @@
 package com.example.demo.controller;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.dto.OrderResponseDTO;
-import com.example.demo.dto.OrderSearchRequestDTO;
 import com.example.demo.model.OrderBean;
 import com.example.demo.service.OrderService;
 
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/orders")
 public class OrderRestController {
 
 	private OrderService orderService;
@@ -31,20 +26,12 @@ public class OrderRestController {
 		this.orderService = orderService;
 	}
 	
-	// get orders by userId and pageNumber 測OK
-	@GetMapping("/{pageNumber}")
+	// get orders by userId and pageNumber
+	@GetMapping("/{userId}/{pageNumber}")
 	public ResponseEntity<?> findOrdersByUserIdAndPageNumber(
-			@PathVariable("pageNumber") Integer pageNumber){
+			@PathVariable("userId") Integer userId, @PathVariable("pageNumber") Integer pageNumber){
 		
-		// 測試資料
-		Long userId = 1L;
-		
-		if(pageNumber == null) pageNumber = 1;
 		List<OrderBean> orders = orderService.findOrdersByUserIdAndPageNumber(userId, pageNumber);
-		
-		for(OrderBean order : orders) {
-			System.out.println(order.getMerchantTradNo());
-		}
 		return ResponseEntity.ok(orders);
 		
 		/*
@@ -69,34 +56,13 @@ public class OrderRestController {
 		 */
 	}
 	
-	@PostMapping("/filter") // 之後加pageNumber
-	public List<OrderResponseDTO> filterOrders(@RequestBody Map<String, String> selectedConditions){
-		OrderSearchRequestDTO requestDTO = new OrderSearchRequestDTO();
-		Long userId = 2L; //測試資料
-		String status = selectedConditions.get("status");
-		String condition = selectedConditions.get("condition");
-		String input = selectedConditions.get("input");
-
-		requestDTO.setUserId(userId);
-		requestDTO.setOrderStatus(status);
-		
-		switch(condition) {
-			case "merchantTradNo":
-				requestDTO.setMerchantTradNo(input); break;
-			case "period":
-				String[] dates = input.split(" to ");
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                requestDTO.setStartDate(LocalDateTime.parse(dates[0], formatter));
-                requestDTO.setEndDate(LocalDateTime.parse(dates[1], formatter));
-                break;
-			case "houseTitle":
-				requestDTO.setHouseTitle(input);
-				break;
-		}
-		
-		return orderService.findOrdersByConditions(requestDTO);
+	// get orders by user id and merchantTradNo
+	@GetMapping("/merchantTradNo/{userId}/{merchantTradNo}")
+	public List<OrderBean> findOrdersByUserIdAndMerchantTradNo(
+			@PathVariable("userId") Integer userId, @PathVariable("merchantTradNo") String merchantTradNo){
+		List<OrderBean> orders = orderService.findOrdersByUserIdAndMerchantTradNo(userId, merchantTradNo);
+		return orders;
 	}
-	
 	
 	// create a new order
 	@PostMapping

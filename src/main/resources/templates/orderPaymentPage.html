@@ -1,18 +1,58 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org/">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rent house</title>
-    <link rel="stylesheet" href="/css/styles.css">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@^2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-</head>
-<body>
-	<div th:replace="~{layout/navbar}"></div>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MY ORDER</title>
+    <link rel="stylesheet" href="../static/css/styles.css" />
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@^2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <ul class="nav-left">
+        <li><a href="#">Buy</a></li>
+        <li class="link"><a href="#">Rent</a></li>
+      </ul>
+
+      <ul class="list" id="list-left-1">
+        <a href="#" class="list-item">item 1</a>
+        <a href="#" class="list-item">item 2</a>
+        <a href="#" class="list-item">item 3</a>
+        <a href="#" class="list-item">item 4</a>
+      </ul>
+
+      <div class="nav-middle">
+        <img src="../static/Logo3.jpg" alt="" />
+
+        <div class="nav-title">
+          <h1>house</h1>
+        </div>
+      </div>
+      <div class="nav-right">
+        <li><a href="#">Manage Rentals</a></li>
+        <li><a href="#">Advertise</a></li>
+        <li><a href="#">Help</a></li>
+        <li><a href="#">Sign In</a></li>
+      </div>
+    </header>
 
     <div
         id="my-ad-title"

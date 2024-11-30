@@ -11,12 +11,11 @@ import com.example.demo.helper.GoogleApiConfig;
 @Controller
 public class CommonController {
 	
-<<<<<<< HEAD
+
 	@Autowired
 	private GoogleApiConfig googleApiConfig;
 	
-=======
->>>>>>> origin/OK
+
 	@GetMapping("/")
 	public String home(Model model) {
 		

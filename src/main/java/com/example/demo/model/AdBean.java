@@ -46,23 +46,15 @@ public class AdBean {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="adtype_id", insertable=false, updatable=false)
-	@JsonIgnore
 	private AdtypeBean adtype;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", insertable = false, updatable = false)
-	@JsonIgnore
 	private UserTableBean user;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="house_id", insertable=false, updatable=false)
-	@JsonIgnore
 	private HouseTableBean house;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="order_id", insertable=false, updatable=false)
-	@JsonIgnore
-	private OrderBean order;
 
 	public AdBean() {
 	}
@@ -147,20 +139,5 @@ public class AdBean {
 		this.house = house;
 	}
 
-	public UserTableBean getUser() {
-		return user;
-	}
-
-	public void setUser(UserTableBean user) {
-		this.user = user;
-	}
-
-	public OrderBean getOrder() {
-		return order;
-	}
-
-	public void setOrder(OrderBean order) {
-		this.order = order;
-	}
 	
 }
