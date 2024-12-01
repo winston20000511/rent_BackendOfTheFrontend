@@ -60,11 +60,16 @@ public class UserController {
 		} else {
 			model.addAttribute("errorMsg", "帳密錯誤");
 			return "loginView";
+<<<<<<< Updated upstream
 		}}
     }
 		
+=======
+>>>>>>> Stashed changes
 		
+		}
 		
+    }}
 	
 	
 
