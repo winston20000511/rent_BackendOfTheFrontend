@@ -7,10 +7,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-<<<<<<< HEAD
-=======
 import com.example.demo.dto.BookingSlotDTO;
->>>>>>> origin/OK
 import com.example.demo.model.HouseBookingTimeSlotBean;
 import com.example.demo.repository.BookingRepository;
 import com.example.demo.repository.BookingTimeSlotRepository;
