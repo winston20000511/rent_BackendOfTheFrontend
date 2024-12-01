@@ -1,7 +1,10 @@
 package com.example.demo.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.net.URI;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import com.example.demo.model.UserTableBean;
 import com.example.demo.service.UserService;
+
+import jakarta.servlet.http.HttpSession;
 
 
 @RestController
@@ -38,26 +43,27 @@ public class UserController {
 
     // 根據 email 查詢使用者
     @GetMapping("/email/{email}")
-    public ResponseEntity<UserTableBean> getUserByEmail(@PathVariable String email) {
-        return userService.getUserByEmail(email)
-                .map(ResponseEntity::ok)  // 若找到，返回 200 OK
-                .orElseGet(() -> ResponseEntity.status(404).build());  // 若未找到，返回 404 Not Found
-		UserTableBean result = userService.checkLogin(username, password);
-		
-		
-		if (result != null) {
-			httpSession.setAttribute("loginUserId", result.getUserId());
-			httpSession.setAttribute("loginUsername", result.getName());
-			httpSession.setAttribute("loginUserEmail", result.getEmail());
-			
-			model.addAttribute("loginOkMsg", "登入成功");
+    public ResponseEntity<String> getUserByEmail(@PathVariable String email, String username, String password, HttpSession httpSession, Model model) {
+        Optional<UserTableBean> user = userService.getUserByEmail(email);
+        
+        if (user.isPresent()) {
+            UserTableBean result = userService.checkLogin(username, password);
+            
+            if (result != null) {
+                httpSession.setAttribute("loginUserId", result.getUserId());
+                httpSession.setAttribute("loginUsername", result.getName());
+                httpSession.setAttribute("loginUserEmail", result.getEmail());
+                
+                return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("/")).build();  // Redirect to homepage
+            } else {
+                model.addAttribute("errorMsg", "帳密錯誤");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("帳密錯誤");
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("用戶未找到");
+        }
+    }}
 
-			return "redirect:/";
-			
-		} else {
-			model.addAttribute("errorMsg", "帳密錯誤");
-			return "loginView";
-		}}}
 		
 		
 		

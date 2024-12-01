@@ -82,5 +82,10 @@ public class UserService {
     public Optional<UserTableBean> getUserByEmail1(String email) {
         return userRepository.findByEmail(email);
     }
+
+	public UserTableBean checkLogin(String username, String password) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
 
