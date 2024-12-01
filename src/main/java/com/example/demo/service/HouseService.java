@@ -1,16 +1,8 @@
 package com.example.demo.service;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-import java.util.List;
-=======
->>>>>>> parent of cba30fb (Merge branch 'seiya' into devlop)
-import java.util.Map;
-=======
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
->>>>>>> chen
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,30 +20,7 @@ import com.example.demo.repository.HouseRepository;
 @Service
 public class HouseService {
 
-<<<<<<< HEAD
 	@Autowired
-<<<<<<< HEAD
-	private HouseRepository houseRepository;
-=======
-    @Autowired
-    private HouseRepository houseRepository;
->>>>>>> parent of cba30fb (Merge branch 'seiya' into devlop)
-
-    public HouseDetailsDTO getHouseDetails(Long houseId) {
-        HouseTableBean house = houseRepository.findById(houseId)
-                                     .orElseThrow();
-
-        HouseDetailsDTO houseDetailsDTO = new HouseDetailsDTO();
-        houseDetailsDTO.setHouseId(house.getHouseId());
-
-
-        return houseDetailsDTO;
-    }
-
-
-
-<<<<<<< HEAD
-=======
     private CollectRepository collectRepository;
 	@Autowired
 	private HouseRepository houseRepository;
@@ -132,16 +101,4 @@ public class HouseService {
 	 public void deleteCollectByHouseId(Long houseId) {
 	        collectRepository.deleteByHouseId(houseId);
 	    }
->>>>>>> chen
 }
-=======
-   public void addHouse(Map<String, String> params) {
-            HouseDetailsDTO house = new HouseDetailsDTO();
-            
-
-            houseRepository.save(house);
-        }
-    }
-
-
->>>>>>> parent of cba30fb (Merge branch 'seiya' into devlop)
