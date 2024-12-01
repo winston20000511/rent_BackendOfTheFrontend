@@ -21,8 +21,6 @@ public class BookingService {
 	@Autowired
 	public BookingTimeSlotRepository timeSlotRepo;
 
-	@Autowired
-	private JavaMailSender mailSender;
 
 	public BookingSlotDTO findTimeSlotByHouseId(Long houseId) {
 		Optional<HouseBookingTimeSlotBean> op = timeSlotRepo.findById(houseId);
@@ -41,7 +39,7 @@ public class BookingService {
 		message.setSubject(subject);
 		message.setText(body);
 		message.setFrom("your-email@example.com");
-		mailSender.send(message);
+
 	}
 
 	private BookingSlotDTO convertToDTO(HouseBookingTimeSlotBean bean) {
