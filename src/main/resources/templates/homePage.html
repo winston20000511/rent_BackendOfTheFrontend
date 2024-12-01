@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org/">
+<html lang="en" data-bs-theme="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,39 +12,79 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
 </head>
+
 <body>
-	<div th:replace="~{layout/navbar}"></div>
+    <header id="header">
+        <ul class="nav-left">
+            <li><a href="#">Buy</a></li>
+            <li class="link"><a href="#">Rent</a></li>
+        </ul>
+
+        <ul class="link-list" id="link-list-1">
+            <a href="#" class="list-item">item 1</a>
+            <a href="#" class="list-item">item 2</a>
+            <a href="#" class="list-item">item 3</a>
+            <a href="#" class="list-item">item 4</a>
+        </ul>
+
+        <div class="nav-middle">
+            <img src="/img/Logo3.jpg" alt="">
+
+            <div class="nav-title">
+                <h1>house</h1>
+            </div>
+
+        </div>
+        <div class="nav-right">
+            <li><a href="#">Manage Rentals</a></li>
+            <li><a href="#">Advertise</a></li>
+            <li><a href="#">Help</a></li>
+            <div th:if="!${session.loginUserId}">
+                <a th:href="@{/users/login}">Sign In</a>
+            </div>
+
+            <div th:if="${session.loginUserId}">
+                我是: <span th:text="${session.loginUsername}"></span>
+            </div>
+        </div>
+    </header>
+
     <div class="filter" id="filter">
         <div class="filter-left">
-            <input type="text" placeholder="Address, neighborhood, city, ZIP" id="search">
-            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" placeholder="Address, neighborhood, city, ZIP" id="search"> <i
+                class="fa-solid fa-magnifying-glass"></i>
         </div>
         <ul class="absolute left-0 w-full mt-1 bg-white border border-gray-300 rounded shadow-lg" id="searchList"></ul>
         <div class="filter-right">
-            <button class="filter-btn bg-white text-black font-bold py-2 px-4 rounded hover:bg-gray-100 border border-blue-700" id="filter-btn-1" >
-                Price
-                <i class="fa-solid fa-angle-down"></i>
+            <button
+                class="filter-btn bg-white text-black font-bold py-2 px-4 rounded hover:bg-gray-100 border border-blue-700"
+                id="filter-btn-1">
+                Price <i class="fa-solid fa-angle-down"></i>
             </button>
-            <button class="filter-btn bg-white text-black font-bold py-2 px-4 rounded hover:bg-gray-100 border border-blue-700">
-                HomeType
-                <i class="fa-solid fa-angle-down"></i>
+            <button
+                class="filter-btn bg-white text-black font-bold py-2 px-4 rounded hover:bg-gray-100 border border-blue-700">
+                HomeType <i class="fa-solid fa-angle-down"></i>
             </button>
         </div>
         <ul class="btn-list" id="btn-list-1">
-            <li>Price Range</li><hr>
-            <li>Minimum<input type="text" class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6" placeholder="請輸入數字 .."></li>
+            <li>Price Range</li>
+            <hr>
+            <li>Minimum<input type="text"
+                    class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
+                    placeholder="請輸入數字 .."></li>
         </ul>
     </div>
-	
+
     <main class="main">
         <div id="map"></div>
-        <div class="main-right bg-white p-1 custom-left-shadow w-160" id="mRight" >
+        <div class="main-right bg-white p-1 custom-left-shadow w-160" id="mRight">
             <div id="card-container" class="container mx-auto p-4 grid grid-cols-1 md:grid-cols-2 gap-6">
-                
+
             </div>
         </div>
     </main>
 
+<<<<<<< HEAD
     <footer>
 
     </footer>
@@ -54,5 +95,24 @@
     <script th:src="'https://maps.googleapis.com/maps/api/js?key=' + ${googleApiKey} + '&callback=initMap&v=weekly&libraries=marker,places'" async defer></script>
     <script src="https://unpkg.com/animejs@3.2.1/lib/anime.min.js"></script>
     
+=======
+    <footer> </footer>
+    <script type="module" src="/js/index.js"></script>
+    <script src="https://unpkg.com/animejs@3.2.1/lib/anime.min.js"></script>
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB74YfHLENToX6YpaEoKASZnhaZdqIio2s&callback=GoogleApiJs.initMap&v=weekly&libraries=marker,places"
+        async defer></script>
+
+    <script type="text/javascript">
+        function bookingPage(houseId) {
+            window.location.href = "/booking/house/" + houseId;
+        }
+
+        function editSlot(houseId) {
+            window.location.href = "/booking/timeSlot/" + houseId;
+        }
+    </script>
+>>>>>>> origin/OK
 </body>
+
 </html>

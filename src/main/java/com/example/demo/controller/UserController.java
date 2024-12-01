@@ -1,8 +1,15 @@
 package com.example.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+
 
 import com.example.demo.model.UserTableBean;
 import com.example.demo.service.UserService;
@@ -14,6 +21,7 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
 
     // 註冊使用者的功能
     @PostMapping("/register")
@@ -34,5 +42,25 @@ public class UserController {
         return userService.getUserByEmail(email)
                 .map(ResponseEntity::ok)  // 若找到，返回 200 OK
                 .orElseGet(() -> ResponseEntity.status(404).build());  // 若未找到，返回 404 Not Found
-    }
-}
+		UserTableBean result = userService.checkLogin(username, password);
+		
+		
+		if (result != null) {
+			httpSession.setAttribute("loginUserId", result.getUserId());
+			httpSession.setAttribute("loginUsername", result.getName());
+			httpSession.setAttribute("loginUserEmail", result.getEmail());
+			
+			model.addAttribute("loginOkMsg", "登入成功");
+
+			return "redirect:/";
+			
+		} else {
+			model.addAttribute("errorMsg", "帳密錯誤");
+			return "loginView";
+		}}
+		
+		
+		
+	
+	
+

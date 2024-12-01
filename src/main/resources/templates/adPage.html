@@ -1,19 +1,54 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org/">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rent house</title>
-    <link rel="stylesheet" href="/css/styles.css">
-    <link rel="stylesheet" href="/css/adAndOrderFront.css">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@^2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-</head>
-<body>
-	<div th:replace="~{layout/navbar}"></div>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MY AD</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@^2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/adAndOrderFront.css" />
+  </head>
+  <body>
+    <header id="header">
+      <ul class="nav-left">
+        <li><a href="#">Buy</a></li>
+        <li class="link"><a href="#">Rent</a></li>
+      </ul>
+
+      <ul class="link-list" id="link-list-1">
+        <a href="#" class="list-item">item 1</a>
+        <a href="#" class="list-item">item 2</a>
+        <a href="#" class="list-item">item 3</a>
+        <a href="#" class="list-item">item 4</a>
+      </ul>
+
+      <div class="nav-middle">
+        <img src="/img/Logo3.jpg" alt="" />
+
+        <div class="nav-title">
+          <h1>house</h1>
+        </div>
+      </div>
+      <div class="nav-right">
+        <li><a href="#">Manage Rentals</a></li>
+        <li><a href="#">Advertise</a></li>
+        <li><a href="#">Help</a></li>
+        <li><a href="#">Sign In</a></li>
+      </div>
+    </header>
 
     <aside class="border-black">
       <div
@@ -96,7 +131,7 @@
         >
           <thead>
             <tr>
-              <th class="px-4 py-2 bg-gray-200 text-left">房屋編號</th>
+              <th class="px-4 py-2 bg-gray-200 text-left">廣告編號</th>
               <th class="px-4 py-2 bg-gray-200 text-left">查看房屋</th>
               <th class="px-4 py-2 bg-gray-200 text-left">廣告方案</th>
               <th class="px-4 py-2 bg-gray-200 text-right">廣告價格</th>
@@ -153,42 +188,30 @@
           </h3>
           <div class="m-4 overflow-auto h-[calc(100%-6rem)]">
             <table class="border border-gray-400 w-full">
-              <tbody id="ad-details-body" class="text-center">
+              <thead class="bg-gray-200">
                 <tr>
-                  <th class="bg-gray-200 w-1/4">廣告編號</th>
-                  <td></td>
+                  <th class="px-4 py-2">廣告編號</th>
+                  <th class="px-4 py-2">房屋標題</th>
+                  <th class="px-4 py-2">廣告種類</th>
+                  <th class="px-4 py-2">廣告金額</th>
+                  <th class="px-4 py-2">付款狀態</th>
+                  <th class="px-4 py-2">訂單號碼</th>
+                  <th class="px-4 py-2">付款日期</th>
                 </tr>
-                <tr>
-                  <th class="bg-gray-200 w-1/4">房屋標題</th>
-                  <td></td>
+              </thead>
+              <tbody id="ad-details-body">
+                <tr class="text-center">
+                  <td>廣告編號</td>
+                  <td>房屋標題</td>
+                  <td>廣告種類</td>
+                  <td>廣告金額</td>
+                  <td>付款狀態</td>
+                  <td>訂單號碼</td>
+                  <td>付款日期</td>
                 </tr>
-                <tr>
-                  <th class="bg-gray-200 w-1/4">廣告種類</th>
-                  <td></td>
-                </tr>
-                <tr>
-                  <th class="bg-gray-200 w-1/4">廣告金額</th>
-                  <td></td>
-                </tr>
-                <tr>
-                  <th class="bg-gray-200 w-1/4">付款狀態</th>
-                  <td></td>
-                </tr>
-                <tr>
-                  <th class="bg-gray-200 w-1/4">訂單號碼</th>
-                  <td></td>
-                </tr>
-                <tr>
-                  <th class="bg-gray-200 w-1/4">付款日期</th>
-                  <td></td>
-                </tr>
-                <tr>
-                  <th class="bg-gray-200 w-1/4">起訖日期</th>
-                  <td></td>
-                </tr>
-            </tbody>
-          </table>
-        </div>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </main>

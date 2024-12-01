@@ -1,21 +1,19 @@
-
-/* 初始化 table */
-initDataTable();
-
-function initDataTable(){
-  getAllOrders();
-}
-
-
 /* 上排搜尋條件的按鈕 */
-const conditionBtnsGroup1 = Array.from(document.querySelectorAll(".condition-btn-group1"));
-const conditionBtnsGroup2 = Array.from(document.querySelectorAll(".condition-btn-group2"));
-const dropdownMenuItems = Array.from(document.querySelectorAll(".menu-item"));
-const menuBtn = document.getElementById("menu-button");
+const conditionBtns = document.querySelectorAll(".condition-btn");
 
+const allOrdersBtn = document.getElementById("all-orders-btn");
+const aliveOrdersBtn = document.getElementById("alive-orders-btn");
+const canceledOrdersBtn = document.getElementById("canceled-orders-btn");
+const menuBtn = document.getElementById("menu-button");
 
 /* 使用者輸入搜尋條件的輸入框 */
 const searchInput = document.getElementById("search-input");
+
+/* 搜尋條件 - 下拉式選單選項 */
+const menuItems = document.querySelectorAll(".menu-item");
+const menuItemMerchantTradNo = document.getElementById("menu-item-marchantTradNo");
+const menuItemDatePicker = document.getElementById("menu-item-datetimepicker");
+const menuItemHouseTitle = document.getElementById("menu-item-houseTitle");
 
 /* 處理下單選單 - 以其他方式搜尋 */
 const dropdownButton = document.getElementById("menu-button");
@@ -35,283 +33,139 @@ document.addEventListener("click", function (event) {
   }
 });
 
-const selectedConditions = {
-  status: "allAds",
-  condition: null,
-  input: null,
-}
+/* 讀取上排按鈕們 */
+conditionBtns.forEach((button) => {
+  button.addEventListener("click", function () {
+    conditionBtns.forEach((btn) => btn.classList.remove("bg-blue-700"));
 
-// 初始化監聽事件
-initListeners();
+    conditionBtns.forEach((btn) => btn.classList.add("bg-blue-500"));
 
-function initListeners(){
-  initBtnListeners(conditionBtnsGroup1, "group1");
-  initBtnListeners(conditionBtnsGroup2, "group2");
-  initDropMenuListeners(dropdownMenuItems);
-}
+    this.classList.add("bg-blue-700");
 
-function initBtnListeners(buttons, group){
-  buttons.forEach((button) =>{
-    button.addEventListener("click", function(){
-      handleButtonSelection(this, group);
-      applyFilters();
-    });
+    if(this != menuBtn){
+        menuBtn.innerHTML='其他搜尋方式 <i class="fa-solid fa-arrow-down py-1"></i>';
+        searchInput.classList.add("hidden");
+    }
   });
-}
+});
 
-function initDropMenuListeners(menuItems){
-  menuItems.forEach((item) =>{
-    item.addEventListener("click", function(){
-      const searchCondition = item.value;
-      handleDropdownSelection(searchCondition);
-    });
-  });
-}
+/* 處理下拉選單的細部操作 */
+dropdownMenu.addEventListener("click", function (event) {
+    event.stopPropagation();
 
-function handleButtonSelection(button, group){
-  let buttons = group === "group1"? conditionBtnsGroup1 : conditionBtnsGroup2;
+    dropdownMenu.classList.add("hidden");
 
-  removeBtnColor(buttons);
+    if(searchInput.id == "date-input"){
+        searchInput.id="search-input";
+        searchInput._flatpickr.destroy();
+    }
 
-  if(group === "group1"){
-    selectedConditions.status = button.value;
-  }
-  
-  button.classList.add("bg-blue-700");
-}
+    if(event.target.closest("#menu-item-marchantTradNo")){
+        getMerchantTradeInput(event);
+    }
 
-// 按鈕除色
-function removeBtnColor(buttons) {
-  buttons.forEach((button) => {
-    button.classList.remove("bg-blue-700");
-    button.classList.add("bg-blue-500");
-  });
-}
+    if(event.target.closest("#menu-item-datetimepicker")){
+        getDateTimeInput(event);
+    }
 
-function handleDropdownSelection(condition){
-  showInputElements(condition);
-  selectedConditions.condition = condition;
+    if(event.target.closest("#menu-item-houseTitle")){
+        getHouseTitleInput(event);
+    }
 
-  searchInput.removeEventListener("input", handleInputChange);
-
-  searchInput.addEventListener("input", handleInputChange);
-}
-
-function handleInputChange(event) {
-  event.stopPropagation();
-  const input = event.target.value;
-  selectedConditions.input = input;
-  // console.log("handleDropdownSelection: ", selectedConditions);
-}
-
-function applyFilters(){
-  // const {status, condition, input} = selectedConditions;
-
-  console.log("filter: ", selectedConditions);
-
-  filterOrders(selectedConditions);
-}
-
-// 取得所有訂單的資料
-function getAllOrders() {
-
-  // 測試資料
-  let pageNumber = 1;
-
-    fetch(
-      `http://localhost:8080/api/orders/${pageNumber}`,
-      { 
-        method: "GET",
-      }
-    ).then((response) => {
-      return response.json();
-    }).then((orders) =>{
-
-      /* {userId, merchantId, merchantTradNo, merchantTradDate, totalAmount, tradeDesc, itemName, orderStatus, returnUrl, choosePayment, checkMacValue} */
-
-      if(orders.length === 0){
-        const tbody = document.querySelector("#paid-list-table tbody");
-        tbody.innerHTML = "";
-        row = 
-          `<tbody>
-            <tr>
-              <td class="px-4 py-2">查無資料</td>
-            </tr>
-          </tbody>`;
-          tbody.innerHTML += row;
-
-        return;
-      }
-
-      const tbody = document.querySelector("#paid-list-table tbody");
-      tbody.innerHTML = "";
-
-      for (let i = 0; i < orders.length; i++) {
-
-        // 之後放去DTO計算
-        const orderDate = orders[0].merchantTradDate.substring(0,10);
-        const orderStatus = orders[0].orderStatus === 0? "已取消" : "一般訂單";
-
-        row = 
-        `<tbody>
-          <tr>
-            <td class="px-4 py-2">${orders[i].merchantTradNo}</td>
-            <td class="px-4 py-2">
-              <ul>
-                <li>動態新增訂單內容物</li>
-                <li>至多兩物件</li>
-              </ul>
-            </td>
-            <td class="px-4 py-2">${orderDate}</td>
-            <td class="px-4 py-2">${orderStatus}</td>
-            <td class="px-4 py-2 text-center">
-              <button
-                  id = "check-detail-btn"
-                  type="button"
-                  class="bg-blue-500 rounded text-white w-16 py-2 hover:bg-blue-300">
-                  查看
-              </button></td>
-          </tr>
-        </tbody>`;
-        tbody.innerHTML += row;
-      }
-    })
-    .catch((error) =>{
-      console.log(error);
-    });
-}
-
-// 以訂單狀態搜尋
-function filterOrders(){
-
-  // const selectedConditions = {
-  //   status: "allAds",
-  //   condition: null,
-  //   input: null,
-  // }
-
-  // 搜尋送資料有問題
-  
-  const selectedConditionsJson = JSON.stringify(selectedConditions);
-  
-  // 測試資料
-  // const pageNumber = 1;
-  // const searchCondition = {
-  //   "userId" : "1",
-  //   "status" : "active",
-  //   "merchantTradNo" : null,
-  //   "startDate" : null,
-  //   "endDate" : null,
-  //   "houseTitle" : "租屋網@1"
-  // }
-  // const searchConditionJson = JSON.stringify(searchCondition);
-
-  fetch("http://localhost:8080/api/orders/filter",{
-    method: "POST",
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: selectedConditionsJson,
-  })
-  .then((response) =>{
-    return response.json();
-  })
-  .then((json) =>{
-    console.log(json);
-  })
-  .catch((error) =>{
-    console.log(error);
-  });
-  
-}
+});
 
 
-/* 下拉選單選項 */
-function showInputElements(condition){
-
-  if (searchInput.flatpickrInstance) {
-    searchInput.flatpickrInstance.destroy();
-    delete searchInput.flatpickrInstance;
-  }
-
-  if(condition === "merchantTradNo"){
-    menuBtn.innerHTML =
-    '以訂單號碼搜尋 <i class="fa-solid fa-arrow-down py-1"></i>';
-
-    searchInput.classList.remove("hidden");
-
-    searchInput.value = "";
-    searchInput.placeholder = "請輸入訂單編號";
-  }
-
-  if(condition === "period"){
-    menuBtn.innerHTML =
-    '以時間搜尋 <i class="fa-solid fa-arrow-down py-1"></i>';
-
-    searchInput.classList.remove("hidden");
-
-    searchInput.value = "";
-    searchInput.id = "date-input";
-
-    searchInput.placeholder = "請選擇想查詢的時間區段";
-
-    const flatpickrInstance = flatpickr("#date-input", {
-      mode: "range",
-      time_24hr: true,
-      dateFormat: "Y-m-d",
-      onChange: function (period) {
-        if (period.length === 2) {
-          const startDate = period[0];
-          const endDate = period[1];
-          const searchInputValue = `${startDate.toISOString()} to ${endDate.toISOString()}`;
-          console.log("Selected range:", searchInputValue);
+function getMerchantTradeInput(event){
+    if (!event.target.contains(dropdownMenu)) {
+        if (event.target.contains(menuItemMerchantTradNo)) {
+          menuBtn.innerHTML =
+            '以訂單號碼搜尋 <i class="fa-solid fa-arrow-down py-1"></i>';
+    
+          searchInput.classList.remove("hidden");
+    
+          searchInput.placeholder = "請輸入訂單編號";
         }
-      },
-    });
-
-    searchInput.flatpickrInstance = flatpickrInstance;
-
-  }
-
-  if(condition === "houseTitle"){
-    menuBtn.innerHTML =
-    '以房屋標題搜尋 <i class="fa-solid fa-arrow-down py-1"></i>';
-
-    searchInput.classList.remove("hidden");
-
-    searchInput.value = "";
-    searchInput.placeholder = "請輸入房屋標題";
-  }
-
-  if(condition === "none"){
-    menuBtn.innerHTML =
-    '不設條件 <i class="fa-solid fa-arrow-down py-1"></i>';
-    searchInput.classList.add("hidden");
-  }
+    }
 }
 
+function getDateTimeInput(event){
+    if (event.target.contains(menuItemDatePicker)) {
+        menuBtn.innerHTML =
+          '以時間搜尋 <i class="fa-solid fa-arrow-down py-1"></i>';
+  
+        searchInput.classList.remove("hidden");
+  
+        searchInput.id = "date-input";
+  
+        searchInput.placeholder = "請選擇想查詢的時間區段";
+  
+        let searchInputValue = "";
+  
+        function getSearchInputValue(){
+          return new Promise((response) => {
+              flatpickr("#date-input", {
+                  mode: "range",
+                  time_24hr: true,
+                  dateFormat: "Y-m-d",
+                  onChange: function (period) {
+                    if(period.length==2){
+                      const startDate = period[0];
+                      const endDate = period[1];
+  
+                      searchInputValue =`${startDate.toISOString()} to ${endDate.toISOString()}}`;
+  
+                      response(searchInputValue);
+                    }
+                  },
+                });
+          });
+        }
+  
+        getSearchInputValue().then(response =>{
+          const jsonString = JSON.stringify(response);
+          /* jsonString:
+          2024-11-15T16:00:00.000Z to 2024-11-16T16:00:00.000Z} */
+        });     
+  
+    }
+}
+
+function getHouseTitleInput(event){
+    if (event.target.contains(menuItemHouseTitle)) {
+        menuBtn.innerHTML =
+        '以房屋標題搜尋 <i class="fa-solid fa-arrow-down py-1"></i>';
+
+      searchInput.classList.remove("hidden");
+
+      searchInput.placeholder = "請輸入房屋標題";
+    }
+}
 
 
 /* 訂單內容 modal */
-/*
 const checkDetailBtn = document.getElementById("check-detail-btn");
 const modal = document.getElementById("modal");
 const modalBackground = document.getElementById("modal-background");
 
-checkDetailBtn.addEventListener("click", function () {
+checkDetailBtn.addEventListener("click", function(){
   modal.classList.remove("hidden");
   toggleModalBackground();
 });
 
-modal.addEventListener("click", function (event) {
-  if (event.target.id === "close-modal-btn") {
+modal.addEventListener("click", function(event){
+  if(event.target.id === "close-modal-btn"){
     modal.classList.add("hidden");
     toggleModalBackground();
   }
 });
 
-function toggleModalBackground() {
-  modalBackground.classList.toggle("overlay");
-  modalBackground.classList.toggle("hidden");
+function toggleModalBackground(){
+  console.log(modalBackground.classList)
+  if(modalBackground.classList.contains("hidden")){
+    modalBackground.classList.add("overlay");
+    modalBackground.classList.remove("hidden");
+  }else if(!modalBackground.classList.contains("hidden")){
+    modalBackground.classList.remove("overlay");
+    modalBackground.classList.add("hidden");
+  }
 }
-*/

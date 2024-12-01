@@ -1,0 +1,60 @@
+      .house-photo-carousel {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      
+      .main-image {
+        width: 100%;
+        height: 400px;
+        overflow: hidden;
+        margin-bottom: 10px;
+      }
+      
+      .main-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      
+      .thumbnail-navigation {
+        display: flex;
+        align-items: center;
+      }
+      
+      .thumbnails {
+        display: flex;
+        overflow-x: auto;
+        gap: 10px;
+        flex-grow: 1;
+      }
+      
+      .thumbnail {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        cursor: pointer;
+        opacity: 0.6;
+        transition: opacity 0.3s;
+      }
+      
+      .thumbnail.active, 
+      .thumbnail:hover {
+        opacity: 1;
+        border: 2px solid blue;
+      }
+      
+      .nav-button {
+        background: rgba(0,0,0,0.5);
+        color: white;
+        border: none;
+        padding: 10px;
+        margin: 0 5px;
+        cursor: pointer;
+      }
+      
+      .no-photos, .loading {
+        text-align: center;
+        padding: 20px;
+        color: gray;
+      }
+ 

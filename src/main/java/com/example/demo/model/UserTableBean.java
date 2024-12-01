@@ -47,11 +47,19 @@ public class UserTableBean {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<HouseImageTableBean> images;
     
+<<<<<<< HEAD
+<<<<<<< HEAD
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<AdBean> ads;
+=======
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<CollectTableBean> collect;
     
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<OrderBean> orders;
+    @OneToMany(mappedBy = "user")
+>>>>>>> chen
+=======
+    @OneToMany(mappedBy = "user")
+>>>>>>> parent of cba30fb (Merge branch 'seiya' into devlop)
+    private List<AdBean> ads;
     
     public UserTableBean() {
     	
@@ -159,6 +167,22 @@ public class UserTableBean {
 
 	public void setImages(List<HouseImageTableBean> images) {
 		this.images = images;
+	}
+
+	public List<CollectTableBean> getCollect() {
+		return collect;
+	}
+
+	public void setCollect(List<CollectTableBean> collect) {
+		this.collect = collect;
+	}
+
+	public List<AdBean> getAds() {
+		return ads;
+	}
+
+	public void setAds(List<AdBean> ads) {
+		this.ads = ads;
 	}
 
 
