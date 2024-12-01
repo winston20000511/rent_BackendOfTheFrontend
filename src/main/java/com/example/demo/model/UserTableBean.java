@@ -50,12 +50,13 @@ public class UserTableBean {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<CollectTableBean> collect;
     
+
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<AdBean> ads;
-    
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<OrderBean> orders;
-    
+     private List<AdBean> ads;
+     
+     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+     private List<OrderBean> orders;
+     
     public UserTableBean() {
     	
     }
