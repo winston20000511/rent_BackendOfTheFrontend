@@ -77,4 +77,4 @@ secrets.yml
 node_modules
 
 googleapikey.properties
-src/main/resources/application.properties
+
