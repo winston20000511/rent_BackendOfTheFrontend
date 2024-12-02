@@ -1,7 +1,9 @@
 package com.example.demo.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,8 @@ import com.example.demo.model.AdBean;
 import com.example.demo.model.AdtypeBean;
 import com.example.demo.repository.AdRepository;
 import com.example.demo.repository.AdtypeRepository;
+
+import jakarta.persistence.Tuple;
 
 @Service
 public class AdService {
@@ -32,12 +36,11 @@ public class AdService {
 	/* CRUD */
 	
 	// get ads by user id and page
-<<<<<<< HEAD
-	public List<AdBean> findAdsByUserIdAndIsPaidAndPage(Long userId, Boolean isPaid, Integer pageNumber){
-		Pageable pageable = PageRequest.of(pageNumber-1, 10, Sort.Direction.DESC, "adId");
-		List<AdBean> ads = adRepository.findAdsByUserIdAndIsPaidAndPage(userId, isPaid, pageable);
-		return ads;
-	}
+//	public List<AdBean> findAdsByUserIdAndIsPaidAndPage(Long userId, Boolean isPaid, Integer pageNumber){
+//		Pageable pageable = PageRequest.of(pageNumber-1, 10, Sort.Direction.DESC, "adId");
+//		List<AdBean> ads = adRepository.findAdsByUserIdAndIsPaidAndPage(userId, isPaid, pageable);
+//		return ads;
+//	}
 	
 	// create a new ad
 	public AdBean createAd(AdCreationRequestDTO adCreationRequestDTO) {
@@ -58,7 +61,6 @@ public class AdService {
 		return adRepository.save(adBean);
 	}
 	
-=======
 	public List<AdDetailsResponseDTO> findAdsByUserIdAndIsPaidAndPage(Long userId, Boolean isPaid, Integer pageNumber){
 		Pageable pageable = PageRequest.of(pageNumber-1, 10, Sort.Direction.DESC, "adId");
 		List<AdBean> ads = adRepository.findAdsByUserIdAndIsPaidAndPage(userId, isPaid, pageable);
@@ -88,19 +90,22 @@ public class AdService {
 			adBean.setIsPaid(false);
 			adBean.setUserId(dto.getUserId());
 			adBean.setHouseId(dto.getHouseId());
-			List<Tuple> results = adtypeRepository.findAdtypeIdAndPriceByadtype(dto.getAdName());
+			Optional<AdtypeBean> adtypes = adtypeRepository.findById(dto.getAdtypeId());
 			
-			Map<String, Integer> adtypeMap = new HashMap<>();
-			for(Tuple tuple : results) {
-				Integer adtypeId = tuple.get(0, Integer.class);
-				Integer adPrice = tuple.get(1, Integer.class);
-				
-				adtypeMap.put("adtypeId", adtypeId);
-				adtypeMap.put("adPrice", adPrice);
-			}
+			adBean.setAdtypeId(dto.getAdtypeId());
 			
-			adBean.setAdtypeId(adtypeMap.get("adtypeId"));
-			adBean.setAdPrice(adtypeMap.get("adPrice"));
+			adBean.setAdPrice(adtypes.get().getAdPrice());
+			
+//			Map<String, Integer> adtypeMap = new HashMap<>();
+//			for(Tuple tuple : results) {
+//				Integer adPrice = tuple.get(1, Integer.class);
+//				
+//				adtypeMap.put("adtypeId", dto.getAdtypeId());
+//				adtypeMap.put("adPrice", adPrice);
+//			}
+//			
+//			adBean.setAdtypeId(adtypeMap.get("adtypeId"));
+//			adBean.setAdPrice(adtypeMap.get("adPrice"));
 			
 			adRepository.save(adBean);
 		}
@@ -108,7 +113,6 @@ public class AdService {
 		return true;
 	}
 	
->>>>>>> parent of 5ca4084 (2024-11-30 update)
 	// udpate the adtype of an ad by ad id
 	public AdBean updateAdtypeById(Long adId, Integer newAdtypeId) {
 		

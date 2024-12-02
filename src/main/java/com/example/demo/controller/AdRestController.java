@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,25 +18,26 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.dto.AdCreationRequestDTO;
 import com.example.demo.dto.AdDetailsResponseDTO;
 import com.example.demo.model.AdBean;
+import com.example.demo.model.AdtypeBean;
 import com.example.demo.service.AdService;
-
-import jakarta.servlet.http.HttpSession;
+import com.example.demo.service.HouseService;
 
 @RestController
 @RequestMapping("/advertisements")
 public class AdRestController {
 
 	private AdService adService;
+	private HouseService houseService;
 
 	@Autowired
-	public AdRestController(AdService adService) {
+	public AdRestController(AdService adService, HouseService houseService) {
 		this.adService = adService;
+		this.houseService = houseService;
 	}
 	
-<<<<<<< HEAD
 	// get ads by user id and is paid and page
 	@GetMapping("/{userId}/{isPaid}/{pageNumber}")
-	public List<AdBean> findAdsBydAndIsPaidAndPage(
+	public List<AdDetailsResponseDTO> findAdsBydAndIsPaidAndPage(
 			@PathVariable("userId") Long userId,
 			//HttpSession session,
 			@PathVariable("isPaid") Boolean isPaid,
@@ -45,7 +47,6 @@ public class AdRestController {
 		return adService.findAdsByUserIdAndIsPaidAndPage(userId, isPaid, pageNumber);
 	}
 	
-=======
 	/* read */
 	// get ads by user id and is paid and page
 	@PostMapping("/search")
@@ -67,7 +68,7 @@ public class AdRestController {
 	// get houses that do not have ads
 	@GetMapping("/noadhouses/{userId}")
 	public List<Map<String,Object>> findNoAdHouses(@PathVariable("userId") Long userId){
-		return houseService.findNoAdHouses(userId);
+		return houseService.findNoAdHousesByUserId(userId);
 	}
 	
 	// get the ad type information
@@ -77,7 +78,6 @@ public class AdRestController {
 	}
 	
 	
->>>>>>> parent of 5ca4084 (2024-11-30 update)
 	// create a new ad
 	@PostMapping
 	public AdBean ceateAd(@RequestBody AdCreationRequestDTO adCreationRequestDTO) {
