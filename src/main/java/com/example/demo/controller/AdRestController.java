@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,42 +18,46 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.dto.AdCreationRequestDTO;
 import com.example.demo.dto.AdDetailsResponseDTO;
 import com.example.demo.model.AdBean;
+import com.example.demo.model.AdtypeBean;
 import com.example.demo.service.AdService;
-
-import jakarta.servlet.http.HttpSession;
+import com.example.demo.service.HouseService;
 
 @RestController
 @RequestMapping("/advertisements")
 public class AdRestController {
 
 	private AdService adService;
+	private HouseService houseService;
 
 	@Autowired
-	public AdRestController(AdService adService) {
+	public AdRestController(AdService adService, HouseService houseService) {
 		this.adService = adService;
+		this.houseService = houseService;
 	}
 	
-	// get ads by user id and is paid and page
-	@GetMapping("/{userId}/{isPaid}/{pageNumber}")
-	public List<AdBean> findAdsBydAndIsPaidAndPage(
-			@PathVariable("userId") Long userId,
-			//HttpSession session,
-			@PathVariable("isPaid") Boolean isPaid,
-			@PathVariable("pageNumber") Integer pageNumber) {
-//		Long loginUserId = (Long)session.getAttribute("loginUserId");
-//		loginUserId = (long) 5; //先測試
-		return adService.findAdsByUserIdAndIsPaidAndPage(userId, isPaid, pageNumber);
+
+	@GetMapping("/noadhouses/{userId}")
+	public List<Map<String,Object>> findNoAdHousesByUserId(@PathVariable("userId") Long userId){
+		return houseService.findNoAdHousesByUserId(userId);
 	}
 	
-	// create a new ad
+	
+	@GetMapping("/adtype")
+	public List<AdtypeBean> findAdType() {
+		return adService.findAllAdType();
+	}
+	
+	
 	@PostMapping
-	public AdBean ceateAd(@RequestBody AdCreationRequestDTO adCreationRequestDTO) {
-		return adService.createAd(adCreationRequestDTO);
+	public boolean createAds(@RequestBody List<AdCreationRequestDTO> adCreationRequestDTOs) {
+		return adService.createAds(adCreationRequestDTOs);
 	}
 	
-	// update an ad by ad id
 	@PutMapping("/{adId}/{newAdtypeId}")
 	public ResponseEntity<?> updateAdtypeById(@PathVariable("adId") Long adId, @PathVariable("newAdtypeId") Integer newAdtypeId) {
+		
+		// 會員登入驗證
+		
 		System.out.println(newAdtypeId);
 		AdBean updatedAd = adService.updateAdtypeById(adId, newAdtypeId);
 		if(updatedAd == null) {
@@ -71,8 +76,8 @@ public class AdRestController {
 	}
 	
 	
+	
 	/* DTO: get ad details */
-	// get an ad by ad id
 	@GetMapping("/details/{adId}")
 	public AdDetailsResponseDTO findAdsByAdId(@PathVariable("adId") Long adId) {
 		AdDetailsResponseDTO adDetails = adService.findAdDetailsByAdId(adId);
@@ -80,12 +85,21 @@ public class AdRestController {
 		return adDetails;
 	}
 	
-	@GetMapping("/tabledata/{userId}/{isPaid}/{pageNumber}")
+	
+	@PostMapping("/search")
 	public List<AdDetailsResponseDTO> findAdTableDataByAdIdAndIsPaid(
-			@PathVariable("userId") Long userId,
-			@PathVariable("isPaid") Boolean isPaid,
-			@PathVariable("pageNumber") Integer pageNumber){
+			@RequestBody Map<String, Object> filter //, HttpSession session
+			){
+		
+		//		Long loginUserId = (Long)session.getAttribute("loginUserId");
+
+		Long userId = Long.valueOf(((Integer)filter.get("userId")).longValue());
+		Boolean isPaid = (Boolean)filter.get("isPaid");
+		Integer pageNumber = (Integer)filter.get("pageNumber")==null? 1 : (Integer)filter.get("pageNumber");
+		System.out.println(filter);
+		
 		List<AdDetailsResponseDTO> dtos = adService.findAdTableDataByUserIdAndIsPaid(userId, isPaid, pageNumber);
+		
 		return dtos;
 	}
 	
