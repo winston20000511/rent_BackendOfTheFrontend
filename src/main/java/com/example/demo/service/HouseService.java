@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,4 +102,7 @@ public class HouseService {
 	 public void deleteCollectByHouseId(Long houseId) {
 	        collectRepository.deleteByHouseId(houseId);
 	    }
+		public List<Map<String, Object>> findNoAdHousesByUserId(Long userId) {
+			return houseRepository.findNoAdHouses(userId);
+		}
 }

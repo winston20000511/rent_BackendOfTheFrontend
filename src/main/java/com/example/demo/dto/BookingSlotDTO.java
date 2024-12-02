@@ -4,7 +4,6 @@ import java.sql.Date;
 import java.sql.Time;
 
 import lombok.Data;
-
 @Data
 public class BookingSlotDTO {
 	private Long houseId;
