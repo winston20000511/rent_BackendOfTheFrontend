@@ -32,6 +32,7 @@ public class AdRestController {
 		this.adService = adService;
 	}
 	
+<<<<<<< HEAD
 	// get ads by user id and is paid and page
 	@GetMapping("/{userId}/{isPaid}/{pageNumber}")
 	public List<AdBean> findAdsBydAndIsPaidAndPage(
@@ -44,6 +45,39 @@ public class AdRestController {
 		return adService.findAdsByUserIdAndIsPaidAndPage(userId, isPaid, pageNumber);
 	}
 	
+=======
+	/* read */
+	// get ads by user id and is paid and page
+	@PostMapping("/search")
+	public List<AdDetailsResponseDTO> findAdsBydAndIsPaidAndPage(
+			@RequestBody Map<String, Object> filter
+			//, HttpSession session
+			) {
+		
+//		Long loginUserId = (Long)session.getAttribute("loginUserId");
+		
+		Long userId = Long.valueOf(((Integer)filter.get("userId")).longValue());
+		Boolean isPaid = (Boolean)filter.get("isPaid");
+		Integer pageNumber = (Integer)filter.get("pageNumber")==null? 1 : (Integer)filter.get("pageNumber");
+		System.out.println(filter);
+		
+		return adService.findAdsByUserIdAndIsPaidAndPage(userId, isPaid, pageNumber);
+	}
+	
+	// get houses that do not have ads
+	@GetMapping("/noadhouses/{userId}")
+	public List<Map<String,Object>> findNoAdHouses(@PathVariable("userId") Long userId){
+		return houseService.findNoAdHouses(userId);
+	}
+	
+	// get the ad type information
+	@GetMapping("/adtype")
+	public List<AdtypeBean> findAdType() {
+		return adService.findAllAdType();
+	}
+	
+	
+>>>>>>> parent of 5ca4084 (2024-11-30 update)
 	// create a new ad
 	@PostMapping
 	public AdBean ceateAd(@RequestBody AdCreationRequestDTO adCreationRequestDTO) {

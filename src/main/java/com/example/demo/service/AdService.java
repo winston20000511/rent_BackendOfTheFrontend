@@ -32,6 +32,7 @@ public class AdService {
 	/* CRUD */
 	
 	// get ads by user id and page
+<<<<<<< HEAD
 	public List<AdBean> findAdsByUserIdAndIsPaidAndPage(Long userId, Boolean isPaid, Integer pageNumber){
 		Pageable pageable = PageRequest.of(pageNumber-1, 10, Sort.Direction.DESC, "adId");
 		List<AdBean> ads = adRepository.findAdsByUserIdAndIsPaidAndPage(userId, isPaid, pageable);
@@ -57,6 +58,57 @@ public class AdService {
 		return adRepository.save(adBean);
 	}
 	
+=======
+	public List<AdDetailsResponseDTO> findAdsByUserIdAndIsPaidAndPage(Long userId, Boolean isPaid, Integer pageNumber){
+		Pageable pageable = PageRequest.of(pageNumber-1, 10, Sort.Direction.DESC, "adId");
+		List<AdBean> ads = adRepository.findAdsByUserIdAndIsPaidAndPage(userId, isPaid, pageable);
+		
+		List<AdDetailsResponseDTO> detailList = new ArrayList<>();
+		for(AdBean ad : ads) {
+			AdDetailsResponseDTO detail = new AdDetailsResponseDTO();
+			detail.setAdId(ad.getAdId());
+			detail.setHouseTitle(ad.getHouse().getTitle());
+			detail.setAdPrice(ad.getAdPrice());
+			detailList.add(detail);
+		}
+		
+		return detailList;
+	}
+	
+	// get all ad types
+	public List<AdtypeBean> findAllAdType(){
+		return adtypeRepository.findAll();
+	}
+	
+	// create a new ad
+	public boolean createAds(List<AdCreationRequestDTO> adCreationRequestDTOs) {
+		
+		for(AdCreationRequestDTO dto : adCreationRequestDTOs) {
+			AdBean adBean = new AdBean();
+			adBean.setIsPaid(false);
+			adBean.setUserId(dto.getUserId());
+			adBean.setHouseId(dto.getHouseId());
+			List<Tuple> results = adtypeRepository.findAdtypeIdAndPriceByadtype(dto.getAdName());
+			
+			Map<String, Integer> adtypeMap = new HashMap<>();
+			for(Tuple tuple : results) {
+				Integer adtypeId = tuple.get(0, Integer.class);
+				Integer adPrice = tuple.get(1, Integer.class);
+				
+				adtypeMap.put("adtypeId", adtypeId);
+				adtypeMap.put("adPrice", adPrice);
+			}
+			
+			adBean.setAdtypeId(adtypeMap.get("adtypeId"));
+			adBean.setAdPrice(adtypeMap.get("adPrice"));
+			
+			adRepository.save(adBean);
+		}
+		
+		return true;
+	}
+	
+>>>>>>> parent of 5ca4084 (2024-11-30 update)
 	// udpate the adtype of an ad by ad id
 	public AdBean updateAdtypeById(Long adId, Integer newAdtypeId) {
 		

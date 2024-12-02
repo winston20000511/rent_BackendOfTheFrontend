@@ -47,6 +47,7 @@ public class UserTableBean {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<HouseImageTableBean> images;
     
+<<<<<<< HEAD
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<CollectTableBean> collect;
     
@@ -57,6 +58,11 @@ public class UserTableBean {
      @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
      private List<OrderBean> orders;
      
+=======
+    @OneToMany(mappedBy = "user")
+    private List<AdBean> ads;
+    
+>>>>>>> parent of 5ca4084 (2024-11-30 update)
     public UserTableBean() {
     	
     }
