@@ -83,9 +83,15 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-	public UserTableBean checkLogin(String username, String password) {
-		// TODO Auto-generated method stub
-		return null;
+    public Optional<UserTableBean> checkLoginOK(String userEmail, String loginPwd) {
+		Optional<UserTableBean> dbUsers = userRepository.findByEmail(userEmail);
+		
+		if (dbUsers.isPresent()) {
+			 if(dbUsers.get().getPassword().equals(loginPwd)) {
+				 return dbUsers;
+			 }
+		}
+		return Optional.empty();
 	}
 }
 

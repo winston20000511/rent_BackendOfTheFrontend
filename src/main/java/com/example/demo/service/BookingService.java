@@ -4,13 +4,15 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.BookingSlotDTO;
 import com.example.demo.model.HouseBookingTimeSlotBean;
+import com.example.demo.model.HouseTableBean;
+import com.example.demo.model.UserTableBean;
 import com.example.demo.repository.BookingRepository;
 import com.example.demo.repository.BookingTimeSlotRepository;
+import com.example.demo.repository.HouseRepository;
 
 @Service
 public class BookingService {
@@ -20,8 +22,10 @@ public class BookingService {
 
 	@Autowired
 	public BookingTimeSlotRepository timeSlotRepo;
-
-
+	
+	@Autowired
+	private HouseRepository houseRepository;
+	
 	public BookingSlotDTO findTimeSlotByHouseId(Long houseId) {
 		Optional<HouseBookingTimeSlotBean> op = timeSlotRepo.findById(houseId);
 		return op.map(this::convertToDTO).orElse(null);
@@ -42,6 +46,8 @@ public class BookingService {
 
 	}
 
+	
+	
 	private BookingSlotDTO convertToDTO(HouseBookingTimeSlotBean bean) {
 		BookingSlotDTO dto = new BookingSlotDTO();
 		dto.setHouseId(bean.getHouseId());
@@ -52,5 +58,19 @@ public class BookingService {
 		dto.setDuration(bean.getDuration());
 		dto.setWeekDay(bean.getWeekDay());
 		return dto;
+	}
+	
+	public boolean confirm(Long houseId, Long userId) {
+		Optional<HouseTableBean> house = houseRepository.findById(houseId);
+
+		if (house.isPresent()) {
+			UserTableBean landlord = house.get().getUser();
+
+			if (landlord != null) {
+				return landlord.getUserId().equals(userId);
+			}
+		}
+
+		return false;
 	}
 }

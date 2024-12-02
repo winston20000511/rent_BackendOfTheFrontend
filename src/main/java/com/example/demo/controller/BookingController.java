@@ -14,25 +14,37 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.example.demo.dto.BookingSlotDTO;
 import com.example.demo.model.HouseBookingTimeSlotBean;
 import com.example.demo.service.BookingService;
+import com.example.demo.service.HouseService;
 
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class BookingController {
 	
+	
 	@Autowired
 	private BookingService bookingService;
 	
+	
+	
 	@GetMapping("/booking/house/{id}")
-	public String bookingPage(@PathVariable("id") Integer houseId) {
+	public String bookingPage(@PathVariable("id") Long houseId) {
 		return "bookingPage";
 	}
 	
 	@GetMapping("/booking/timeSlot/{id}")
-	public String editTimeSlot(@PathVariable("id") Integer houseId) {
+	public String toTimeSlot(@PathVariable("id") Long houseId, HttpSession session) {
+		Long userId = (Long)session.getAttribute("loginUserId");
+		if(userId==null) {
+			return "loginView";
+		}
 		
+		boolean confirm = bookingService.confirm(houseId, userId);
+		if(confirm) {
+			return "bookingTimeSlotView";
+		}
 		
-		return "bookingTimeSlotView";
+		return "redirect:/";
 	}
 	
 	@GetMapping("/api/booking/add")
