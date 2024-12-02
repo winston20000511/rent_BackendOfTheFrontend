@@ -1,7 +1,10 @@
 package com.example.demo.service;
 
+<<<<<<< HEAD
 import java.util.Base64;
 import java.util.List;
+=======
+>>>>>>> parent of 5ca4084 (2024-11-30 update)
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -21,6 +24,7 @@ import com.example.demo.repository.HouseRepository;
 @Service
 public class HouseService {
 
+<<<<<<< HEAD
 	@Autowired
     private CollectRepository collectRepository;
 	@Autowired
@@ -100,10 +104,36 @@ public class HouseService {
 	}
 	
 	 public void deleteCollectByHouseId(Long houseId) {
-	       collectRepository.deleteByHouseId(houseId);
-	 }
-	 
-	public List<Map<String, Object>> findNoAdHousesByUserId(Long userId) {
-		return houseRepository.findNoAdHouses(userId);
-	}
+	        collectRepository.deleteByHouseId(houseId);
+	    }
+		public List<Map<String, Object>> findNoAdHousesByUserId(Long userId) {
+			return houseRepository.findNoAdHouses(userId);
+		}
 }
+=======
+    @Autowired
+    private HouseRepository houseRepository;
+
+    public HouseDetailsDTO getHouseDetails(Long houseId) {
+        HouseTableBean house = houseRepository.findById(houseId)
+                                     .orElseThrow();
+
+        HouseDetailsDTO houseDetailsDTO = new HouseDetailsDTO();
+        houseDetailsDTO.setHouseId(house.getHouseId());
+
+
+        return houseDetailsDTO;
+    }
+
+
+
+   public void addHouse(Map<String, String> params) {
+            HouseDetailsDTO house = new HouseDetailsDTO();
+            
+
+            houseRepository.save(house);
+        }
+    }
+
+
+>>>>>>> parent of 5ca4084 (2024-11-30 update)
