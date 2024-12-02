@@ -83,6 +83,8 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
+    
+    // test checkLogin 
     public Optional<UserTableBean> checkLoginOK(String userEmail, String loginPwd) {
 		Optional<UserTableBean> dbUsers = userRepository.findByEmail(userEmail);
 		

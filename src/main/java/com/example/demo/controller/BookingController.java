@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.demo.dto.BookingSlotDTO;
+import com.example.demo.model.BookingBean;
+import com.example.demo.model.BookingId;
 import com.example.demo.model.HouseBookingTimeSlotBean;
+import com.example.demo.repository.BookingRepository;
 import com.example.demo.service.BookingService;
-import com.example.demo.service.HouseService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -90,4 +94,21 @@ public class BookingController {
         
         return "預約成功，已通知房東！";
     }
+	
+	@Autowired
+	private BookingRepository res;
+	
+	@ResponseBody
+	@GetMapping("test")
+	public Optional<BookingBean> getMethodName() {
+	
+
+		
+		Optional<BookingBean> op = res.findById(1l);
+		
+		op.get().toString();
+		System.out.println(op);
+		return op;
+	}
+	
 }

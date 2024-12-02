@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.dto.BookingDTO;
 import com.example.demo.dto.BookingSlotDTO;
+import com.example.demo.model.BookingBean;
 import com.example.demo.model.HouseBookingTimeSlotBean;
 import com.example.demo.model.HouseTableBean;
 import com.example.demo.model.UserTableBean;
@@ -36,7 +38,19 @@ public class BookingService {
 		BookingSlotDTO dto = convertToDTO(bean);
 		return dto;
 	}
-
+	
+	
+	public BookingDTO createBooking(BookingDTO booking) {
+        
+		
+        Booking savedBooking = bookingRepo.save(booking);
+        
+        // 发送邮件给房子主人
+        sendEmailToOwner(booking.getHouseId(), booking);
+        
+        return savedBooking;
+    }
+	
 	public void sendEmail(String to, String subject, String body) {
 		SimpleMailMessage message = new SimpleMailMessage();
 		message.setTo(to);
@@ -46,6 +60,17 @@ public class BookingService {
 
 	}
 
+	
+	private BookingDTO convertToDTO(BookingBean bean) {
+		BookingDTO dto = new BookingDTO();
+		dto.setHouseId(bean.getHouseId());
+		dto.setUserId(bean.getUserId());
+		dto.setBookingDate(bean.getBookingDate());
+		dto.setFromTime(bean.getFromTime());
+		dto.setToTime(bean.getToTime());
+		dto.setStatus(bean.getStatus());
+		return dto;
+	}
 	
 	
 	private BookingSlotDTO convertToDTO(HouseBookingTimeSlotBean bean) {

@@ -11,10 +11,19 @@ import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "booking_table")
-@IdClass(BookingId.class)
 public class BookingBean {
 	
 	@Id
@@ -25,7 +34,7 @@ public class BookingBean {
     @JoinColumn(name = "house_id", insertable = false, updatable = false)
     private HouseTableBean house;
 
-    @Id
+    
     @Column(name = "user_id")
     private Long userId;
 
@@ -45,61 +54,10 @@ public class BookingBean {
 	@Column(name = "status")
 	private String status;
 	
-	public BookingBean() {
-		
-	}
-	
+
 	public boolean isOwner() {
 		
 		return rentUser.getUserId().equals(house.getUser().getUserId());
 	}
 
-	public HouseTableBean getHouse() {
-		return house;
-	}
-
-	public void setHouse(HouseTableBean house) {
-		this.house = house;
-	}
-
-	public UserTableBean getRentUser() {
-		return rentUser;
-	}
-
-	public void setRentUser(UserTableBean rentUser) {
-		this.rentUser = rentUser;
-	}
-
-	public Date getBookingDate() {
-		return bookingDate;
-	}
-
-	public void setBookingDate(Date bookingDate) {
-		this.bookingDate = bookingDate;
-	}
-
-	public Time getFromTime() {
-		return fromTime;
-	}
-
-	public void setFromTime(Time fromTime) {
-		this.fromTime = fromTime;
-	}
-
-	public Time getToTime() {
-		return toTime;
-	}
-
-	public void setToTime(Time toTime) {
-		this.toTime = toTime;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-	
 }
