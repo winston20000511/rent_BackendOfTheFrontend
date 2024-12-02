@@ -36,7 +36,10 @@ public class SearchController {
 	public List<AddressDTO> searchShowMap(@RequestBody OriginDTO request) {
 		AddressDTO origin = searchService.placeConvertToAdress(request.getOrigin());
 		List<AddressDTO> addressDtoList = searchService.findByCityAndTownship(origin.getAddress());
-		addressDtoList.add(0,origin);
+		if (addressDtoList.size() == 0) {
+			addressDtoList.add(0,origin);
+		}
+		
 		long startTime = System.currentTimeMillis();
 		addressDtoList = searchService.GetDurationAndDistanceGoogleAPI(addressDtoList);
 		long endTime = System.currentTimeMillis();

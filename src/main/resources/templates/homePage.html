@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
-
+<html xmlns:th="http://www.thymeleaf.org/">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,41 +13,9 @@
 </head>
 
 <body>
-    <header id="header">
-        <ul class="nav-left">
-            <li><a href="#">Buy</a></li>
-            <li class="link"><a href="#">Rent</a></li>
-        </ul>
-
-        <ul class="link-list" id="link-list-1">
-            <a href="#" class="list-item">item 1</a>
-            <a href="#" class="list-item">item 2</a>
-            <a href="#" class="list-item">item 3</a>
-            <a href="#" class="list-item">item 4</a>
-        </ul>
-
-        <div class="nav-middle">
-            <img src="/img/Logo3.jpg" alt="">
-
-            <div class="nav-title">
-                <h1>house</h1>
-            </div>
-
-        </div>
-        <div class="nav-right">
-            <li><a href="#">Manage Rentals</a></li>
-            <li><a href="#">Advertise</a></li>
-            <li><a href="#">Help</a></li>
-            <div th:if="!${session.loginUserId}">
-                <a th:href="@{/users/login}">Sign In</a>
-            </div>
-
-            <div th:if="${session.loginUserId}">
-                我是: <span th:text="${session.loginUsername}"></span>
-            </div>
-        </div>
-    </header>
-
+	
+	<div th:replace="~{layout/navbar}"></div>
+	
     <div class="filter" id="filter">
         <div class="filter-left">
             <input type="text" placeholder="Address, neighborhood, city, ZIP" id="search"> <i
@@ -85,11 +52,14 @@
     </main>
 
     <footer> </footer>
-    <script type="module" src="/js/index.js"></script>
+
+    <script th:src="'https://maps.googleapis.com/maps/api/js?key=' + ${googleApiKey} + '&callback=initMap&v=weekly&libraries=marker,places'" async defer></script>
     <script src="https://unpkg.com/animejs@3.2.1/lib/anime.min.js"></script>
-    <script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB74YfHLENToX6YpaEoKASZnhaZdqIio2s&callback=GoogleApiJs.initMap&v=weekly&libraries=marker,places"
-        async defer></script>
+    <script type="text/javascript" src="/js/GoogleScript.js"></script>
+    <script type="text/javascript" src="/js/ListScript.js"></script>
+    <script type="text/javascript" src="/js/CardScript.js"></script>
+    <script type="text/javascript" src="/js/ButtonScript.js"></script>
+
 
     <script type="text/javascript">
         function bookingPage(houseId) {
