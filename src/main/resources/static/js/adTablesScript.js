@@ -56,7 +56,6 @@ export function showSelectedTable(clickedBtn) {
 
   if (clickedBtn === paidAdsBtn) {
     paidAdTable.classList.remove("hidden");
-<<<<<<< HEAD
     isPaid = true;
     // userId = 5; //測試資料
     fetch(`http://localhost:8080/advertisements/tabledata/${userId}/${isPaid}/${pageNumber}`,{
@@ -78,15 +77,6 @@ export function showSelectedTable(clickedBtn) {
         tbody.appendChild(div);
 
         return;
-=======
-    
-    // 測試資料
-    // userId = 5;
-    fetch(
-      `http://localhost:8080/advertisements/tabledata/${userId}/${isPaid}/${pageNumber}`,
-      {
-        method: "GET",
->>>>>>> parent of 5ca4084 (2024-11-30 update)
       }
 
       tableDetails.forEach(rowdata=>{
@@ -267,151 +257,6 @@ export function showSelectedTable(clickedBtn) {
         // 將靜態<option>刪除
         // fetch 取得天數
 
-<<<<<<< HEAD
-=======
-              const adPriceElement = row.querySelector(".selected-ad-price");
-
-              adPriceElement.textContent = adData[0].adPrice;
-
-              selectElement.addEventListener("change", function () {
-                const adName =
-                  selectElement.options[selectElement.options.selectedIndex]
-                    .value;
-
-                const adPrice =
-                  adData.find((item) => item.adName === adName)?.adPrice || 0;
-                adPriceElement.textContent = adPrice;
-
-                const houseId = parseInt(
-                  row.querySelector(".house-id").textContent
-                );
-
-                if (selectedAdDataMap.has(houseId)) {
-                  selectedAdDataMap.set(houseId, {
-                    userId: userId,
-                    houseId: houseId,
-                    adName: adName,
-                    adPrice: adPrice,
-                  });
-                }
-
-                // console.log(
-                //   "select改變時選取的當前物件: ",
-                //   Array.from(selectedAdDataMap.values())
-                // );
-              });
-            });
-
-            tbody.addEventListener("change", function (event) {
-              event.stopPropagation();
-
-              const checkbox = event.target;
-
-              if (event.target && event.target.type === "checkbox") {
-                const row = checkbox.closest("tr");
-                const houseId = parseInt(
-                  row.querySelector(".house-id").textContent
-                );
-
-                if (checkbox.checked) {
-                  const adName = row.querySelector("select").value;
-                  const adPrice =
-                    adData.find((item) => item.adName === adName)?.adPrice || 0;
-
-                  selectedAdDataMap.set(houseId, {
-                    userId: userId,
-                    houseId: houseId,
-                    adName: adName,
-                    adPrice: adPrice,
-                  });
-                } else {
-                  selectedAdDataMap.delete(houseId);
-                }
-
-                // 顯示確認行
-                const checkedBoxes = tbody.querySelectorAll(
-                  "#add-ad-table input[type='checkbox']"
-                );
-                const anyChecked = Array.from(checkedBoxes).some(
-                  (checkbox) => checkbox.checked
-                );
-                const confirmRowHTML = document.getElementById("confirm-row");
-
-                if (anyChecked) {
-                  const confirmRow = `
-                    <tr id="confirm-row">
-                      <td class="text-right border border-t border-gray-300" colspan="5">
-                        <button type="button" id="confirm-add-btn" class="bg-blue-500 text-white py-2 px-4 rounded m-2 hover:bg-blue-300">
-                          確認新增廣告
-                        </button>
-                      </td>
-                    </tr>`;
-
-                  if (confirmRowHTML) {
-                    confirmRowHTML.outerHTML = confirmRow;
-                  } else {
-                    tbody.insertAdjacentHTML("beforeend", confirmRow);
-                  }
-                } else {
-                  if (confirmRowHTML) {
-                    confirmRowHTML.remove();
-                  }
-                }
-              }
-
-              // console.log(
-              //   "選取物件陣列: ",
-              //   Array.from(selectedAdDataMap.values())
-              // );
-            });
-
-            tbody.addEventListener("click", function (event) {
-              if (event.target.id === "confirm-add-btn") {
-                const selectedAdJson = JSON.stringify(
-                  Array.from(selectedAdDataMap.values())
-                );
-
-                /*
-                fetch("http://localhost:8080/advertisements", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: selectedAdJson,
-                })
-                  .then((response) => {
-                    return response.json();
-                  })
-                  .then((isSuccess) => {
-                    console.log(isSuccess);
-                    if (isSuccess) {
-                      // 確認完要把加好的house row刪掉
-                      const removedHouseIds = [...selectedAdDataMap.keys()];
-
-                      const houseIdTd = document.querySelectorAll(
-                        "#add-ad-table .house-id"
-                      );
-
-                      houseIdTd.forEach((td) => {
-                        const houseId = parseInt(td.textContent);
-                        if (removedHouseIds.includes(houseId)) {
-                          td.closest("tr").classList.add("hidden");
-                        }
-                      });
-                    }
-                  })
-                  .catch((error) => {
-                    console.log(error);
-                  });
-                  */
-
-                }
-            });
-          })
-          .catch((error) => {
-            console.log(error);
-          });
->>>>>>> parent of 5ca4084 (2024-11-30 update)
       });
 
     }).catch(error=>{
@@ -471,10 +316,6 @@ export function clickConfirmBtn(onclickConfirmButtonClick) {
       if(clickedBtn) {
         onclickConfirmButtonClick();
       }
-<<<<<<< HEAD
-=======
-      
->>>>>>> parent of 5ca4084 (2024-11-30 update)
     });
   });
 }
