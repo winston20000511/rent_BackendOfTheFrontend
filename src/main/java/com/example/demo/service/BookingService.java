@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.BookingDTO;
@@ -28,6 +29,9 @@ public class BookingService {
 	@Autowired
 	private HouseRepository houseRepository;
 	
+	@Autowired
+    private JavaMailSender mailSender;
+	
 	public BookingSlotDTO findTimeSlotByHouseId(Long houseId) {
 		Optional<HouseBookingTimeSlotBean> op = timeSlotRepo.findById(houseId);
 		return op.map(this::convertToDTO).orElse(null);
@@ -41,24 +45,29 @@ public class BookingService {
 	
 	
 	public BookingDTO createBooking(BookingDTO booking) {
-        
+		;
 		
-        Booking savedBooking = bookingRepo.save(booking);
+        BookingBean newBooking = bookingRepo.save(convertToBean(booking));
         
         // 发送邮件给房子主人
         sendEmailToOwner(booking.getHouseId(), booking);
         
         return savedBooking;
     }
-	
-	public void sendEmail(String to, String subject, String body) {
-		SimpleMailMessage message = new SimpleMailMessage();
-		message.setTo(to);
-		message.setSubject(subject);
-		message.setText(body);
-		message.setFrom("your-email@example.com");
+		
+	private void sendEmailToOwner(Long houseId, BookingDTO booking) {
+        // 获取房子主人的邮箱（假设有方法获取）
+        String ownerEmail = houseRepository.getOwnerEmailByHouseId(houseId);
+        
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(ownerEmail);
+        message.setSubject("新的预约通知");
+        message.setText("用户已预约从 " + booking.getFromTime() + " 到 " + booking.getToTime());
+        
+        mailSender.send(message);
+    }
 
-	}
+    
 
 	
 	private BookingDTO convertToDTO(BookingBean bean) {
@@ -83,6 +92,29 @@ public class BookingService {
 		dto.setDuration(bean.getDuration());
 		dto.setWeekDay(bean.getWeekDay());
 		return dto;
+	}
+	
+	private BookingBean convertToBean(BookingDTO dto) {
+	    BookingBean bean = new BookingBean();
+	    bean.setHouseId(dto.getHouseId());
+	    bean.setUserId(dto.getUserId());
+	    bean.setBookingDate(dto.getBookingDate()); // 假设 BookingDTO 中有这个字段
+	    bean.setFromTime(dto.getFromTime());
+	    bean.setToTime(dto.getToTime());
+	    bean.setStatus(dto.getStatus());
+	    return bean;
+	}
+	
+	private HouseBookingTimeSlotBean convertToBean(BookingSlotDTO dto) {
+	    HouseBookingTimeSlotBean bean = new HouseBookingTimeSlotBean();
+	    bean.setHouseId(dto.getHouseId());
+	    bean.setFromDate(dto.getFromDate());
+	    bean.setToDate(dto.getToDate());
+	    bean.setFromTime(dto.getFromTime());
+	    bean.setToTime(dto.getToTime());
+	    bean.setDuration(dto.getDuration());
+	    bean.setWeekDay(dto.getWeekDay());
+	    return bean;
 	}
 	
 	public boolean confirm(Long houseId, Long userId) {

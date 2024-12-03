@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.example.demo.dto.BookingDTO;
 import com.example.demo.dto.BookingSlotDTO;
 import com.example.demo.model.BookingBean;
 import com.example.demo.model.BookingId;
@@ -83,7 +84,7 @@ public class BookingController {
 	
 	@ResponseBody
 	@PostMapping("/api/house/book")
-    public String bookHouse(@RequestParam String houseName, @RequestParam String landlordEmail) {
+    public String bookHouse(@RequestBody BookingDTO bookingDTO) {
         // 處理預約邏輯，例如保存到資料庫等
         
         // 發送郵件通知房東
