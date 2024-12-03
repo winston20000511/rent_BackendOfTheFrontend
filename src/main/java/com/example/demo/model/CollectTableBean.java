@@ -12,7 +12,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "collect_table")
 public class CollectTableBean {
@@ -34,56 +40,4 @@ public class CollectTableBean {
 
 
 
-	public CollectTableBean() {
-	}
-
-
-
-	public Long getCollectId() {
-		return collectId;
-	}
-
-
-
-	public void setCollectId(Long collectId) {
-		this.collectId = collectId;
-	}
-
-
-
-	public HouseTableBean getHouse() {
-		return house;
-	}
-
-
-
-	public void setHouse(HouseTableBean house) {
-		this.house = house;
-	}
-
-
-
-	public UserTableBean getUser() {
-		return user;
-	}
-
-
-
-	public void setUser(UserTableBean user) {
-		this.user = user;
-	}
-
-
-
-	public Time getCollectTime() {
-		return collectTime;
-	}
-
-
-
-	public void setCollectTime(Time collectTime) {
-		this.collectTime = collectTime;
-	}
-
-	
 }

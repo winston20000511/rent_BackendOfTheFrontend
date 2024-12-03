@@ -19,6 +19,7 @@ import com.example.demo.model.FurnitureTableBean;
 import com.example.demo.model.HouseImageTableBean;
 import com.example.demo.model.HouseTableBean;
 import com.example.demo.model.UserTableBean;
+import com.example.demo.service.CollectService;
 import com.example.demo.service.HouseService;
 
 
@@ -29,7 +30,8 @@ public class HouseController {
 	@Autowired
 	private HouseService houseService;
 	
-	
+	@Autowired
+	private CollectService collectService;
 	
     @SuppressWarnings("unchecked")
 	@PostMapping("/add")
@@ -123,4 +125,21 @@ public class HouseController {
                                  .body("Failed to delete collect data: " + e.getMessage());
         }
     }
+    
+    @GetMapping("/collect/{userId}")
+    public List<Long> getHouseIds(@PathVariable Long userId) {
+        return collectService.getHouseIdsByUserId(userId);
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }

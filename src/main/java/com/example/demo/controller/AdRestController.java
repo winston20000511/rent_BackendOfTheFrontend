@@ -26,10 +26,11 @@ import com.example.demo.service.HouseService;
 @RequestMapping("/advertisements")
 public class AdRestController {
 
+	@Autowired
 	private AdService adService;
+	@Autowired
 	private HouseService houseService;
 
-	@Autowired
 	public AdRestController(AdService adService, HouseService houseService) {
 		this.adService = adService;
 		this.houseService = houseService;
