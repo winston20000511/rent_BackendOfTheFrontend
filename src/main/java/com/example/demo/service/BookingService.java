@@ -8,7 +8,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.BookingDTO;
+import com.example.demo.dto.BookingDetailDTO;
 import com.example.demo.dto.BookingSlotDTO;
+import com.example.demo.dto.HouseOwnerDetailDTO;
 import com.example.demo.model.BookingBean;
 import com.example.demo.model.HouseBookingTimeSlotBean;
 import com.example.demo.model.HouseTableBean;
@@ -44,23 +46,25 @@ public class BookingService {
 	}
 	
 	
-	public BookingDTO createBooking(BookingDTO booking) {
-		;
+	public String createBooking(BookingDetailDTO bookingDTO) {
 		
-        BookingBean newBooking = bookingRepo.save(convertToBean(booking));
+		
+        BookingBean newBean = bookingRepo.save(convertToBean(bookingDTO));
+        BookingDetailDTO newDTO = convertToDTO(newBean);
         
         // 发送邮件给房子主人
-        sendEmailToOwner(booking.getHouseId(), booking);
+        sendEmailToOwner(newDTO);
         
-        return savedBooking;
+        return "已申請預約";
     }
 		
-	private void sendEmailToOwner(Long houseId, BookingDTO booking) {
-        // 获取房子主人的邮箱（假设有方法获取）
-        String ownerEmail = houseRepository.getOwnerEmailByHouseId(houseId);
+	private void sendEmailToOwner(BookingDTO booking) {
+		Long houseId = booking.getHouseId();
+		
+        HouseOwnerDetailDTO owner = houseRepository.getOwnerDetailByHouseId(houseId);
         
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(ownerEmail);
+        message.setTo(owner.getMail());
         message.setSubject("新的预约通知");
         message.setText("用户已预约从 " + booking.getFromTime() + " 到 " + booking.getToTime());
         
@@ -94,7 +98,7 @@ public class BookingService {
 		return dto;
 	}
 	
-	private BookingBean convertToBean(BookingDTO dto) {
+	private BookingBean convertToBean(BookingDetailDTO dto) {
 	    BookingBean bean = new BookingBean();
 	    bean.setHouseId(dto.getHouseId());
 	    bean.setUserId(dto.getUserId());

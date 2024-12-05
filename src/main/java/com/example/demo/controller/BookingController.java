@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.demo.dto.BookingDTO;
+import com.example.demo.dto.BookingDetailDTO;
 import com.example.demo.dto.BookingSlotDTO;
 import com.example.demo.model.BookingBean;
 import com.example.demo.model.BookingId;

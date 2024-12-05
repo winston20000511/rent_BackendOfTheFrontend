@@ -2,6 +2,7 @@ package com.example.demo.model;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -42,6 +43,9 @@ public class BookingBean {
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private UserTableBean rentUser;
 
+    @Column(name = "create_date")
+	private LocalDateTime createDate;
+    
 	@Column(name = "booking_date")
 	private Date bookingDate;
 	

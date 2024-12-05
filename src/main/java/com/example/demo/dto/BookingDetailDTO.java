@@ -7,9 +7,11 @@ import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
-public class BookingDTO {
-	private Long houseId; 
-    private Long userId;
+public class BookingDetailDTO {
+    private String OwnerName; 
+    private String OwnerEmail;
+    private String userName; 
+    private String userEmail;
     private LocalDateTime createDate;
 	private Date bookingDate;
 	private Time fromTime;
