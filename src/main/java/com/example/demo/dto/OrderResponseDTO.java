@@ -5,21 +5,32 @@ import java.util.List;
 
 public class OrderResponseDTO {
 
+	// table 用
 	private String merchantTradNo;
 	private List<String> houseTitles;
 	private LocalDateTime merchantTradDate;
 	private String orderStatus;
 	
+	// 詳細內容用
+	private List<Integer> adIds;
+ 	private List<String> adtypes;
+	private Long totalAmount;
+	
 	public OrderResponseDTO() {
 	}
+	
 
 	public OrderResponseDTO(String merchantTradNo, List<String> houseTitles, LocalDateTime merchantTradDate,
-			String orderStatus) {
+			String orderStatus, List<String> adtypes, Long totalAmount) {
+		super();
 		this.merchantTradNo = merchantTradNo;
 		this.houseTitles = houseTitles;
 		this.merchantTradDate = merchantTradDate;
 		this.orderStatus = orderStatus;
+		this.adtypes = adtypes;
+		this.totalAmount = totalAmount;
 	}
+
 
 	public String getMerchantTradNo() {
 		return merchantTradNo;
@@ -52,5 +63,23 @@ public class OrderResponseDTO {
 	public void setOrderStatus(String orderStatus) {
 		this.orderStatus = orderStatus;
 	}
+
+	public List<String> getAdtypes() {
+		return adtypes;
+	}
+
+	public void setAdtypes(List<String> adtypes) {
+		this.adtypes = adtypes;
+	}
+
+	public Long getTotalAmount() {
+		return totalAmount;
+	}
+
+	public void setTotalAmount(Long totalAmount) {
+		this.totalAmount = totalAmount;
+	}
+
+	
 	
 }

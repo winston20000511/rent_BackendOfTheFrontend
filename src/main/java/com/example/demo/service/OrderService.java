@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.OrderResponseDTO;
 import com.example.demo.dto.OrderSearchRequestDTO;
+import com.example.demo.model.AdBean;
 import com.example.demo.model.OrderBean;
 import com.example.demo.repository.OrderRepository;
 import com.example.demo.repository.OrderSpecification;
@@ -38,14 +40,17 @@ public class OrderService {
 	}
 	
 	// get orders by conditions and page
-	// 要加分頁
-	public List<OrderResponseDTO> findOrdersByConditions(OrderSearchRequestDTO requestDTO){
+	public List<OrderResponseDTO> findOrdersByConditions(OrderSearchRequestDTO requestDTO, Integer pageNumber){
+		
+		// 頁數
+		Pageable pageable = PageRequest.of(pageNumber-1, 10, Sort.Direction.DESC, "merchantTradDate");
+		Specification<OrderBean> spec = OrderSpecification.filter(requestDTO);
+        Page<OrderBean> orderPage = orderRepository.findAll(spec, pageable);
 		
 		System.out.println(requestDTO);
 		
-		Specification<OrderBean> spec = OrderSpecification.filter(requestDTO);
 		
-		List<OrderBean> orders = orderRepository.findAll(spec);
+		List<OrderBean> orders = orderPage.getContent();
 		
 		List<OrderResponseDTO> responseDTOList = new ArrayList<>();
 		
@@ -66,11 +71,44 @@ public class OrderService {
 
 		}
 		
-		System.out.println("responseDTOList: " + responseDTOList);
+		if(!responseDTOList.isEmpty()) {
+			System.out.println("ResponseDTOList first: " + responseDTOList.getFirst().getMerchantTradNo());
+		}
 		
 		return responseDTOList;
 	}
-	
+
+	// get order details by merchantTradNo
+	public OrderResponseDTO findOrdersByMerchantTradNo(String merchantTradNo){
+		OrderBean order = orderRepository.findByMerchantTradNo(merchantTradNo);
+		OrderResponseDTO dto = new OrderResponseDTO();
+		// 訂單號碼
+		dto.setMerchantTradNo(merchantTradNo);
+		
+		/*
+		List<AdBean> ads = order.getAds();
+		// 物件內容（複數）
+		List<String> houseTitles = new ArrayList<>();
+		// 廣告種類（複數）
+		List<String> adtypes = new ArrayList<>();
+		
+		for(AdBean ad : ads) {
+			houseTitles.add(ad.getHouse().getTitle());
+			adtypes.add(ad.getAdtype().getAdName());
+		}
+		dto.setHouseTitles(houseTitles);
+		dto.setAdtypes(adtypes);
+		*/
+		
+		// 訂單金額
+		dto.setTotalAmount(order.getTotalAmount());
+		// 付款日期
+		dto.setMerchantTradDate(order.getMerchantTradDate());
+		// 訂單狀態
+		dto.setOrderStatus(order.getOrderStatus() == 0 ? "已取消" : "一般訂單");
+		
+		return dto;
+	}
 	
 	// create a new order
 	public OrderBean createOrder(OrderBean orderBean) {

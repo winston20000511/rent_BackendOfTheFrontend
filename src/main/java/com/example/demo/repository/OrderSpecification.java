@@ -38,6 +38,11 @@ public class OrderSpecification {
 				predicates.add(builder.like(houseJoin.get("title"), "%" + requestDTO.getHouseTitle() + "%"));
 			}
 			
+			if(requestDTO.getMerchantTradNo() != null) {
+				Join<OrderBean, AdBean> adJoin = root.join("ads", JoinType.INNER);
+				predicates.add(builder.like(adJoin.get("orderId"), "%" + requestDTO.getMerchantTradNo() + "%"));
+			}
+			
 			return builder.and(predicates.toArray(new Predicate[0]));
 		};
 	}
