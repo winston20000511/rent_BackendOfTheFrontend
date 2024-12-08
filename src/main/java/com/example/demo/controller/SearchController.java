@@ -30,7 +30,6 @@ public class SearchController {
 		return houseList;
 	}
 	
-	// TODO
 	@CrossOrigin(origins = "*")
 	@PostMapping("/api/map")
 	public List<AddressDTO> searchShowMap(@RequestBody OriginDTO request) {

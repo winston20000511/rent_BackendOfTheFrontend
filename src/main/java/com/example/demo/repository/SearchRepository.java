@@ -14,8 +14,6 @@ import com.example.demo.model.HouseTableBean;
 @Repository
 public interface SearchRepository extends JpaRepository<HouseTableBean, Long>{
 	
-//	List<Address> findByCity(String city);
-//	
 	@Query("select new com.example.demo.dto.AddressDTO(h.address , h.lat , h.lng , h.price , COALESCE(a.isPaid,false)) " +  "from HouseTableBean h " + "left join h.ads a " + "where address like %:n%")
 	List<AddressDTO> findByKeyWord(@Param("n") String name);
 	

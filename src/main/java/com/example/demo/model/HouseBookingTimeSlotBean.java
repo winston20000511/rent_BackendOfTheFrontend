@@ -36,7 +36,7 @@ public class HouseBookingTimeSlotBean {
 	private Time toTime;
 	@Column(name = "duration")
 	private Short duration;
-	@Column(name = "weekDay")
+	@Column(name = "week_day")
 	private String weekDay;
 
 	@OneToOne(fetch = FetchType.LAZY)

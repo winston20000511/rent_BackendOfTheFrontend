@@ -2,6 +2,7 @@ package com.example.demo.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -53,7 +54,10 @@ public class HouseTableBean {
     private Byte kitchen;
     @Column(name = "floor")
     private Byte floor;
-    @Column(name = "atticAddition")
+	@Column(name="house_type")
+	private String houseType;
+
+	@Column(name = "atticAddition")
     private Boolean atticAddition;
     @Column(name = "status")
     private Byte status;
@@ -71,15 +75,17 @@ public class HouseTableBean {
 
     @OneToMany(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<HouseImageTableBean> images;
-
+    
+    @JsonIgnore
     @OneToMany(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<BookingBean> bookings;
 
-    @OneToOne(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "house", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private HouseBookingTimeSlotBean bookingTimeSlots;
     
-    @OneToMany(mappedBy = "house", fetch = FetchType.LAZY)
+    @JsonIgnore
+    @OneToMany(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<AdBean> ads;
     
 	public Long getHouseId() {
@@ -192,6 +198,14 @@ public class HouseTableBean {
 
 	public void setFloor(Byte floor) {
 		this.floor = floor;
+	}
+	
+    public String getHouseType() {
+		return houseType;
+	}
+
+	public void setHouseType(String houseType) {
+		this.houseType = houseType;
 	}
 
 	public Boolean getAtticAddition() {
