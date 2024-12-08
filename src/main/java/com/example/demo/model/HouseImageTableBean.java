@@ -1,10 +1,8 @@
 package com.example.demo.model;
 
-import java.sql.Date;
-import java.sql.Time;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,11 +26,11 @@ public class HouseImageTableBean {
     @Column(name = "image_url")
     private byte[] imageUrl;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "house_id", nullable = false) // 房屋ID作為外鍵
     private HouseTableBean house;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false) // 用戶ID作為外鍵
     private UserTableBean user;
 
