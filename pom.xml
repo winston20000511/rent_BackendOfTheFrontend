@@ -94,11 +94,12 @@
 		    <version>2.17.1</version><!--$NO-MVN-MAN-VER$-->
 		</dependency>
 		
-		
 		<dependency>
 		    <groupId>org.springframework.boot</groupId>
 		    <artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
+
+
 	</dependencies>
 
 	<build>
