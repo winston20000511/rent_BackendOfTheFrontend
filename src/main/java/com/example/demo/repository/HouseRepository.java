@@ -25,7 +25,7 @@ public interface HouseRepository extends JpaRepository<HouseTableBean, Long> {
 			+ "from house_table h "
 			+ "left join ads_table a on a.house_id = h.house_id where a.ad_id is null",
 			nativeQuery = true)
-	public Page<Map<String, Object>> findNoAdHouses(Pageable pageable);
+	public Page<Map<String, Object>> findHousesWithoutAds(Pageable pageable);
 	
 	/*
 	"select h.house_id as houseId, h.title as houseTitle from house_table h "

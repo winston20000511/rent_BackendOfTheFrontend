@@ -145,7 +145,7 @@ public class AdService {
 	public Page<Map<String, Object>> findHousesWithoutAds(Integer pageNumber){
 		Pageable pageable = PageRequest.of(pageNumber-1, 10, Sort.Direction.DESC, "houseId");
 		// info: houseId + houseTitle
-		Page<Map<String, Object>> housesInfo = houseRepository.findNoAdHouses(pageable);
+		Page<Map<String, Object>> housesInfo = houseRepository.findHousesWithoutAds(pageable);
 		
 		return housesInfo;
 	}

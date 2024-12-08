@@ -102,7 +102,4 @@ public class HouseService {
 	 public void deleteCollectByHouseId(Long houseId) {
 	        collectRepository.deleteByHouseId(houseId);
 	    }
-		public List<Map<String, Object>> findNoAdHousesByUserId(Long userId) {
-			return houseRepository.findNoAdHouses(userId);
-		}
 }

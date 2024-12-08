@@ -141,7 +141,8 @@ public class OrderService {
 	public String ecpayCheckout() {
 		AllInOne all = new AllInOne("");
 		AioCheckOutALL obj = new AioCheckOutALL();
-		obj.setMerchantTradeNo("textCompany0100");
+		obj.setIgnorePayment("ApplePay#WebATM");
+		obj.setMerchantTradeNo("textCompany0112");
 		obj.setMerchantTradeDate("2024/11/18 08:05:23");
 		obj.setTotalAmount("50");
 		obj.setTradeDesc("test Description");
