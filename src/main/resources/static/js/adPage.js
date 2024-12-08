@@ -103,7 +103,7 @@ async function filterAds() {
   deleteBtn.forEach((button) => {
     button.addEventListener("click", function () {
       const adId = this.closest("tr").getAttribute("data-ad-id");
-      const userConfirmed = window.confirm("確定要刪除嗎");
+      const userConfirmed = window.confirm("確定要刪除嗎？");
 
       if (userConfirmed) {
         deleteAd(adId);
@@ -526,6 +526,20 @@ addAdBtn.addEventListener("click", function () {
 
   filterHousesWithoutAds();
 });
+
+// 如果是從order頁面跳過來
+window.onload = function(){
+  const params = new URLSearchParams(window.location.search);
+  const action = params.get("action");
+
+  if(action === "addAd"){
+    if(addAdBtn){
+      addAdBtn.click();
+    }else{
+      console.log("按鈕不存在");
+    }
+  }
+}
 
 closeAddTable();
 

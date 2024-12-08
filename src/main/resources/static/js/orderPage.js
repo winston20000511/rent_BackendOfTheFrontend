@@ -1,472 +1,388 @@
-
-/* 初始化 table */
-initDataTable();
-
-function initDataTable(){
-  filterOrders({
-    "status": "allOrders",
-    "condition": null,
-    "input": null
-  });
-}
-
-
-/* 上排搜尋條件的按鈕 */
-const conditionBtnsGroup1 = Array.from(document.querySelectorAll(".condition-btn-group1"));
-const conditionBtnsGroup2 = Array.from(document.querySelectorAll(".condition-btn-group2"));
-const dropdownMenuItems = Array.from(document.querySelectorAll(".menu-item"));
-const menuBtn = document.getElementById("menu-button");
-
-
-/* 使用者輸入搜尋條件的輸入框 */
-const searchInput = document.getElementById("search-input");
-
-/* 處理下單選單 - 以其他方式搜尋 */
-const dropdownButton = document.getElementById("menu-button");
-const dropdownMenu = document.getElementById("dropdown-menu");
-
-dropdownButton.addEventListener("click", function (event) {
-  event.stopPropagation();
-  dropdownMenu.classList.toggle("hidden");
+// 為物件申請VIP服務
+const addAdBtn = document.getElementById("add-ad-btn");
+addAdBtn.addEventListener("click", function () {
+  window.location.href = "http://localhost:8080/advertisements/mylist?action=addAd";
 });
 
-document.addEventListener("click", function (event) {
-  if (
-    !dropdownButton.contains(event.target) &&
-    event.target != dropdownButton
-  ) {
-    dropdownMenu.classList.add("hidden");
-  }
-});
-
-const selectedConditions = {
-  status: "allAds",
-  condition: null,
+// 設定篩選條件
+const conditions = {
+  page: 1,
+  status: null,
+  daterange: null,
+  inputcondition: null,
   input: null,
+};
+
+initTable(); // 初始化
+
+// 初始化表格資料
+function initTable() {
+  filterOrders();
 }
 
-// 初始化監聽事件
-initListeners();
+// 監聽篩選條件的變化
+const filters = document.querySelectorAll(".condition-filter");
 
-function initListeners(){
-  initBtnListeners(conditionBtnsGroup1, "group1");
-  initBtnListeners(conditionBtnsGroup2, "group2");
-  initDropMenuListeners(dropdownMenuItems);
-  initSearchInputLinstener();
-}
+filters.forEach((filter) => {
+  filter.addEventListener("change", function (event) {
+    const selectedEmelemt = event.target;
+    if (selectedEmelemt.id === "filter-type") {
+      let inputBox = document.getElementById("input-box");
 
-function initBtnListeners(buttons, group){
-  buttons.forEach((button) =>{
-    button.addEventListener("click", function(){
-      handleButtonSelection(this, group);
-      applyFilters();
-    });
+      inputBox.classList.remove("hidden");
+      const userInputElement = document.getElementById("user-input");
+      userInputElement.value = "";
+      if (selectedEmelemt.value === "orderid") {
+        userInputElement.setAttribute("placeholder", "請輸入訂單編號");
+      }
+
+      if (selectedEmelemt.value === "housetitle") {
+        userInputElement.setAttribute("placeholder", "請輸入房屋標題");
+      }
+
+      if (selectedEmelemt.value === "none") {
+        userInputElement.removeAttribute("placeholder", "請輸入訂單編號");
+        inputBox.classList.add("hidden");
+      }
+    }
+
+    conditions[filter.name] = filter.value;
+    conditions.page = 1;
+
+    filterOrders();
   });
-}
+});
 
-function initDropMenuListeners(menuItems){
-  menuItems.forEach((item) =>{
-    item.addEventListener("click", function(){
-      const searchCondition = item.value;
-      handleDropdownSelection(searchCondition);
-    });
-  });
-}
+//即時搜尋及延後執行
+const userInput = document.getElementById("user-input");
+let debounceTimeout;
 
-function initSearchInputLinstener(){
-  searchInput.addEventListener("input", function(event){
+userInput.addEventListener("input", function () {
+  clearTimeout(debounceTimeout); // 清除上次計時器
+  debounceTimeout = setTimeout(() => {
+    conditions.page = 1;
+    conditions.input = userInput.value;
+    filterOrders();
+  }, 300);
+});
 
-    const input = event.target.value;
-    selectedConditions.input = input;
-    applyFilters();
+// 篩選廣告及生成內容
+async function filterOrders() {
+  console.log("filter conditions: ", conditions);
 
-    // if(event.key === "Enter"){
-    // }
-
-  })
-}
-
-function handleButtonSelection(button, group){
-  let buttons = group === "group1"? conditionBtnsGroup1 : conditionBtnsGroup2;
-
-  removeBtnColor(buttons);
-
-  if(group === "group1"){
-    selectedConditions.status = button.value;
-  }
-  
-  button.classList.add("bg-blue-700");
-}
-
-// 按鈕除色
-function removeBtnColor(buttons) {
-  buttons.forEach((button) => {
-    button.classList.remove("bg-blue-700");
-    button.classList.add("bg-blue-500");
-  });
-}
-
-function handleDropdownSelection(condition){
-  showInputElements(condition);
-  selectedConditions.condition = condition;
-}
-
-
-function applyFilters(){
-  // console.log("filter: ", selectedConditions);
-
-  filterOrders(selectedConditions);
-}
-
-// 取得所有訂單的資料
-// function getAllOrders() {
-
-//   // 測試資料
-//   let pageNumber = 1;
-
-//     fetch(
-//       `http://localhost:8080/api/orders/${pageNumber}`,
-//       { 
-//         method: "GET",
-//       }
-//     ).then((response) => {
-//       return response.json();
-//     }).then((orders) =>{
-
-//       /* {userId, merchantId, merchantTradNo, merchantTradDate, totalAmount, tradeDesc, itemName, orderStatus, returnUrl, choosePayment, checkMacValue} */
-
-//       if(orders.length === 0){
-//         const tbody = document.querySelector("#paid-list-table tbody");
-//         tbody.innerHTML = "";
-//         row = 
-//           `<tbody>
-//             <tr>
-//               <td class="px-4 py-2">查無資料</td>
-//             </tr>
-//           </tbody>`;
-//           tbody.innerHTML += row;
-
-//         return;
-//       }
-
-//       const tbody = document.querySelector("#paid-list-table tbody");
-//       tbody.innerHTML = "";
-
-//       for (let i = 0; i < orders.length; i++) {
-
-//         // 之後放去DTO計算
-//         const orderDate = orders[0].merchantTradDate.substring(0,10);
-//         const orderStatus = orders[0].orderStatus === 0? "已取消" : "一般訂單";
-
-//         row = 
-//         `<tbody>
-//           <tr>
-//             <td class="px-4 py-2">${orders[i].merchantTradNo}</td>
-//             <td class="px-4 py-2">
-//               <ul>
-//                 <li>動態新增訂單內容物</li>
-//                 <li>至多兩物件</li>
-//               </ul>
-//             </td>
-//             <td class="px-4 py-2">${orderDate}</td>
-//             <td class="px-4 py-2">${orderStatus}</td>
-//             <td class="px-4 py-2 text-center">
-//               <button
-//                   type="button"
-//                   class="check-detail-btn bg-blue-500 rounded text-white w-16 py-2 hover:bg-blue-300">
-//                   查看
-//               </button></td>
-//           </tr>
-//         </tbody>`;
-//         tbody.innerHTML += row;
-//       }
-//     })
-//     .catch((error) =>{
-//       console.log(error);
-//     });
-// }
-
-// 以訂單狀態搜尋
-function filterOrders(selectedConditions){
-
-  console.log(selectedConditions);
-
-  // 測試資料 
-  let pageNumber = 1
-  
-  const selectedConditionsJson = JSON.stringify(selectedConditions);
-
-  fetch(`http://localhost:8080/api/orders/filter/${pageNumber}`,{
+  const response = await fetch("http://localhost:8080/api/orders/filter", {
     method: "POST",
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: selectedConditionsJson,
-  })
-  .then((response) =>{
-    return response.json();
-  })
-  .then((orders) =>{
-    // console.log(orders);
-
-    const tbody = document.querySelector("#paid-list-table tbody");
-    tbody.innerHTML = "";
-
-    if(orders.length === 0){
-      const div = document.createElement("div");
-      div.classList.add("px-4", "py-2");
-      div.textContent = "查無資料";
-
-      tbody.appendChild(div);
-
-      return;
-    }
-
-    for (let i = 0; i < orders.length; i++) {
-      const merchantTradDate = orders[i].merchantTradDate.substring(0,10);
-      row = 
-      `<tbody>
-        <tr class="border-b border-gray-200 hover:bg-gray-50">
-          <!-- 廣告編號 -->
-          <td class="px-4 py-3 text-sm font-medium text-gray-700">
-            ${orders[i].merchantTradNo}
-          </td>
-
-          <!-- 房屋標題 -->
-          <td class="px-4 py-3 text-sm text-gray-700">
-            <ul class="list-disc pl-4">
-              <li>${orders[i].houseTitles}</li>
-            </ul>
-          </td>
-
-          <!-- 訂單日期 -->
-          <td class="px-4 py-3 text-sm text-gray-700">
-            ${merchantTradDate}
-          </td>
-
-          <!-- 訂單狀態 -->
-          <td class="px-4 py-3 text-sm text-gray-700">
-            <span class="inline-block px-2 py-1 text-xs font-medium rounded-full
-              ${orders[i].orderStatus === '已完成' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
-              ${orders[i].orderStatus}
-            </span>
-          </td>
-
-          <td class="px-4 py-3 text-center">
-            <button
-              type="button"
-              class="check-detail-btn bg-blue-600 text-white text-sm font-semibold py-2 px-4 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">
-              查看
-            </button>
-          </td>
-        </tr>
-      </tbody>`;
-      tbody.innerHTML += row;
-    }
-    
-  })
-  .catch((error) =>{
-    console.log(error);
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(conditions),
   });
-  
+
+  const orderPages = await response.json();
+
+  const tbody = document.querySelector("#order-table tbody");
+
+  tbody.innerHTML = "";
+  orderPages.content.forEach((order) => {
+    tbody.innerHTML += generateOrderRow(order);
+  });
+
+  updatePagination(orderPages.totalPages, conditions.page, filterOrders);
+
+  // 查看詳細
+  const checkButtons = document.querySelectorAll("#order-box tbody .check-btn");
+
+  checkButtons.forEach((button) => {
+    button.addEventListener("click", function () {
+      const merchantTradNo = this.closest("tr").firstElementChild.textContent;
+      openCheckForm(merchantTradNo);
+    });
+  });
+
+  // 取消訂單
+  const cancelButtons = document.querySelectorAll("#order-box tbody .cancel-btn");
+  cancelButtons.forEach((button) =>{
+    button.addEventListener("click", function () {
+      const merchantTradNo = this.closest("tr").firstElementChild.textContent;
+      cancelOrder(merchantTradNo);
+    });
+  })
+
 }
 
+async function openCheckForm(merchantTradNo) {
+  toggleOrderDetailModal();
 
-/* 下拉選單選項 */
-function showInputElements(condition){
+  const response = await fetch(
+    `http://localhost:8080/api/orders/merchantTradNo`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: merchantTradNo,
+    }
+  );
 
-  if (searchInput.flatpickrInstance) {
-    searchInput.flatpickrInstance.destroy();
-    delete searchInput.flatpickrInstance;
-  }
+  const orderDetail = await response.json();
 
-  if(condition === "merchantTradNo"){
-    menuBtn.innerHTML =
-    '以訂單號碼搜尋 <i class="fa-solid fa-arrow-down py-1"></i>';
+  setupcheckForm(orderDetail);
+}
 
-    searchInput.classList.remove("hidden");
+// 取消訂單
+async function cancelOrder(merchantTradNo){
+  const message = document.getElementById("message");
+  const userConfirmed = window.confirm("確定要取消訂單嗎？");
+  if(userConfirmed){
+    message.textContent = "已提出取消申請";
+    const hintMessage = document.createElement("div");
+    hintMessage.classList.add("text-center");
+    hintMessage.textContent = "請待服務人員確認，方能取消訂單";
+    message.insertAdjacentElement("afterend", hintMessage);
+    toggleMessageModal();
 
-    searchInput.value = "";
-    searchInput.placeholder = "請輸入訂單編號";
-  }
-
-  if(condition === "period"){
-    menuBtn.innerHTML =
-    '以時間搜尋 <i class="fa-solid fa-arrow-down py-1"></i>';
-
-    searchInput.classList.remove("hidden");
-
-    searchInput.value = "";
-    searchInput.id = "date-input";
-
-    searchInput.placeholder = "請選擇想查詢的時間區段";
-
-    const flatpickrInstance = flatpickr("#date-input", {
-      mode: "range",
-      time_24hr: true,
-      dateFormat: "Y-m-d",
-      onChange: function (period) {
-        if (period.length === 2) {
-          const startDate = period[0];
-          const endDate = period[1];
-          const searchInputValue = `${startDate.toISOString()} to ${endDate.toISOString()}`;
-          console.log("Selected range:", searchInputValue);
-        }
-      },
+    const response = await fetch("http://localhost:8080/api/orders/merchantTradNo",{
+      method:"PUT",
+      headers: { "Content-Type": "application/json" },
+      body: merchantTradNo,
     });
 
-    searchInput.flatpickrInstance = flatpickrInstance;
+    const result = response.json();
+    console.log(result);
 
-  }
+    filterOrders();
 
-  if(condition === "houseTitle"){
-    menuBtn.innerHTML =
-    '以房屋標題搜尋 <i class="fa-solid fa-arrow-down py-1"></i>';
-
-    searchInput.classList.remove("hidden");
-
-    searchInput.value = "";
-    searchInput.placeholder = "請輸入房屋標題";
-  }
-
-  if(condition === "none"){
-    menuBtn.innerHTML =
-    '不設條件 <i class="fa-solid fa-arrow-down py-1"></i>';
-    searchInput.classList.add("hidden");
+  }else{
+    message.textContent = "訂單未取消";
+    toggleMessageModal();
   }
 }
 
-
-
-/* 訂單內容 modal */
-const tbody = document.querySelector("#paid-list-table tbody");
-const modal = document.getElementById("modal");
-const modalBackground = document.getElementById("modal-background");
-
-tbody.addEventListener("click", function (event) {
-  const checkBtn = event.target;
-  if(event.target.classList.contains("check-detail-btn")){
-    const metchantTradNo = checkBtn.closest("tr").children[0].textContent;
-    console.log(metchantTradNo);
-
-    // 取的訂單及廣告資料
-    fetchOrderAndAdDetails(metchantTradNo)
-    .then(([adList, orderDetail]) => {
-      console.log("adList:", adList);
-      console.log("orderDetail:", orderDetail);
-
-      const orderDate = orderDetail.merchantTradDate.substring(0,10);
-
-      // 顯示 modal
-      modal.classList.remove("hidden");
-
-      // 變更 modal 內容
-      const orderModalTable = document.getElementById("order-modal-table");
-      orderModalTable.innerHTML = "";
-
-      const content = 
-      `
-        <table id="order-modal-table" class="border border-gray-400 w-full">
-        <thead class="border border-gray-400">
-          <tr>
-            <th class="bg-gray-200 w-1/4">訂單編號</th>
-            <td colspan="4" class="px-2">${orderDetail.merchantTradNo}</td>
-          </tr>
-          <tr>
-            <th class="bg-gray-200 w-1/4">下單時間</th>
-            <td colspan="4" class="px-2">${orderDate}</td>
-          </tr>
-          <tr>
-            <th class="bg-gray-200 w-1/4">訂單狀態</th>
-            <td colspan="4" class="px-2">${orderDetail.orderStatus}</td>
-          </tr>
-        </thead>
-        <tbody id="ad-details-body" class="text-center">
-          <tr>
-            <th class="bg-gray-200 w-1/4">物件內容</th>
-            <th class="bg-gray-200 w-1/4">廣告種類</th>
-            <th class="bg-gray-200 w-1/4">廣告金額</th>
-            <th class="bg-gray-200 w-1/4">廣告詳細</th>
-          </tr>
-        </tbody>
-      </table>`;
-
-      orderModalTable.innerHTML += content;
-
-
-      const tbody = document.getElementById("ad-details-body");
-
-      // 動態加入ads資料
-      adList.forEach((ad) =>{
-        const tr = document.createElement("tr");
-
-        // const adIdTd = document.createElement("td");adIdTd.textContent = ad.adId;
-        const houseTitleTd = document.createElement("td");
-        houseTitleTd.textContent = ad.houseTitle;
-        const adNameTd = document.createElement("td");
-        adNameTd.textContent = ad.adName;
-        const adPriceTd = document.createElement("td");
-        adPriceTd.textContent = ad.adPrice;
-        const adDetails = document.createElement("td");
-        adDetails.innerHTML = 
-        `<button
-          type="button"
-          class="bg-yellow-500 rounded text-white w-16 py-1 hover:bg-yellow-300">
-          查看
-        </button>`;
-
-        tr.appendChild(houseTitleTd);
-        tr.appendChild(adNameTd);
-        tr.appendChild(adPriceTd);
-        tr.appendChild(adDetails);
-
-        tbody.appendChild(tr);
-      });
-
-      const totalAmountContent =
-      `<tr>
-        <th class="w-1/4 px-4 py-2"></th>
-        <th class="w-1/4 px-4 py-2">訂單金額</th>
-        <td class="w-1/4 px-4 py-2">${orderDetail.totalAmount}</td>
-      </tr>`;
-
-      tbody.innerHTML += totalAmountContent;
-
-      // 點選廣告詳細的話可以看詳細內容
-
-      toggleModalBackground();
-    });
-  }
+const closeButton = document.getElementById("close-modal");
+closeButton.addEventListener("click", function(){
+  toggleMessageModal();
 });
 
-modal.addEventListener("click", function (event) {
-  if (event.target.id === "close-modal-btn") {
-    modal.classList.add("hidden");
-    toggleModalBackground();
-  }
-});
-
-function toggleModalBackground() {
-  modalBackground.classList.toggle("overlay");
+function toggleMessageModal(){
+  const messageModal = document.getElementById("message-modal");
+  const modalBackground = document.getElementById("modal-background");
+  messageModal.classList.toggle("hidden");
   modalBackground.classList.toggle("hidden");
 }
 
-async function fetchOrderAndAdDetails(merchantTradNo){
-  try{
-    const [adList, orderDetail] = await Promise.all([
-      fetch(`http://localhost:8080/advertisements/orderId/${merchantTradNo}`).then((response) => response.json()), 
-      fetch(`http://localhost:8080/api/orders/${merchantTradNo}`).then((response) => response.json())
-    ]);
 
-    return [adList, orderDetail];
+function setupcheckForm(orderDetail){
+  // table thead內容
+  const theadElement = document.querySelector("#order-modal-table thead");
+  theadElement.children[0].innerHTML = `<th class="bg-gray-100">訂單號碼</th>
+   <td colspan="3" class="px-4 py-2">${orderDetail.merchantTradNo}`;
+  theadElement.children[1].innerHTML = `<th class="bg-gray-100">付款日期</th>
+    <td colspan="3" class="px-4 py-2">${orderDetail.merchantTradDate}`;
+  theadElement.children[2].innerHTML = `<th class="bg-gray-100">訂單狀態</th>
+    <td colspan="3" class="px-4 py-2">${orderDetail.orderStatus}`;
+  theadElement.children[3].innerHTML = `<th class="bg-gray-100">訂單狀態</th>
+    <td colspan="3" class="px-4 py-2">${orderDetail.choosePayment}`;
 
-  }catch(error){
-    console.log("error in one of the two requests");
+  // table tbody 內容
+  const tbodyElement = document.getElementById("order-details-body");
+  tbodyElement.innerHTML = "";
+
+  const adTd = document.createElement("td");
+  adTd.classList.add("py-2");
+  const adtypeTd = document.createElement("td");
+  const adPriceTd = document.createElement("td");
+  const houseTitleTd = document.createElement("td");
+  const voucherTd = document.createElement("td");
+  const subtotalTd = document.createElement("td");
+  for (let i = 0; i < orderDetail.adIds.length; i++) {
+    // ad ids
+    const adId = orderDetail.adIds[i];
+    const adSpan = document.createElement("span");
+    adSpan.textContent = adId;
+    adSpan.style.display = "block";
+    adTd.appendChild(adSpan);
+
+    // ad type names
+    const adtypeName = orderDetail.adtypes[i];
+    const adtypeSpan = document.createElement("span");
+    adtypeSpan.textContent = adtypeName;
+    adtypeSpan.style.display = "block";
+    adtypeTd.appendChild(adtypeSpan);
+
+    // ad prices
+    const adPrice = orderDetail.prices[i];
+    const adPriceSpan = document.createElement("span");
+    adPriceSpan.textContent = adPrice;
+    adPriceSpan.style.display = "block";
+    adPriceTd.appendChild(adPriceSpan);
+
+    // house title
+    const houseTitle = orderDetail.houseTitles[i];
+    const houseTitleSpan = document.createElement("span");
+    houseTitleSpan.textContent = houseTitle;
+    houseTitleSpan.style.display = "block";
+    houseTitleTd.appendChild(houseTitleSpan);
+
+    // voucher
+    const voucher = "voucher";
+    const voucherSpan = document.createElement("span");
+    voucherSpan.textContent = voucher;
+    voucherSpan.style.display = "block";
+    voucherTd.appendChild(voucherSpan);
+
+    // subtotal
+    const subtotal = "subtotal";
+    const subtotalSpan = document.createElement("span");
+    subtotalSpan.textContent = subtotal;
+    subtotalSpan.style.display = "block";
+    subtotalTd.appendChild(subtotalSpan);
   }
+
+  const tbodyHTML = `<tbody>
+    <tr>
+      <th class="bg-gray-200 text-center">廣告編號</th>
+      <th class="bg-gray-200 text-center">VIP方案</th>
+      <th class="adtype bg-gray-200 text-center">方案金額</th>
+      <th class="bg-gray-200 text-center">房屋標題</th>
+      <th class="bg-gray-200 text-center">折扣</th>
+      <th class="bg-gray-200 text-center">小計</th>
+    </tr>
+    <tr>
+      ${adTd.outerHTML}
+      ${adtypeTd.outerHTML}
+      ${adPriceTd.outerHTML}
+      ${houseTitleTd.outerHTML}
+      ${voucherTd.outerHTML}
+      ${subtotalTd.outerHTML}
+    </tr>
+    <tr>
+      <td colspan="4"></td>
+      <td class="py-1 text-center">總金額</td>
+      <td><strong>${orderDetail.totalAmount}</strong></td>
+    </tr>
+  </tbody>`;
+
+  tbodyElement.innerHTML += tbodyHTML;
 }
 
-// 跳去新增廣告
-// const addAdBtn = document.getElementById("add-btn");
-// addAdBtn.addEventListener("click", function(){
-//   fetch("http://localhost:8080/orders/mylist")
-// });
+function toggleOrderDetailModal() {
+  const orderDetailModal = document.getElementById("order-detail-modal");
+  const modalBackground = document.getElementById("modal-background");
+  orderDetailModal.classList.toggle("hidden");
+  modalBackground.classList.toggle("hidden");
+}
+
+document.getElementById("order-detail-modal").addEventListener("click", function (event) {
+    if (event.target.id === "close-modal-btn") {
+      toggleOrderDetailModal();
+    }
+  });
+
+function generateOrderRow(order) {
+  let orderSpanElement;
+  let cancelButtonElement;
+
+  if (order.orderStatus === "一般訂單") {
+    orderSpanElement = `<span class="inline-block px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">一般訂單</span>`;
+    cancelButtonElement = `<button class="cancel-btn px-3 py-1 text-sm text-red-600 bg-red-100 rounded hover:bg-red-200">取消</button>`;
+  }
+
+  if (order.orderStatus === "已取消") {
+    orderSpanElement = `<span class="inline-block px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">已取消</span>`;
+    cancelButtonElement = `<button class="px-3 py-1 text-sm text-gray-400 border rounded" style="cursor: default;" disabled>取消</button>`;
+  }
+
+  if (order.orderStatus === "取消中") {
+    orderSpanElement = `<span class="inline-block px-2 py-1 text-xs font-medium rounded-full bg-pink-100 text-pink-800">取消中</span>`;
+    cancelButtonElement = `<button class="px-3 py-1 text-sm text-gray-400 border rounded" style="cursor: default;" disabled>取消</button>`;
+  }
+
+  let orderDetailsContent = `<ul class="text-center text-sm text-gray-700">`;
+  for (let i = 0; i < order.adIds.length; i++) {
+    const truncatedTitle =
+      order.houseTitles[i].length > 10
+        ? order.houseTitles[i].substring(0, 10) + "..."
+        : order.houseTitles[i];
+    orderDetailsContent += `<li><strong>．${truncatedTitle}</strong></li>`;
+  }
+  orderDetailsContent += `<ul>`;
+
+  return `
+    <tr class="border-b border-gray-200 hover:bg-gray-50">
+      <td class="px-4 py-3 text-sm text-gray-700 text-center">${order.merchantTradNo}</td>
+      <td class="px-4 py-3 text-sm text-center text-gray-700">${order.merchantTradDate}</td>
+      <td class="px-4 py-3 text-sm text-center">
+        ${orderSpanElement}</td>
+      <td class="px-4 py-3 text-sm text-center text-gray-700">${order.totalAmount}</td>
+      <td class="px-4 py-3 text-sm text-center text-gray-700">${orderDetailsContent}</td>
+      <td class="px-4 py-3 text-center">
+        <button class="check-btn px-3 py-1 text-sm text-blue-600 bg-blue-100 rounded hover:bg-blue-200">查看</button>
+        ${cancelButtonElement}
+      </td>
+    </tr>`;
+}
+
+// 設置分頁
+let paginationInitialized = false;
+const maxVisiblePages = 10;
+
+function updatePagination(totalPages, currentPage, filterCallback) {
+  const paginationElement = document.getElementById("pagination");
+
+  paginationElement.innerHTML = "";
+
+  const prevButton = createPaginationButton("prev-page", "&lt;");
+  paginationElement.appendChild(prevButton);
+
+  const startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+  const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+  for (let i = startPage; i <= endPage; i++) {
+    const pageButton = createPaginationButton(i, i);
+    if (i === currentPage) {
+      pageButton.classList.add("bg-blue-500", "rounded", "text-white");
+    } else {
+      pageButton.classList.add("bg-white", "text-gray-600");
+    }
+    paginationElement.appendChild(pageButton);
+  }
+
+  const nextButton = createPaginationButton("next-page", "&gt;");
+  paginationElement.appendChild(nextButton);
+
+  setupPagination(totalPages, filterCallback);
+}
+
+// 建立分頁按鈕
+function createPaginationButton(page, label) {
+  const button = document.createElement("li");
+  button.innerHTML = `
+    <button data-page="${page}" class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400">${label}</button>
+  `;
+  return button;
+}
+
+function setupPagination(totalPages, filterCallback) {
+  if (paginationInitialized) return;
+
+  const paginationElement = document.getElementById("pagination");
+
+  paginationElement.addEventListener("click", handlePaginationClick);
+
+  function handlePaginationClick(event) {
+    const page = event.target.getAttribute("data-page");
+
+    if (!page) return;
+
+    if (page === "prev-page" && conditions.page > 1) {
+      conditions.page--;
+    } else if (page === "next-page" && conditions.page < totalPages) {
+      conditions.page++;
+    } else if (page !== "prev-page" && page !== "next-page") {
+      conditions.page = parseInt(page, 10);
+    } else {
+      conditions.page = totalPages;
+    }
+
+    filterCallback();
+  }
+
+  paginationInitialized = true; // 標記為已初始化
+}
+

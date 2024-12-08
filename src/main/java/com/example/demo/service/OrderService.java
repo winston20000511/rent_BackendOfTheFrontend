@@ -2,20 +2,25 @@ package com.example.demo.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.dto.AdDetailsResponseDTO;
 import com.example.demo.dto.OrderResponseDTO;
 import com.example.demo.dto.OrderSearchRequestDTO;
 import com.example.demo.model.AdBean;
+import com.example.demo.model.AdtypeBean;
 import com.example.demo.model.OrderBean;
+import com.example.demo.repository.AdSpecification;
 import com.example.demo.repository.OrderRepository;
 import com.example.demo.repository.OrderSpecification;
 
@@ -24,113 +29,116 @@ import ecpay.payment.integration.domain.AioCheckOutALL;
 
 @Service
 public class OrderService {
-	
+
 	private OrderRepository orderRepository;
-	
+
 	@Autowired
 	public OrderService(OrderRepository orderRepository) {
 		this.orderRepository = orderRepository;
 	}
-	
-	// get orders by page
-	public List<OrderBean> findOrdersByUserIdAndPageNumber(Long userId, Integer pageNumber){
-		Pageable pageable = PageRequest.of(pageNumber-1, 10, Sort.Direction.DESC, "merchantTradDate");
-		List<OrderBean> orders = orderRepository.findOrdersByUserIdAndPageNumber(userId, pageable);
-		return orders;
-	}
-	
-	// get orders by conditions and page
-	public List<OrderResponseDTO> findOrdersByConditions(OrderSearchRequestDTO requestDTO, Integer pageNumber){
-		
-		// 頁數
-		Pageable pageable = PageRequest.of(pageNumber-1, 10, Sort.Direction.DESC, "merchantTradDate");
-		Specification<OrderBean> spec = OrderSpecification.filter(requestDTO);
-        Page<OrderBean> orderPage = orderRepository.findAll(spec, pageable);
-		
-		System.out.println(requestDTO);
-		
-		
-		List<OrderBean> orders = orderPage.getContent();
-		
-		List<OrderResponseDTO> responseDTOList = new ArrayList<>();
-		
-		for(OrderBean order : orders) {
-			OrderResponseDTO responseDTO = new OrderResponseDTO();
-			responseDTO.setMerchantTradNo(order.getMerchantTradNo());
-			responseDTO.setOrderStatus(order.getOrderStatus() == 0? "已取消" : "一般訂單");
-			
-			List<String> houseTitles = new ArrayList<>();
-			for(int i = 0; i< order.getAds().size(); i++) {
-				String title = order.getAds().get(i).getHouse().getTitle();
-				houseTitles.add(title);
-			}
-		    responseDTO.setHouseTitles(houseTitles);
-		    responseDTO.setMerchantTradDate(order.getMerchantTradDate());
-		    
-		    responseDTOList.add(responseDTO);
 
+	// 查詢
+	// get orders by conditions and page
+	public Page<OrderResponseDTO> findOrdersByConditions(Map<String, String> conditions) {
+		Integer pageNumber = Integer.parseInt(conditions.get("page"));
+
+		Specification<OrderBean> spec = OrderSpecification.filter(conditions);
+
+		Pageable pageable = PageRequest.of(pageNumber - 1, 10, Sort.Direction.DESC, "merchantTradNo");
+		Page<OrderBean> page = orderRepository.findAll(spec, pageable);
+
+		List<OrderBean> orders = page.getContent();
+		for (OrderBean order : orders) {
+			System.out.println("order id: " + order.getMerchantTradNo());
 		}
-		
-		if(!responseDTOList.isEmpty()) {
-			System.out.println("ResponseDTOList first: " + responseDTOList.getFirst().getMerchantTradNo());
-		}
-		
-		return responseDTOList;
+
+		List<OrderResponseDTO> responseDTOs = setOrderDetailsResponsesDTO(page.getContent());
+
+		return new PageImpl<>(responseDTOs, pageable, page.getTotalElements());
 	}
 
 	// get order details by merchantTradNo
-	public OrderResponseDTO findOrdersByMerchantTradNo(String merchantTradNo){
+	public OrderResponseDTO findOrdersByMerchantTradNo(String merchantTradNo) {
+		System.out.println(merchantTradNo);
 		OrderBean order = orderRepository.findByMerchantTradNo(merchantTradNo);
 		OrderResponseDTO dto = new OrderResponseDTO();
-		// 訂單號碼
+
 		dto.setMerchantTradNo(merchantTradNo);
-		
-		/*
-		List<AdBean> ads = order.getAds();
-		// 物件內容（複數）
-		List<String> houseTitles = new ArrayList<>();
-		// 廣告種類（複數）
+		List<AdBean> ads = order.getAds(); // 物件內容（複數） 
+		List<String> houseTitles = new ArrayList<>(); // 廣告種類（複數） 
 		List<String> adtypes = new ArrayList<>();
-		
-		for(AdBean ad : ads) {
+		List<Integer> prices = new ArrayList<>();
+		List<Long> adIds = new ArrayList<>();
+		for(AdBean ad : ads) { 
 			houseTitles.add(ad.getHouse().getTitle());
 			adtypes.add(ad.getAdtype().getAdName());
-		}
+			prices.add(ad.getAdPrice());
+			adIds.add(ad.getAdId());
+		} 
+		
 		dto.setHouseTitles(houseTitles);
 		dto.setAdtypes(adtypes);
-		*/
+		dto.setPrices(prices);
+		dto.setAdIds(adIds);
 		
-		// 訂單金額
 		dto.setTotalAmount(order.getTotalAmount());
-		// 付款日期
 		dto.setMerchantTradDate(order.getMerchantTradDate());
-		// 訂單狀態
-		dto.setOrderStatus(order.getOrderStatus() == 0 ? "已取消" : "一般訂單");
-		
+		dto.setOrderStatus(order.getOrderStatus());
+		dto.setChoosePayment(order.getChoosePayment());
+
 		return dto;
 	}
-	
-	// create a new order
-	public OrderBean createOrder(OrderBean orderBean) {
-		OrderBean newOrder = orderRepository.save(orderBean);
-		return newOrder;
-	}
-	
-	// cancel(=update) a order
-	public OrderBean cancelOrderByMerchantTradNo(String merchantTradNo) {
-		Optional<OrderBean> option = orderRepository.findById(merchantTradNo);
-		if(option.isPresent()) {
-			OrderBean dbOrder = option.get();
-			dbOrder.setOrderStatus((short) 0);
-			OrderBean savedOrder = orderRepository.save(dbOrder);
-			return savedOrder;
+
+	// 新增
+
+	// 取消（變更）
+	public boolean cancelOrderByMerchantTradNo(String merchantTradNo) {
+		Optional<OrderBean> optional = orderRepository.findById(merchantTradNo);
+		if(optional != null) {
+			OrderBean order = optional.get();
+			order.setOrderStatus((short)2); // 確認後方可取消
+			orderRepository.save(order);
+			return true;
 		}
 		
-		return null;
+		return false;
+	}
+
+	/* private method */
+	private List<OrderResponseDTO> setOrderDetailsResponsesDTO(List<OrderBean> orders) {
+
+		List<OrderResponseDTO> responseDTOs = new ArrayList<>();
+
+		for (OrderBean order : orders) {
+			OrderResponseDTO responseDTO = new OrderResponseDTO();
+
+			List<AdBean> ads = order.getAds();
+			List<Long> adIds = new ArrayList<>();
+			List<String> adtypes = new ArrayList<>();
+			List<String> houseTitles = new ArrayList<>();
+			for (AdBean ad : ads) {
+				adIds.add(ad.getAdId());
+				adtypes.add(ad.getAdtype().getAdName());
+				houseTitles.add(ad.getHouse().getTitle());
+			}
+
+			responseDTO.setAdIds(adIds);
+			responseDTO.setAdtypes(adtypes);
+			responseDTO.setHouseTitles(houseTitles);
+
+			responseDTO.setMerchantTradDate(order.getMerchantTradDate());
+			responseDTO.setMerchantTradNo(order.getMerchantTradNo());
+			responseDTO.setOrderStatus(order.getOrderStatus());
+			responseDTO.setTotalAmount(order.getTotalAmount());
+
+			responseDTOs.add(responseDTO);
+		}
+
+		return responseDTOs;
 	}
 
 	/* ecpay */
-	public String ecpayCheckout(){
+	public String ecpayCheckout() {
 		AllInOne all = new AllInOne("");
 		AioCheckOutALL obj = new AioCheckOutALL();
 		obj.setMerchantTradeNo("textCompany0100");
@@ -146,7 +154,7 @@ public class OrderService {
 		String form = all.aioCheckOut(obj, null);
 		return form;
 	}
-	
+
 	// get ecpay check value and verify
-	
+
 }
