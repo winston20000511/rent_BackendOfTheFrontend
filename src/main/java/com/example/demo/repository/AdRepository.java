@@ -23,5 +23,4 @@ public interface AdRepository extends JpaRepository<AdBean, Long>{
 			+ "where a.adId = :adId")
 	public AdDetailsResponseDTO findAdDetailsByAdId(Long adId);
 	
-	
 }

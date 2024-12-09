@@ -4,15 +4,18 @@ import java.sql.Date;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -25,6 +28,7 @@ import com.example.demo.model.HouseBookingTimeSlotBean;
 import com.example.demo.repository.BookingRepository;
 import com.example.demo.service.BookingService;
 
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -87,24 +91,38 @@ public class BookingController {
 	}
 	
 	@ResponseBody
-	@PostMapping("/api/house/book")
-    public ResponseEntity<?> bookHouse(@RequestBody BookingDTO bookingDTO) {
+	@GetMapping("/api/booking/user")
+    public ResponseEntity<?> getBookingByUser(Long userId) {
+		List<BookingDTO> bookingList = bookingService.getBookingByUser(userId);
+
+        return ResponseEntity.ok().body(bookingList);
+    }
+	
+	@ResponseBody
+	@GetMapping("/api/booking/house")
+    public ResponseEntity<?> getBookingByHouse(Long houseId) {
+		List<BookingDTO> bookingList = bookingService.getBookingByHouse(houseId);
 		
-		
+        return ResponseEntity.ok().body(bookingList);
+    }
+	
+	@ResponseBody
+	@PostMapping("/api/booking/house")
+    public ResponseEntity<?> postBooking(@RequestBody BookingDTO bookingDTO) throws MessagingException {
 		bookingDTO.setCreateDate(LocalDateTime.now());
 		bookingDTO.setStatus((byte) 0);
-		
-        // 發送郵件通知房東
-//        String subject = "新預約通知";
-//        String body = "房屋名稱: " + houseName + "\n有新的預約請求。";
-//        
-//        bookingService.sendEmail(landlordEmail, subject, body);
-        
-		System.out.println(bookingDTO);
-		
+
         return ResponseEntity.ok().body(bookingService.createBooking(bookingDTO));
     }
+	
+	@ResponseBody
+	@PutMapping("/api/booking/house")
+    public ResponseEntity<?> putBooking(String houseId, @RequestBody BookingDTO bookingDTO) throws MessagingException {
+		
 
+        return ResponseEntity.ok().body(bookingService.createBooking(bookingDTO));
+    }
+	
 	@ResponseBody
 	@GetMapping("test")
 	public Optional<BookingBean> getMethodName() {

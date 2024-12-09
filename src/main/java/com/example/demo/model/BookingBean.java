@@ -32,7 +32,7 @@ public class BookingBean {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
+	@Column(name = "booking_id")
 	private Long bookingId;
 
 	@Column(name = "house_id")
