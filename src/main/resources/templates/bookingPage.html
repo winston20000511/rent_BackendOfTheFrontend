@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/" lang="zh-hant-TW">
+
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" href="/css/booking.css" />
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css"
+	integrity="sha512-tS3S5qG0BlhnQROyJXvNjeEM4UpMXHrQfTGmbQ1gKmelCxlSEBUaxhRBj/EFTzpbP4RVSrpEikbmdJobCvhE3g=="
+	crossorigin="anonymous" referrerpolicy="no-referrer" />
+<title>BOOKING</title>
+</head>
+
+<body>
+	<div class="wrapper">
+		<div id="calendar">
+			<div class="header">
+				<div class="overlay">
+					<h1>Make appointment</h1>
+				</div>
+			</div>
+			<div class="monthChange"></div>
+		</div>
+
+		<div class="inner-wrap">
+			<form>
+				<div class="form-name">
+					<input type="text" name="name" id="name"
+						th:value="${session.loginUsername}" /> <label for="name">您的
+						姓名</label>
+				</div>
+
+				<div class="form-name">
+					<input type="email" name="email" id="email"
+						th:value="${session.loginUserEmail}" /> <label for="email">您的
+						email</label>
+				</div>
+
+				<button type="submit" class="request disabled">
+					預約日期: <br class="break" /> <span></span> <span class="day"></span>
+					<span>預約時段: </span> <span class="time"></span>
+					<div class="sendRequest"></div>
+				</button>
+			</form>
+		</div>
+
+		<div class="timepicker">
+			<div class="owl">
+				<div>06:00</div>
+				<div>07:00</div>
+				<div>08:00</div>
+				<div>09:00</div>
+				<div>10:00</div>
+				<div>11:00</div>
+				<div>12:00</div>
+				<div>13:00</div>
+				<div>14:00</div>
+				<div>15:00</div>
+				<div>16:00</div>
+				<div>17:00</div>
+				<div>18:00</div>
+				<div>19:00</div>
+				<div>20:00</div>
+			</div>
+			<div class="fade-l"></div>
+			<div class="fade-r"></div>
+		</div>
+	</div>
+
+
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+		integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+		crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.14.1/jquery-ui.min.js"
+		integrity="sha512-MSOo1aY+3pXCOCdGAYoBZ6YGI0aragoQsg1mKKBHXCYPIWxamwOE7Drh+N5CPgGI5SA9IEKJiPjdfqWFWmZtRA=="
+		crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"
+		integrity="sha512-bPs7Ae6pVvhOSiIcyUClR7/q2OAsRiovw4vAkX+zJbw3ShAeeqezq50RIIcIURq7Oa20rW2n2q+fyXBNcU9lrw=="
+		crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+	<script src="/js/booking.js"></script>
+</body>
+
+</html>
