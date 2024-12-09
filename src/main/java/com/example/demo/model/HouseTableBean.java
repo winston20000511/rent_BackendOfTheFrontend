@@ -2,6 +2,7 @@ package com.example.demo.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -33,6 +34,7 @@ public class HouseTableBean {
     
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private UserTableBean user;
     @Column(name = "title")
     private String title;
@@ -66,18 +68,23 @@ public class HouseTableBean {
     private Integer clickCount;
 
     @OneToOne(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JsonIgnore
     private ConditionTableBean condition;
     
     @OneToOne(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JsonIgnore
     private CollectTableBean collect;
 
     @OneToOne(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JsonIgnore
     private FurnitureTableBean furniture;
 
     @OneToMany(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<HouseImageTableBean> images;
 
     @OneToMany(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<BookingBean> bookings;
 
     @OneToOne(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
@@ -85,7 +92,9 @@ public class HouseTableBean {
     private HouseBookingTimeSlotBean bookingTimeSlots;
     
     @OneToMany(mappedBy = "house", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<AdBean> ads;
+
     
 
 }

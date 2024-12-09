@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.HouseDetailsDTO;
+import com.example.demo.dto.HouseListByUserIdDTO;
 import com.example.demo.model.ConditionTableBean;
 import com.example.demo.model.FurnitureTableBean;
 import com.example.demo.model.HouseImageTableBean;
@@ -158,7 +160,11 @@ public class HouseService {
 		return houseRepository.findNoAdHouses(userId);
 	}
 
-	public List<HouseTableBean> getHousesByUserId(Long userId) {
-		return houseRepository.findByUserUserId(userId);
+	public List<HouseListByUserIdDTO> getHousesByUserId(Long userId) {
+	    // 使用 findHouseByUserId 方法查詢結果
+	    List<HouseListByUserIdDTO> houses = houseRepository.findHousesByUserId(userId);
+	    
+	    // 返回查詢結果
+	    return houses;
 	}
 }

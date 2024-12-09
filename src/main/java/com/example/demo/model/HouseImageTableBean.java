@@ -1,5 +1,7 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -28,10 +30,12 @@ public class HouseImageTableBean {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "house_id", nullable = false) // 房屋ID作為外鍵
+    @JsonIgnore
     private HouseTableBean house;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false) // 用戶ID作為外鍵
+    @JsonIgnore
     private UserTableBean user;
 
 

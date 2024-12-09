@@ -13,7 +13,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "orders_table")
 public class OrderBean {
@@ -61,111 +66,4 @@ public class OrderBean {
 	@JsonIgnore
 	private List<AdBean> ads;
 	
-	public OrderBean() {
-	}
-
-	public Long getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
-
-	public String getMerchantId() {
-		return merchantId;
-	}
-
-	public void setMerchantId(String merchantId) {
-		this.merchantId = merchantId;
-	}
-
-	public String getMerchantTradNo() {
-		return merchantTradNo;
-	}
-
-	public void setMerchantTradNo(String merchantTradNo) {
-		this.merchantTradNo = merchantTradNo;
-	}
-
-	public LocalDateTime getMerchantTradDate() {
-		return merchantTradDate;
-	}
-
-	public void setMerchantTradDate(LocalDateTime merchantTradDate) {
-		this.merchantTradDate = merchantTradDate;
-	}
-
-	public Long getTotalAmount() {
-		return totalAmount;
-	}
-
-	public void setTotalAmount(Long totalAmount) {
-		this.totalAmount = totalAmount;
-	}
-
-	public String getTradeDesc() {
-		return tradeDesc;
-	}
-
-	public void setTradeDesc(String tradeDesc) {
-		this.tradeDesc = tradeDesc;
-	}
-
-	public String getItemName() {
-		return itemName;
-	}
-
-	public void setItemName(String itemName) {
-		this.itemName = itemName;
-	}
-
-	public Short getOrderStatus() {
-		return orderStatus;
-	}
-
-	public void setOrderStatus(Short orderStatus) {
-		this.orderStatus = orderStatus;
-	}
-
-	public String getReturnUrl() {
-		return returnUrl;
-	}
-
-	public void setReturnUrl(String returnUrl) {
-		this.returnUrl = returnUrl;
-	}
-
-	public String getChoosePayment() {
-		return choosePayment;
-	}
-
-	public void setChoosePayment(String choosePayment) {
-		this.choosePayment = choosePayment;
-	}
-
-	public String getCheckMacValue() {
-		return checkMacValue;
-	}
-
-	public void setCheckMacValue(String checkMacValue) {
-		this.checkMacValue = checkMacValue;
-	}
-
-	public UserTableBean getUser() {
-		return user;
-	}
-
-	public void setUser(UserTableBean user) {
-		this.user = user;
-	}
-
-	public List<AdBean> getAds() {
-		return ads;
-	}
-
-	public void setAds(List<AdBean> ads) {
-		this.ads = ads;
-	}
-
 }

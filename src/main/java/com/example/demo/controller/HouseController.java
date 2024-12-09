@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.HouseDetailsDTO;
+import com.example.demo.dto.HouseListByUserIdDTO;
 import com.example.demo.model.ConditionTableBean;
 import com.example.demo.model.FurnitureTableBean;
 import com.example.demo.model.HouseImageTableBean;
@@ -138,7 +139,7 @@ public class HouseController {
     
 
     @GetMapping("/user/{userId}")
-    public List<HouseTableBean> getHousesByUserId(@PathVariable Long userId) {
+    public List<HouseListByUserIdDTO> getHousesByUserId(@PathVariable Long userId) {
         return houseService.getHousesByUserId(userId);
     }
     

@@ -5,8 +5,10 @@ import java.util.Map;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.example.demo.dto.HouseDetailsDTO;
+import com.example.demo.dto.HouseListByUserIdDTO;
 import com.example.demo.model.HouseTableBean;
 
 public interface HouseRepository extends JpaRepository<HouseTableBean, Long> {
@@ -19,5 +21,7 @@ public interface HouseRepository extends JpaRepository<HouseTableBean, Long> {
 				nativeQuery = true)
 		public List<Map<String,Object>> findNoAdHouses(Long userId);
 		
-		 List<HouseTableBean> findByUserUserId(Long userId);
+		@Query("SELECT new com.example.demo.dto.HouseListByUserIdDTO(h.houseId, h.user.userId) " +
+			       "FROM HouseTableBean h WHERE h.user.userId = :userId")
+			List<HouseListByUserIdDTO> findHousesByUserId(@Param("userId") Long userId);
 }

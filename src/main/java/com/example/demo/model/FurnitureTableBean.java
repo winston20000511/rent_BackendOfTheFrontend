@@ -1,5 +1,9 @@
 package com.example.demo.model;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -7,7 +11,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "furniture_table")
 public class FurnitureTableBean {
@@ -44,119 +53,4 @@ public class FurnitureTableBean {
     @JoinColumn(name = "house_id",nullable = false)
     private HouseTableBean house;
 
-	public FurnitureTableBean() {
-
-	}
-
-	public Long getHouseId() {
-		return houseId;
-	}
-
-	public void setHouseId(Long houseId) {
-		this.houseId = houseId;
-	}
-
-	public Boolean getWashingMachine() {
-		return washingMachine;
-	}
-
-	public void setWashingMachine(Boolean washingMachine) {
-		this.washingMachine = washingMachine;
-	}
-
-	public Boolean getAirConditioner() {
-		return airConditioner;
-	}
-
-	public void setAirConditioner(Boolean airConditioner) {
-		this.airConditioner = airConditioner;
-	}
-
-	public Boolean getNetwork() {
-		return network;
-	}
-
-	public void setNetwork(Boolean network) {
-		this.network = network;
-	}
-
-	public Boolean getBedstead() {
-		return bedstead;
-	}
-
-	public void setBedstead(Boolean bedstead) {
-		this.bedstead = bedstead;
-	}
-
-	public Boolean getMattress() {
-		return mattress;
-	}
-
-	public void setMattress(Boolean mattress) {
-		this.mattress = mattress;
-	}
-
-	public Boolean getRefrigerator() {
-		return refrigerator;
-	}
-
-	public void setRefrigerator(Boolean refrigerator) {
-		this.refrigerator = refrigerator;
-	}
-
-	public Boolean getEwaterHeater() {
-		return ewaterHeater;
-	}
-
-	public void setEwaterHeater(Boolean ewaterHeater) {
-		this.ewaterHeater = ewaterHeater;
-	}
-
-	public Boolean getGwaterHeater() {
-		return gwaterHeater;
-	}
-
-	public void setGwaterHeater(Boolean gwaterHeater) {
-		this.gwaterHeater = gwaterHeater;
-	}
-
-	public Boolean getTelevision() {
-		return television;
-	}
-
-	public void setTelevision(Boolean television) {
-		this.television = television;
-	}
-
-	public Boolean getChannel4() {
-		return channel4;
-	}
-
-	public void setChannel4(Boolean channel4) {
-		this.channel4 = channel4;
-	}
-
-	public Boolean getSofa() {
-		return sofa;
-	}
-
-	public void setSofa(Boolean sofa) {
-		this.sofa = sofa;
-	}
-
-	public Boolean getTables() {
-		return tables;
-	}
-
-	public void setTables(Boolean tables) {
-		this.tables = tables;
-	}
-
-	public HouseTableBean getHouse() {
-		return house;
-	}
-
-	public void setHouse(HouseTableBean house) {
-		this.house = house;
-	}
 }
