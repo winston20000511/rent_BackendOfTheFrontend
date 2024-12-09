@@ -2,6 +2,8 @@ package com.example.demo.service;
 
 import java.util.Optional;
 
+import javax.print.attribute.standard.DateTimeAtCompleted;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -27,13 +29,13 @@ public class BookingService {
 
 	@Autowired
 	public BookingTimeSlotRepository timeSlotRepo;
-	
+
 	@Autowired
 	private HouseRepository houseRepository;
-	
+
 	@Autowired
-    private JavaMailSender mailSender;
-	
+	private JavaMailSender mailSender;
+
 	public BookingSlotDTO findTimeSlotByHouseId(Long houseId) {
 		Optional<HouseBookingTimeSlotBean> op = timeSlotRepo.findById(houseId);
 		return op.map(this::convertToDTO).orElse(null);
@@ -44,36 +46,48 @@ public class BookingService {
 		BookingSlotDTO dto = convertToDTO(bean);
 		return dto;
 	}
-	
-	
-	public String createBooking(BookingDetailDTO bookingDTO) {
-		
-		
-        BookingBean newBean = bookingRepo.save(convertToBean(bookingDTO));
-        BookingDetailDTO newDTO = convertToDTO(newBean);
-        
-        // 发送邮件给房子主人
-        sendEmailToOwner(newDTO);
-        
-        return "已申請預約";
-    }
-		
-	private void sendEmailToOwner(BookingDTO booking) {
-		Long houseId = booking.getHouseId();
-		
-        HouseOwnerDetailDTO owner = houseRepository.getOwnerDetailByHouseId(houseId);
-        
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(owner.getMail());
-        message.setSubject("新的预约通知");
-        message.setText("用户已预约从 " + booking.getFromTime() + " 到 " + booking.getToTime());
-        
-        mailSender.send(message);
-    }
-
-    
 
 	
+	
+	public BookingDetailDTO createBooking(BookingDTO booking) {
+		System.out.println("000000000000000000000000");
+		
+		System.out.println(booking.getHouseId());
+		System.out.println(booking.getBookingDate());
+		System.out.println(booking.getFromTime());
+		
+		
+		BookingBean bool = bookingRepo.isExistBooking(booking.getHouseId(), booking.getBookingDate(),
+				booking.getFromTime());
+		System.out.println(bool);
+System.out.println("11111111111111111");
+		BookingBean newBean = null;
+		if (bool==null) {
+			newBean = bookingRepo.save(convertToBean(booking));
+			System.out.println("222222222222222");
+		}
+		
+		System.out.println("3333333333");
+		if(newBean!=null) {
+			BookingDetailDTO bookingDetail = bookingRepo.findBookingDetailsById(newBean.getBookingId());
+			System.out.println("44444444444");
+	        sendEmailToOwner(bookingDetail);
+	        return bookingDetail;
+		}
+		
+		System.out.println("555555555555");
+		return null;
+	}
+
+	private void sendEmailToOwner(BookingDetailDTO booking) {
+		SimpleMailMessage message = new SimpleMailMessage();
+		message.setTo(booking.getOwnerEmail());
+		message.setSubject("新的预约通知");
+		message.setText("用户已预约从 " + booking.getFromTime() + " 到 " + booking.getToTime());
+
+		mailSender.send(message);
+	}
+
 	private BookingDTO convertToDTO(BookingBean bean) {
 		BookingDTO dto = new BookingDTO();
 		dto.setHouseId(bean.getHouseId());
@@ -84,8 +98,20 @@ public class BookingService {
 		dto.setStatus(bean.getStatus());
 		return dto;
 	}
-	
-	
+
+	private BookingDetailDTO convertToDetailDTO(BookingBean bean) {
+		BookingDetailDTO dto = new BookingDetailDTO();
+		dto.setOwnerName(bean.getHouse().getUser().getName());
+		dto.setOwnerEmail(bean.getHouse().getUser().getEmail());
+		dto.setUserName(null);
+		dto.setUserEmail(null);
+		dto.setBookingDate(bean.getBookingDate());
+		dto.setFromTime(bean.getFromTime());
+		dto.setToTime(bean.getToTime());
+		dto.setStatus(bean.getStatus());
+		return dto;
+	}
+
 	private BookingSlotDTO convertToDTO(HouseBookingTimeSlotBean bean) {
 		BookingSlotDTO dto = new BookingSlotDTO();
 		dto.setHouseId(bean.getHouseId());
@@ -97,30 +123,31 @@ public class BookingService {
 		dto.setWeekDay(bean.getWeekDay());
 		return dto;
 	}
-	
-	private BookingBean convertToBean(BookingDetailDTO dto) {
-	    BookingBean bean = new BookingBean();
-	    bean.setHouseId(dto.getHouseId());
-	    bean.setUserId(dto.getUserId());
-	    bean.setBookingDate(dto.getBookingDate()); // 假设 BookingDTO 中有这个字段
-	    bean.setFromTime(dto.getFromTime());
-	    bean.setToTime(dto.getToTime());
-	    bean.setStatus(dto.getStatus());
-	    return bean;
+
+	private BookingBean convertToBean(BookingDTO dto) {
+		BookingBean bean = new BookingBean();
+		bean.setHouseId(dto.getHouseId());
+		bean.setUserId(dto.getUserId());
+		bean.setCreateDate(dto.getCreateDate());
+		bean.setBookingDate(dto.getBookingDate());
+		bean.setFromTime(dto.getFromTime());
+		bean.setToTime(dto.getToTime());
+		bean.setStatus(dto.getStatus());
+		return bean;
 	}
-	
+
 	private HouseBookingTimeSlotBean convertToBean(BookingSlotDTO dto) {
-	    HouseBookingTimeSlotBean bean = new HouseBookingTimeSlotBean();
-	    bean.setHouseId(dto.getHouseId());
-	    bean.setFromDate(dto.getFromDate());
-	    bean.setToDate(dto.getToDate());
-	    bean.setFromTime(dto.getFromTime());
-	    bean.setToTime(dto.getToTime());
-	    bean.setDuration(dto.getDuration());
-	    bean.setWeekDay(dto.getWeekDay());
-	    return bean;
+		HouseBookingTimeSlotBean bean = new HouseBookingTimeSlotBean();
+		bean.setHouseId(dto.getHouseId());
+		bean.setFromDate(dto.getFromDate());
+		bean.setToDate(dto.getToDate());
+		bean.setFromTime(dto.getFromTime());
+		bean.setToTime(dto.getToTime());
+		bean.setDuration(dto.getDuration());
+		bean.setWeekDay(dto.getWeekDay());
+		return bean;
 	}
-	
+
 	public boolean confirm(Long houseId, Long userId) {
 		Optional<HouseTableBean> house = houseRepository.findById(houseId);
 

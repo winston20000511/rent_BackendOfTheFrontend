@@ -25,7 +25,6 @@ public class HouseTableBean {
     @Column(name = "house_id")
     private Long houseId;
     
-    
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private UserTableBean user;

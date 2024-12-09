@@ -1,5 +1,9 @@
 package com.example.demo.controller;
 
+import java.sql.Date;
+import java.sql.Time;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +21,6 @@ import com.example.demo.dto.BookingDTO;
 import com.example.demo.dto.BookingDetailDTO;
 import com.example.demo.dto.BookingSlotDTO;
 import com.example.demo.model.BookingBean;
-import com.example.demo.model.BookingId;
 import com.example.demo.model.HouseBookingTimeSlotBean;
 import com.example.demo.repository.BookingRepository;
 import com.example.demo.service.BookingService;
@@ -85,32 +88,28 @@ public class BookingController {
 	
 	@ResponseBody
 	@PostMapping("/api/house/book")
-    public String bookHouse(@RequestBody BookingDTO bookingDTO) {
-        // 處理預約邏輯，例如保存到資料庫等
-        
+    public ResponseEntity<?> bookHouse(@RequestBody BookingDTO bookingDTO) {
+		
+		
+		bookingDTO.setCreateDate(LocalDateTime.now());
+		bookingDTO.setStatus((byte) 0);
+		
         // 發送郵件通知房東
-        String subject = "新預約通知";
-        String body = "房屋名稱: " + houseName + "\n有新的預約請求。";
+//        String subject = "新預約通知";
+//        String body = "房屋名稱: " + houseName + "\n有新的預約請求。";
+//        
+//        bookingService.sendEmail(landlordEmail, subject, body);
         
-        bookingService.sendEmail(landlordEmail, subject, body);
-        
-        return "預約成功，已通知房東！";
+		System.out.println(bookingDTO);
+		
+        return ResponseEntity.ok().body(bookingService.createBooking(bookingDTO));
     }
-	
-	@Autowired
-	private BookingRepository res;
-	
+
 	@ResponseBody
 	@GetMapping("test")
 	public Optional<BookingBean> getMethodName() {
 	
-
-		
-		Optional<BookingBean> op = res.findById(1l);
-		
-		op.get().toString();
-		System.out.println(op);
-		return op;
+		return null;
 	}
 	
 }

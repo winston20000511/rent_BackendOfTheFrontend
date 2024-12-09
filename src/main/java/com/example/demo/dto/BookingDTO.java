@@ -8,11 +8,11 @@ import lombok.Data;
 
 @Data
 public class BookingDTO {
-	private Long houseId; 
-    private Long userId;
-    private LocalDateTime createDate;
+	private Long houseId;
+	private Long userId;
+	private LocalDateTime createDate;
 	private Date bookingDate;
 	private Time fromTime;
 	private Time toTime;
-	private String status; 
+	private Byte status;
 }
