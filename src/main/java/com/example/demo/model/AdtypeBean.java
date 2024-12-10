@@ -13,12 +13,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-@Entity
-@Table(name = "adtype_table")
+@NoArgsConstructor
 @Getter
 @Setter
+@Entity
+@Table(name = "adtype_table")
 public class AdtypeBean {
 
 	@Id
@@ -32,16 +33,8 @@ public class AdtypeBean {
 	@Column(name = "adprice")
 	private Integer adPrice;
 	
-	@OneToMany(mappedBy = "adtype", fetch = FetchType.EAGER)
-	@JsonIgnore
-	private List<AdBean> ads;
-	
 	@OneToMany(mappedBy = "adtype", fetch = FetchType.LAZY)
 	@JsonIgnore
-	private List<CartItemBean> cartItems;
+	private List<AdBean> ads;
 
-	public AdtypeBean() {
-	}
-
-	
 }

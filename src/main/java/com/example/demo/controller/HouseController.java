@@ -9,16 +9,19 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.HouseDetailsDTO;
+import com.example.demo.dto.HouseListByUserIdDTO;
 import com.example.demo.model.ConditionTableBean;
 import com.example.demo.model.FurnitureTableBean;
 import com.example.demo.model.HouseImageTableBean;
 import com.example.demo.model.HouseTableBean;
 import com.example.demo.model.UserTableBean;
+import com.example.demo.service.CollectService;
 import com.example.demo.service.HouseService;
 
 
@@ -29,7 +32,8 @@ public class HouseController {
 	@Autowired
 	private HouseService houseService;
 	
-	
+	@Autowired
+	private CollectService collectService;
 	
     @SuppressWarnings("unchecked")
 	@PostMapping("/add")
@@ -96,6 +100,10 @@ public class HouseController {
    }
     
     
+    @PutMapping("/{id}")
+    public String updateHouse(@PathVariable Long id, @RequestBody HouseDetailsDTO detail) {
+        return houseService.updateHouse(id, detail);
+    }
     @GetMapping("/getPhotos/{houseId}")
     public ResponseEntity<List<String>> getHousePhotos(@PathVariable Long houseId) {
         List<String> base64Images = houseService.getHouseImagesByHouseId(houseId);
@@ -123,4 +131,25 @@ public class HouseController {
                                  .body("Failed to delete collect data: " + e.getMessage());
         }
     }
+    
+    @GetMapping("/collect/{userId}")
+    public List<Long> getHouseIds(@PathVariable Long userId) {
+        return collectService.getHouseIdsByUserId(userId);
+    }
+    
+
+    @GetMapping("/user/{userId}")
+    public List<HouseListByUserIdDTO> getHousesByUserId(@PathVariable Long userId) {
+        return houseService.getHousesByUserId(userId);
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }
