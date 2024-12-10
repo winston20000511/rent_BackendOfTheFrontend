@@ -1,8 +1,5 @@
 package com.example.demo.controller;
 
-import java.sql.Date;
-import java.sql.Time;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -11,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,11 +18,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.demo.dto.BookingDTO;
-import com.example.demo.dto.BookingDetailDTO;
 import com.example.demo.dto.BookingSlotDTO;
 import com.example.demo.model.BookingBean;
 import com.example.demo.model.HouseBookingTimeSlotBean;
-import com.example.demo.repository.BookingRepository;
 import com.example.demo.service.BookingService;
 
 import jakarta.mail.MessagingException;
@@ -60,9 +55,10 @@ public class BookingController {
 		return "redirect:/";
 	}
 	
-	@GetMapping("/api/booking/add")
+	@CrossOrigin(origins = "http://localhost:5173") 
+	@GetMapping("/api/booking/list")
 	public ResponseEntity<?> editTimeSlot(Long houseId) {
-		BookingSlotDTO house = bookingService.findTimeSlotByHouseId(1l);
+		BookingSlotDTO house = bookingService.findTimeSlotByHouseId(houseId);
 		return ResponseEntity.ok(house);
 	}
 	
@@ -91,7 +87,7 @@ public class BookingController {
 	}
 	
 	@ResponseBody
-	@GetMapping("/api/booking/user")
+	@GetMapping("/api/booking/guest")
     public ResponseEntity<?> getBookingByUser(Long userId) {
 		List<BookingDTO> bookingList = bookingService.getBookingByUser(userId);
 
@@ -99,7 +95,7 @@ public class BookingController {
     }
 	
 	@ResponseBody
-	@GetMapping("/api/booking/house")
+	@GetMapping("/api/booking/host")
     public ResponseEntity<?> getBookingByHouse(Long houseId) {
 		List<BookingDTO> bookingList = bookingService.getBookingByHouse(houseId);
 		
@@ -107,7 +103,7 @@ public class BookingController {
     }
 	
 	@ResponseBody
-	@PostMapping("/api/booking/house")
+	@PostMapping("/api/booking/host")
     public ResponseEntity<?> postBooking(@RequestBody BookingDTO bookingDTO) throws MessagingException {
 		bookingDTO.setCreateDate(LocalDateTime.now());
 		bookingDTO.setStatus((byte) 0);
@@ -116,11 +112,19 @@ public class BookingController {
     }
 	
 	@ResponseBody
-	@PutMapping("/api/booking/house")
-    public ResponseEntity<?> putBooking(String houseId, @RequestBody BookingDTO bookingDTO) throws MessagingException {
+	@PutMapping("/api/booking/guest")
+    public ResponseEntity<?> putBookingByUser(@RequestBody BookingDTO bookingDTO) throws MessagingException {
 		
 
-        return ResponseEntity.ok().body(bookingService.createBooking(bookingDTO));
+        return ResponseEntity.ok().body(bookingService.updateBookingByGuest(bookingDTO));
+    }
+	
+	@ResponseBody
+	@PutMapping("/api/booking/host")
+    public ResponseEntity<?> putBookingByHouse(@RequestBody BookingDTO bookingDTO) throws MessagingException {
+
+
+        return ResponseEntity.ok().body(bookingService.updateBookingByHost(bookingDTO));
     }
 	
 	@ResponseBody

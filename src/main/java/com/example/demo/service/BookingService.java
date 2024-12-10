@@ -52,7 +52,7 @@ public class BookingService {
 		BookingSlotDTO dto = convertToDTO(bean);
 		return dto;
 	}
-	
+
 	public List<BookingDTO> getBookingByUser(Long userId) {
 		List<BookingBean> bs = bookingRepo.findByUserId(userId);
 		List<BookingDTO> dto = new ArrayList<>();
@@ -65,7 +65,7 @@ public class BookingService {
 		}
 		return dto;
 	}
-	
+
 	public List<BookingDTO> getBookingByHouse(Long houseId) {
 		List<BookingBean> bs = bookingRepo.findByHouseId(houseId);
 		List<BookingDTO> dto = new ArrayList<>();
@@ -103,6 +103,31 @@ public class BookingService {
 		}
 	}
 
+	public BookingDTO updateBookingByHost(BookingDTO booking) {
+		Optional<BookingBean> op = bookingRepo.findById(booking.getBookingId());
+		
+		BookingBean newBean = new BookingBean();
+		if(op.isPresent()) {
+			newBean = op.get();
+			newBean.setStatus(booking.getStatus());
+		}
+		
+		return convertToDTO(bookingRepo.save(newBean));
+	}
+	
+	public BookingDTO updateBookingByGuest(BookingDTO booking) {
+Optional<BookingBean> op = bookingRepo.findById(booking.getBookingId());
+		
+		BookingBean newBean = new BookingBean();
+		if(op.isPresent()) {
+			newBean = op.get();
+			newBean.setStatus(booking.getStatus());
+		}
+		
+		return convertToDTO(bookingRepo.save(newBean));
+	}
+	
+	
 	private void sendSimpleEmail(String to, String subject, String text) throws MessagingException {
 		MimeMessage message = mailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message, true);
@@ -127,7 +152,7 @@ public class BookingService {
 
 	private BookingDetailDTO convertToDetailDTO(BookingBean bean) {
 		BookingDetailDTO dto = new BookingDetailDTO();
-		
+
 		dto.setOwnerName(bean.getHouse().getUser().getName());
 		dto.setOwnerEmail(bean.getHouse().getUser().getEmail());
 		dto.setUserName(null);
@@ -153,6 +178,7 @@ public class BookingService {
 
 	private BookingBean convertToBean(BookingDTO dto) {
 		BookingBean bean = new BookingBean();
+		bean.setBookingId(dto.getBookingId());
 		bean.setHouseId(dto.getHouseId());
 		bean.setUserId(dto.getUserId());
 		bean.setCreateDate(dto.getCreateDate());
