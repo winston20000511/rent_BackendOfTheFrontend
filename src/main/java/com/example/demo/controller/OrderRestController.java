@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dto.OrderConfirmationResponseDTO;
 import com.example.demo.dto.OrderResponseDTO;
+import com.example.demo.model.OrderBean;
 import com.example.demo.service.OrderService;
 
 @RestController
@@ -69,6 +72,13 @@ public class OrderRestController {
 		return orderService.findOrdersByConditions(conditions);
 	}
 	
+	@PostMapping("/create")
+	public OrderResponseDTO createOrder(@RequestBody Map<String, String> param) {
+		Integer cartId = Integer.parseInt(param.get("cartId"));
+		String paymentMethod = param.get("paymentMethod");
+		return orderService.createOrder(cartId, paymentMethod);
+	}
+	
 	@PostMapping("/merchantTradNo")
 	public OrderResponseDTO findOrderByMerchantTradNo(@RequestBody String merchantTradNo) {
 		return orderService.findOrdersByMerchantTradNo(merchantTradNo);
@@ -80,11 +90,10 @@ public class OrderRestController {
 		return result;
 	}
 	
-	// 接收 form 表單資料
-	@PostMapping("/ecpayCheckout")
-	public String ecpayCheckout() {
-		String aioCheckOutALLForm = orderService.ecpayCheckout();	
-		return aioCheckOutALLForm;
+	// 取得訂單確認資料
+	@PostMapping("/content/confirmation")
+	public List<OrderConfirmationResponseDTO> confirmOrderContent(@RequestBody Integer cartId) {
+		return orderService.getOrderConfirmationResponseDTOsByCartId(cartId);
 	}
 	
 }

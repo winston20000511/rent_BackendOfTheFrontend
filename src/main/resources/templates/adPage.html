@@ -108,11 +108,11 @@
       </div>
       <div class="flex justify-end w-full sm:w-auto">
         <button
-          id="buy-ad-btn"
+          id="check-cart-btn"
           type="button"
           class="bg-green-500 text-white px-4 py-2 text-sm rounded-lg hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-green-300"
         >
-          前往購買VIP服務
+          查看選購清單
         </button>
       </div>
     </div>
@@ -121,6 +121,12 @@
       <div id="view-box" class="border border-gray-400 py-2 px-2 rounded-md">
         <!-- 篩選出來的廣告列表 -->
         <div id="ads-table-box">
+          <div
+            class="px-4 py-2 text-sm font-bold text-yellow-600 bg-yellow-100 rounded m-3"
+          >
+            <div>．VIP申請僅保留三天。如逾期未付款，視為取消申請。</div>
+            <div>．加入訂單後，可前往查看訂單內容，並進行付費。</div>
+          </div>
           <table
             class="table-auto w-full border-collapse border border-gray-300"
           >
@@ -210,10 +216,7 @@
       </div>
 
       <!-- 提示訊息 -->
-      <div
-        id="modal-background"
-        class="fixed inset-0 bg-gray-500/75 hidden"
-      ></div>
+      <div id="modal-background" class="overlay hidden"></div>
       <div
         id="success-modal"
         class="fixed inset-0 z-10 bg-gray-500/75 flex items-center justify-center hidden"
@@ -269,6 +272,57 @@
           </div>
         </div>
       </div>
+
+      <!-- 購物車 modal -->
+      <div
+        id="cart"
+        class="fixed top-0 right-0 w-80 h-full bg-white shadow-lg transform hidden-right z-50 hidden"
+      >
+        <div class="flex justify-between p-4 border-b">
+          <h2 class="text-xl font-semibold">選購清單</h2>
+          <button
+            id="close-cart"
+            class="text-xl font-bold text-gray-600 hover:text-gray-800 focus:outline-none"
+          >
+            ×
+          </button>
+        </div>
+
+        <div id="cart-list" class="p-4 space-y-4"></div>
+
+        <div class="p-4 space-y-4">
+          <p class="text-lg font-semibold">選擇付款方式</p>
+          <div class="flex flex-col space-y-2">
+            <label class="flex items-center">
+              <input
+                type="radio"
+                name="payment-method"
+                value="linepay"
+                class="mr-2"
+                checked
+              />
+              <span class="text-gray-700"><img width="70px" src="/img/Line_pay_logo.svg.png"/></span>
+            </label>
+            <label class="flex items-center">
+              <input
+                type="radio"
+                name="payment-method"
+                value="Credit"
+                class="mr-2"
+              />
+              <span class="text-gray-700"><i class="fa-solid fa-credit-card"></i> 信用卡</span>
+            </label>
+          </div>
+        </div>
+        <div class="p-4 text-right border-t">
+          <button id="submit-btn"
+            class="bg-green-600 text-white px-6 py-2 rounded-lg shadow hover:bg-green-700"
+          >
+            前往結帳
+          </button>
+        </div>
+      </div>
+
     </main>
 
     <footer></footer>

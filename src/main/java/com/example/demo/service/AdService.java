@@ -53,7 +53,7 @@ public class AdService {
 			Optional<AdtypeBean> optional = adtypeRepository.findById(requestDTO.getAdtypeId());
 			if(optional != null) {
 				AdtypeBean adtypeBean = optional.get();
-				adBean.setAdtypeId(adtypeBean.getAdTypeId());
+				adBean.setAdtypeId(adtypeBean.getAdtypeId());
 				adBean.setAdPrice(adtypeBean.getAdPrice());
 			}
 			

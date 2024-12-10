@@ -1,15 +1,10 @@
 package com.example.demo.repository;
 
-import java.util.List;
-
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
-import com.example.demo.dto.AdDetailsResponseDTO;
 import com.example.demo.model.AdBean;
-import com.example.demo.model.OrderBean;
 
 public interface AdRepository extends JpaRepository<AdBean, Long>, JpaSpecificationExecutor<AdBean>{
 	
@@ -30,5 +25,8 @@ public interface AdRepository extends JpaRepository<AdBean, Long>, JpaSpecificat
 //			+ "join HouseTableBean h on a.houseId = h.houseId "
 //			+ "where a.orderId = :orderId")
 //	public List<AdDetailsResponseDTO> findAdDetailsByOrderId(String orderId);
+	
+	@Query("From AdBean where adId = :adId and userId = :userId")
+	public AdBean findAdByAdIdAndUserId(Long adId, Long userId);
 	
 }

@@ -1,7 +1,7 @@
 // 為物件申請VIP服務
 const addAdBtn = document.getElementById("add-ad-btn");
 addAdBtn.addEventListener("click", function () {
-  window.location.href = "http://localhost:8080/advertisements/mylist?action=addAd";
+  window.location.href = "/advertisements/mylist?action=addAd";
 });
 
 // 設定篩選條件
@@ -70,7 +70,7 @@ userInput.addEventListener("input", function () {
 async function filterOrders() {
   console.log("filter conditions: ", conditions);
 
-  const response = await fetch("http://localhost:8080/api/orders/filter", {
+  const response = await fetch("/api/orders/filter", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(conditions),
@@ -112,7 +112,7 @@ async function openCheckForm(merchantTradNo) {
   toggleOrderDetailModal();
 
   const response = await fetch(
-    `http://localhost:8080/api/orders/merchantTradNo`,
+    `/api/orders/merchantTradNo`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -137,7 +137,7 @@ async function cancelOrder(merchantTradNo){
     message.insertAdjacentElement("afterend", hintMessage);
     toggleMessageModal();
 
-    const response = await fetch("http://localhost:8080/api/orders/merchantTradNo",{
+    const response = await fetch("/api/orders/merchantTradNo",{
       method:"PUT",
       headers: { "Content-Type": "application/json" },
       body: merchantTradNo,

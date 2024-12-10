@@ -2,10 +2,108 @@
   1. 分頁重複觸發的問題要修掉
 */
 
-// 前往購買廣告
-document.getElementById("buy-ad-btn").addEventListener("click", function () {
-  window.location.href = "http://localhost:8080/orders/mylist";
+// 追蹤加入購物車的的項目
+const cartItems = new Set();
+// 查看購物車
+const cart = document.getElementById("cart");
+const modalBackground = document.getElementById("modal-background");
+document.getElementById("check-cart-btn").addEventListener("click", async function () {
+  modalBackground.classList.remove("hidden");
+  cart.classList.remove('hidden');
+  cart.classList.remove('hidden-right');
+  cart.classList.remove('slide-out-right');
+  cart.classList.add('slide-in-right');
+
+  // 取得購物車內容
+  const response = await fetch("/api/cart/list",{
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(conditions),
+  });
+  const cartItems = await response.json();
+
+  console.log("cart items: ", cartItems);
+
+  let cartLisElement = document.getElementById("cart-list");
+
+  cartLisElement.innerHTML = "";
+  cartItems.forEach((cartItem) =>{
+    cartLisElement.innerHTML += generateCartItemRow(cartItem);
+  });
+
+  document.getElementById('submit-btn').addEventListener('click', function() {
+    // 使用querySelector選取被選中的radio按鈕
+    const selectedPaymentMethod = document.querySelector('input[name="payment-method"]:checked');
+  
+    if (selectedPaymentMethod) {
+      console.log('選擇的付款方式是：', selectedPaymentMethod.value);
+
+      const purchase = {
+        "paymentMethod" : selectedPaymentMethod.value,
+        "cartId" : cartItems[0].cartId,
+      };
+
+      console.log("purchase: ", purchase);
+
+      // 攜帶參數前往結帳畫面
+      // 將付款方式 + 購物車內容資料送到後端 > 呼叫API並轉址
+      fetch("/orders/confirm",{
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(purchase),
+      })
+      .then((response) =>{
+        return response.json();
+      })
+      .then((data) =>{
+        console.log("定向回傳: ", data);
+        if(data.redirectURL){
+          window.location.href = data.redirectURL;
+        }else{
+          console.log("沒有重新定向的URL");
+        }
+      })
+      .catch((error) =>{
+        console.log("error: ", error);
+      });
+
+    }
+
+  });
+
 });
+
+const closeCartButton = document.getElementById("close-cart");
+closeCartButton.addEventListener("click", function() {
+  cart.classList.add("slide-out-right");
+  modalBackground.classList.add("hidden");
+  
+  setTimeout(function() {
+    cart.classList.add("hidden");
+    cart.classList.add("hidden-right");
+  }, 500);
+});
+
+function generateCartItemRow(cartItem){
+
+  const time = cartItem.addedDate.split("T");
+
+  const cartItemHTML =
+  `<div class="p-4 border rounded-lg shadow-sm">
+    <div class="flex justify-between">
+      <p class="font-semibold">
+        廣告編號：<span class="text-blue-600">${cartItem.adId}</span>
+      </p>
+      <p class="text-gray-500">價格：NTD ${cartItem.adPrice}</p>
+    </div>
+    <p>廣告方案：<span class="text-green-600">${cartItem.adtypeId}</span></p>
+    <p class="text-sm text-gray-500">
+      加入購物車時間：${time[0]} ${time[1].substring(0,5)}
+    </p>
+  </div>`;
+
+  return cartItemHTML;
+}
 
 // 設定篩選條件
 const conditions = {
@@ -66,7 +164,15 @@ userInput.addEventListener("input", function () {
 async function filterAds() {
   console.log("filter conditions: ", conditions);
 
-  const response = await fetch("http://localhost:8080/advertisements/filter", {
+  const cartResponse = await fetch("/api/cart/ads");
+  const addedAdIds = await cartResponse.json();
+  cartItems.clear();
+  addedAdIds.forEach((adId) =>{
+  cartItems.add(adId);
+  })
+  console.log("added cart items: ", cartItems);
+
+  const response = await fetch("/advertisements/filter", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(conditions),
@@ -97,10 +203,10 @@ async function filterAds() {
     });
   });
 
-  const deleteBtn = document.querySelectorAll(
+  const deleteBtns = document.querySelectorAll(
     "#ads-table-box tbody .delete-btn"
   );
-  deleteBtn.forEach((button) => {
+  deleteBtns.forEach((button) => {
     button.addEventListener("click", function () {
       const adId = this.closest("tr").getAttribute("data-ad-id");
       const userConfirmed = window.confirm("確定要刪除嗎？");
@@ -110,13 +216,51 @@ async function filterAds() {
       }
     });
   });
+
+  const addToCartBtns = document.querySelectorAll(".add-to-cart-btn");
+  addToCartBtns.forEach((button) => {
+    button.addEventListener("click", function () {
+      const adId = button.closest("tr").getAttribute("data-ad-id");
+
+      if (cartItems.has(adId)) {
+        alert("該商品已加入購物車！");
+        return;
+      }
+
+      // 送新增post到後端
+      addItemToCart(adId).then((isSuccess) => {
+        console.log(isSuccess);
+        if (isSuccess) {
+          cartItems.add(adId);
+          this.disabled = true;
+          this.textContent = "已加入";
+        } else {
+          alert("加入失敗，請重新操作");
+        }
+      });
+    });
+  });
+}
+
+async function addItemToCart(adId) {
+  const response = await fetch("/api/cart/additem", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(adId),
+  });
+
+  const result = await response.json();
+
+  return result;
 }
 
 async function openEditForm(adId) {
   toggleAdDetailModal();
 
   const response = await fetch(
-    `http://localhost:8080/advertisements/adId/${adId}`
+    `/advertisements/adId/${adId}`
   );
 
   const adDetail = await response.json();
@@ -182,7 +326,7 @@ async function openEditForm(adId) {
   tbodyElement.innerHTML += tbodyHTML;
 
   const adtypesResponse = await fetch(
-    `http://localhost:8080/advertisements/adtypes`
+    `/advertisements/adtypes`
   );
   const adtypes = await adtypesResponse.json();
 
@@ -240,7 +384,7 @@ async function openEditForm(adId) {
       const selectedValue = document.getElementById("ad-type-select").value;
       const adPlanCell = document.querySelector(".ad-plan-cell");
 
-      const response = await fetch("http://localhost:8080/advertisements", {
+      const response = await fetch("/advertisements", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -274,7 +418,7 @@ async function openEditForm(adId) {
 }
 
 async function deleteAd(adId) {
-  const response = await fetch("http://localhost:8080/advertisements", {
+  const response = await fetch("/advertisements", {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -357,6 +501,9 @@ function calculateRemainingDays(startDateStr, adDays) {
 }
 
 function generateAdRow(ad) {
+
+  const isAdded = cartItems.has(ad.adId);
+
   let adStatusSpanElement;
   let remainingDays = calculateRemainingDays(ad.paidDate, ad.adName);
   let deleteBtn;
@@ -365,21 +512,25 @@ function generateAdRow(ad) {
   if (ad.isPaid === "已付款") {
     adStatusSpanElement = `<span class="inline-block px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">推廣中</span>`;
     deleteBtn = `<button class="px-3 py-1 text-sm text-gray-400 border rounded" style="cursor: default;" disabled>刪除</button>`;
-    cart = `<button class="px-3 py-1 text-sm text-gray-400 border rounded" style="cursor: default;" disabled>加入購物車</button>`;
+    cart = `<button class="px-3 py-1 text-sm text-gray-400 border rounded" style="cursor: default;" disabled>加入訂單</button>`;
   }
 
   if (ad.isPaid === "已付款" && remainingDays < 0) {
     adStatusSpanElement = `<span class="inline-block px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">已到期</span>`;
     remainingDays = "無";
     deleteBtn = `<button class="px-3 py-1 text-sm text-gray-400 border rounded" style="cursor: default;" disabled>刪除</button>`;
-    cart = `<button class="px-3 py-1 text-sm text-gray-400 border rounded" style="cursor: default;" disabled>加入購物車</button>`;
+    cart = `<button class="px-3 py-1 text-sm text-gray-400 border rounded" style="cursor: default;" disabled>加入訂單</button>`;
   }
 
   if (ad.isPaid === "未付款") {
-    adStatusSpanElement = `<span class="inline-block px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">未發布</span>`;
+    adStatusSpanElement = `<span class="inline-block px-2 py-1 text-xs font-medium rounded-full bg-pink-100 text-pink-800">未發布</span>`;
     remainingDays = "無";
     deleteBtn = `<button class="delete-btn px-3 py-1 text-sm text-red-600 bg-red-100 rounded hover:bg-red-200">刪除</button>`;
-    cart = `<button class="buy-btn px-3 py-1 text-sm text-green-600 bg-green-100 rounded hover:bg-green-200">加入購物車</button>`;
+    if(isAdded){
+      cart = `<button class="add-to-cart-btn px-3 py-1 text-sm text-gray-600 bg-gray-100 rounded" style="cursor: default;" disabled>已加入</button>`;
+    }else{
+      cart = `<button class="add-to-cart-btn px-3 py-1 text-sm text-green-600 bg-green-100 rounded hover:bg-green-200">加入訂單</button>`;
+    }
   }
 
   return `
@@ -528,18 +679,18 @@ addAdBtn.addEventListener("click", function () {
 });
 
 // 如果是從order頁面跳過來
-window.onload = function(){
+window.onload = function () {
   const params = new URLSearchParams(window.location.search);
   const action = params.get("action");
 
-  if(action === "addAd"){
-    if(addAdBtn){
+  if (action === "addAd") {
+    if (addAdBtn) {
       addAdBtn.click();
-    }else{
+    } else {
       console.log("按鈕不存在");
     }
   }
-}
+};
 
 closeAddTable();
 
@@ -556,12 +707,12 @@ function closeAddTable() {
 async function filterHousesWithoutAds() {
   const pageNumber = conditions.page;
   const response = await fetch(
-    `http://localhost:8080/advertisements/houseswithoutadds/${pageNumber}`
+    `/advertisements/houseswithoutadds/${pageNumber}`
   );
   const data = await response.json();
 
   const adtypesResponse = await fetch(
-    `http://localhost:8080/advertisements/adtypes`
+    `/advertisements/adtypes`
   );
   const adtypes = await adtypesResponse.json();
 
@@ -650,7 +801,7 @@ function showHouses(houseContents, adtypes) {
 }
 
 async function addSelectedAd(huoseId, adTypeId) {
-  const response = fetch("http://localhost:8080/advertisements", {
+  const response = fetch("/advertisements", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
