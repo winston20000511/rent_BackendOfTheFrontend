@@ -26,7 +26,7 @@ public class HouseImageTableBean {
     private Long id;
 
     @Column(name = "image_url")
-    private byte[] imageUrl;
+    private byte[] image;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "house_id", nullable = false) // 房屋ID作為外鍵
