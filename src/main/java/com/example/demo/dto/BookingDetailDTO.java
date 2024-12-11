@@ -18,7 +18,6 @@ public class BookingDetailDTO {
 	private String userEmail;
 	private LocalDateTime createDate;
 	private Date bookingDate;
-	private Time fromTime;
-	private Time toTime;
+	private Time bookingTime;
 	private Byte status;
 }

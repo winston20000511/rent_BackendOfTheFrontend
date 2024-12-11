@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.print.attribute.standard.DateTimeAtCompleted;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -15,7 +12,6 @@ import org.springframework.stereotype.Service;
 import com.example.demo.dto.BookingDTO;
 import com.example.demo.dto.BookingDetailDTO;
 import com.example.demo.dto.BookingSlotDTO;
-import com.example.demo.dto.HouseOwnerDetailDTO;
 import com.example.demo.model.BookingBean;
 import com.example.demo.model.HouseBookingTimeSlotBean;
 import com.example.demo.model.HouseTableBean;
@@ -81,7 +77,7 @@ public class BookingService {
 
 	public String createBooking(BookingDTO booking) throws MessagingException {
 		Integer bool = bookingRepo.isExistBooking(booking.getHouseId(), booking.getBookingDate(),
-				booking.getFromTime());
+				booking.getBookingTime());
 		BookingBean newBean = null;
 
 		if (bool != null && bool > 0) {
@@ -91,8 +87,8 @@ public class BookingService {
 			if (newBean != null) {
 				BookingDetailDTO b = bookingRepo.findBookingDetailsById(newBean.getBookingId());
 
-				String msg = "<h2>您在 <span style='color:red;'>" + b.getBookingDate() + " " + b.getFromTime() + "-"
-						+ b.getToTime() + "</span> 有新的預約</h2>" + "<br/>http://localhost:8080/";
+				String msg = "<h2>您在 <span style='color:red;'>" + b.getBookingDate() + " " + b.getBookingTime()
+						+ "</span> 有新的預約</h2>" + "<br/>http://localhost:8080/";
 
 				sendSimpleEmail(b.getOwnerEmail(), "您有新的預約", msg);
 				return "預約成功!";
@@ -105,29 +101,28 @@ public class BookingService {
 
 	public BookingDTO updateBookingByHost(BookingDTO booking) {
 		Optional<BookingBean> op = bookingRepo.findById(booking.getBookingId());
-		
+
 		BookingBean newBean = new BookingBean();
-		if(op.isPresent()) {
+		if (op.isPresent()) {
 			newBean = op.get();
 			newBean.setStatus(booking.getStatus());
 		}
-		
+
 		return convertToDTO(bookingRepo.save(newBean));
 	}
-	
+
 	public BookingDTO updateBookingByGuest(BookingDTO booking) {
-Optional<BookingBean> op = bookingRepo.findById(booking.getBookingId());
-		
+		Optional<BookingBean> op = bookingRepo.findById(booking.getBookingId());
+
 		BookingBean newBean = new BookingBean();
-		if(op.isPresent()) {
+		if (op.isPresent()) {
 			newBean = op.get();
 			newBean.setStatus(booking.getStatus());
 		}
-		
+
 		return convertToDTO(bookingRepo.save(newBean));
 	}
-	
-	
+
 	private void sendSimpleEmail(String to, String subject, String text) throws MessagingException {
 		MimeMessage message = mailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message, true);
@@ -144,8 +139,7 @@ Optional<BookingBean> op = bookingRepo.findById(booking.getBookingId());
 		dto.setUserId(bean.getUserId());
 		dto.setCreateDate(bean.getCreateDate());
 		dto.setBookingDate(bean.getBookingDate());
-		dto.setFromTime(bean.getFromTime());
-		dto.setToTime(bean.getToTime());
+		dto.setBookingTime(bean.getBookingTime());
 		dto.setStatus(bean.getStatus());
 		return dto;
 	}
@@ -158,8 +152,7 @@ Optional<BookingBean> op = bookingRepo.findById(booking.getBookingId());
 		dto.setUserName(null);
 		dto.setUserEmail(null);
 		dto.setBookingDate(bean.getBookingDate());
-		dto.setFromTime(bean.getFromTime());
-		dto.setToTime(bean.getToTime());
+		dto.setBookingTime(bean.getBookingTime());
 		dto.setStatus(bean.getStatus());
 		return dto;
 	}
@@ -183,8 +176,7 @@ Optional<BookingBean> op = bookingRepo.findById(booking.getBookingId());
 		bean.setUserId(dto.getUserId());
 		bean.setCreateDate(dto.getCreateDate());
 		bean.setBookingDate(dto.getBookingDate());
-		bean.setFromTime(dto.getFromTime());
-		bean.setToTime(dto.getToTime());
+		bean.setBookingTime(dto.getBookingTime());
 		bean.setStatus(dto.getStatus());
 		return bean;
 	}

@@ -16,7 +16,7 @@ var duration;
 
 
 $.ajax({
-	url: '/api/booking/add',
+	url: '/api/booking/list',
 	type: 'GET',
 	dataType: 'json',
 	data: {

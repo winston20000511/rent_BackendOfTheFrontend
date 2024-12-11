@@ -17,7 +17,7 @@ public interface BookingRepository extends JpaRepository<BookingBean, Long> {
 	List<BookingBean> findByHouseId(Long houserId);
 	
 	@Query(value = "SELECT new com.example.demo.dto.BookingDetailDTO(ow.name, ow.email, u.name, u.email, "
-			+ "b.createDate, b.bookingDate, b.fromTime, b.toTime, b.status) " + "FROM BookingBean b "
+			+ "b.createDate, b.bookingDate, b.bookingTime, b.status) " + "FROM BookingBean b "
 			+ "JOIN b.house h " 
 			+ "JOIN h.user ow "
 			+ "JOIN b.rentUser u " 
@@ -29,8 +29,7 @@ public interface BookingRepository extends JpaRepository<BookingBean, Long> {
 
 	@Query(value = "SELECT count(*) FROM booking_table WHERE house_id = :houseId "
 			+ "AND booking_date = :date "
-			+ "AND start_time <= CAST(:time AS time) "
-			+ "AND end_time > CAST(:time AS time) "
+			+ "AND booking_time = CAST(:time AS time) "
 			+ "AND status <= 1", nativeQuery = true)
 	Integer isExistBooking(Long houseId, Date date, Time time);
 

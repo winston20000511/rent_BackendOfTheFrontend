@@ -47,12 +47,9 @@ public class BookingBean {
 	@Column(name = "booking_date")
 	private Date bookingDate;
 
-	@Column(name = "start_time")
-	private Time fromTime;
-
-	@Column(name = "end_time")
-	private Time toTime;
-
+	@Column(name = "booking_time")
+	private Time bookingTime;
+	
 	@Column(name = "status")
 	private Byte status;
 

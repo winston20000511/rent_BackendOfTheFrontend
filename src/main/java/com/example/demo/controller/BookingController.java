@@ -55,9 +55,9 @@ public class BookingController {
 		return "redirect:/";
 	}
 	
-	@CrossOrigin(origins = "http://localhost:5173") 
+	
 	@GetMapping("/api/booking/list")
-	public ResponseEntity<?> editTimeSlot(Long houseId) {
+	public ResponseEntity<?> getTimeSlot(Long houseId) {
 		BookingSlotDTO house = bookingService.findTimeSlotByHouseId(houseId);
 		return ResponseEntity.ok(house);
 	}
