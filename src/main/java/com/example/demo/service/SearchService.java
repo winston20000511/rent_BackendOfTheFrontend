@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +20,11 @@ import com.example.demo.helper.SearchHelper;
 import com.example.demo.model.HouseTableBean;
 import com.example.demo.repository.SearchRepository;
 
+
 @Service
 public class SearchService {
 	
+
 	@Autowired
 	private SearchRepository searchRepo;
 	
@@ -31,11 +34,7 @@ public class SearchService {
 	public List<HouseTableBean> findAll() {
 		return searchRepo.findAll();
 	}
-//	
-//	public List<Address> findByCity(String city){
-//		return searchRepo.findByCity(city);
-//	}
-//	
+
 	public List<AddressDTO> findByCityAndTownship(String address){
 		
 		String[] Parts = SearchHelper.splitCityTown(address);
@@ -43,7 +42,9 @@ public class SearchService {
 	}
 	
 	public List<AddressDTO> findByKeyWord(String name){
-		return searchRepo.findByKeyWord(name);
+		List<AddressDTO> listAddressDTO = searchRepo.findByKeyWord(name);
+		listAddressDTO.sort(Comparator.comparing(AddressDTO::getPaidDate).reversed());
+		return listAddressDTO;
 	}
 
 
@@ -70,7 +71,7 @@ public class SearchService {
 		try {
 			encodedAddress = java.net.URLEncoder.encode(origin,"UTF-8");
 			String urlString = "https://maps.googleapis.com/maps/api/geocode/json?address=" 
-	                + encodedAddress + "&components=country:TW&language=zh-TW&key=" + googleApiConfig.getGoogleMapKey();
+	                + encodedAddress + "&components=country:TW&bounds=21.5,119.5|25.5,122.5&language=zh-TW&key=" + googleApiConfig.getGoogleMapKey();
 			StringBuilder content = SearchHelper.urlConnection(urlString);
 			
 			JSONObject json = new JSONObject(content.toString());
@@ -99,16 +100,12 @@ public class SearchService {
 			}
 			
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

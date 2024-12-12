@@ -49,9 +49,6 @@ iconButton.addEventListener('click',()=>{
 	//addMarkerByAddress();
 })
 
-
-
-
 function initMap() {
 	map = new google.maps.Map(document.getElementById('map'), {
 		center: { lat: 23.023535, lng: 120.222776 }, // 台灣的中心點 緯度 經度
@@ -112,10 +109,18 @@ async function updateKeyWordList(data){
 	const search = document.getElementById('search');
 	searchList.innerHTML = '';
 	data.forEach(k=>{
+
 		const li = document.createElement('li');
-		//if (k.adress === null){ k.address=""};
-		
-		li.textContent=k.address;
+		const dateSpec = '1999-01-01T00:00:00';
+
+		const sourceDate = new Date(k.paidDate);
+		const targetDate = new Date(dateSpec)
+
+		if (sourceDate > targetDate){
+			console.log(k.paidDate)
+			li.classList.add('red-height')
+		}
+		li.textContent=k.address
 		li.classList.add('px-4', 'py-2', 'cursor-pointer', 'hover:bg-blue-500', 'hover:text-white');
 
 		li.addEventListener('click',()=>{
@@ -258,6 +263,8 @@ async function addMarkerByAddress(data) {
     // 將地圖中心移動到新標記位置
 	const address = document.getElementById('search').value;
 	const origin = await geocodeAddress(address)
+	console.log(address)
+	console.log(origin)
     const originMaker = new google.maps.marker.AdvancedMarkerElement({
         position: origin,
 		map: map,
