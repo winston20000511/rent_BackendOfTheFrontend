@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -71,17 +72,17 @@ public class HouseTableBean {
     @JsonIgnore
     private ConditionTableBean condition;
     
-    @OneToOne(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JsonIgnore
-    private CollectTableBean collect;
+    private List<CollectTableBean> collect;
 
     @OneToOne(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JsonIgnore
     private FurnitureTableBean furniture;
 
-    @OneToMany(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "house", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
-    private List<HouseImageTableBean> images;
+    private List<HouseImageTableBean> images = new ArrayList<>();
 
     @OneToMany(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JsonIgnore

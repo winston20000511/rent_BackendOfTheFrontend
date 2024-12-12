@@ -41,7 +41,7 @@ public class HouseDetailsDTO {
 	private Boolean channel4;
 	private Boolean sofa;
 	private Boolean tables;
-    private List<byte[]> imageUrl;
+    private List<byte[]> images;
 
 	public HouseDetailsDTO(Long houseId, Long userId, String title, Integer price, String description, Integer size,
 			String address, Byte room, Byte bathroom, Byte livingroom, Byte kitchen, Byte floor, Boolean atticAddition,
@@ -49,7 +49,7 @@ public class HouseDetailsDTO {
 			Boolean waterDispenser, Boolean managementFee, Byte genderRestrictions, Boolean washingMachine,
 			Boolean airConditioner, Boolean network, Boolean bedstead, Boolean mattress, Boolean refrigerator,
 			Boolean ewaterHeater, Boolean gwaterHeater, Boolean television, Boolean channel4, Boolean sofa,
-			Boolean tables, List<byte[]> imageUrl) {
+			Boolean tables, List<byte[]> images) {
 		super();
 		this.houseId = houseId;
 		this.userId = userId;
@@ -85,7 +85,7 @@ public class HouseDetailsDTO {
 		this.channel4 = channel4;
 		this.sofa = sofa;
 		this.tables = tables;
-		this.imageUrl = imageUrl;
+		this.images = images;
 	}
 
 	public HouseDetailsDTO() {

@@ -1,6 +1,5 @@
 package com.example.demo.service;
 
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -146,15 +145,13 @@ public class HouseService {
 
 	// 將byte[]轉換為Base64編碼的字串
 	private String convertImageToBase64(HouseImageTableBean image) {
-		if (image.getImage() == null) {
+		if (image.getImages() == null) {
 			return null;
 		}
-		return Base64.getEncoder().encodeToString(image.getImage());
+		return Base64.getEncoder().encodeToString(image.getImages());
 	}
 
-	public void deleteCollectByHouseId(Long houseId) {
-		collectRepository.deleteByHouseId(houseId);
-	}
+
 
 	public List<Map<String, Object>> findNoAdHousesByUserId(Long userId) {
 		return houseRepository.findNoAdHouses(userId);

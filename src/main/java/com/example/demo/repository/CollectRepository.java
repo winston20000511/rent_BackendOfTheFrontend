@@ -14,13 +14,13 @@ import jakarta.transaction.Transactional;
 
 @Repository
 public interface CollectRepository extends JpaRepository<CollectTableBean, Long> {
-	//根據USERID列出USER收藏房屋的ID清單
-	 @Query("SELECT c.house.houseId FROM CollectTableBean c WHERE c.user.userId = :userId")
-	    List<Long> findHouseIdsByUserId(@Param("userId") Long userId);
+	// 根據USERID列出USER收藏房屋的ID清單
+	@Query("SELECT c.house.houseId FROM CollectTableBean c WHERE c.user.userId = :userId")
+	List<Long> findHouseIdsByUserId(@Param("userId") Long userId);
+
+	@Modifying
+	@Transactional
+	@Query("DELETE FROM CollectTableBean c WHERE c.user.userId = :userId AND c.house.houseId = :houseId")
+	void deleteByUserIdAndHouseId(@Param("userId") Long userId, @Param("houseId") Long houseId);
 	
-	 //根據HOUSEID跟USERID刪除該USER的收藏房屋
-    @Transactional
-    @Modifying
-    @Query("DELETE FROM CollectTableBean c WHERE c.house.houseId = :houseId")
-    void deleteByHouseId(@Param("houseId") Long houseId);
 }
