@@ -28,7 +28,7 @@ public class UserService {
     }
 
     // 根據電子信箱查詢使用者
-    public Optional<UserTableBean> getUserByEmail(String email) {
+    public UserTableBean getUserByEmail(String email) {
         // 查詢使用者
         return userRepository.findByEmail(email);
     }
@@ -78,10 +78,7 @@ public class UserService {
         }
     }
 
-    // 根據 email 查詢使用者
-    public Optional<UserTableBean> getUserByEmail1(String email) {
-        return userRepository.findByEmail(email);
-    }
+
 
 	public UserTableBean checkLogin(String username, String password) {
 		// TODO Auto-generated method stub
