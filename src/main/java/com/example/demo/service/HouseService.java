@@ -92,15 +92,13 @@ public class HouseService {
 
 	// 將byte[]轉換為Base64編碼的字串
 	private String convertImageToBase64(HouseImageTableBean image) {
-		if (image.getImageUrl() == null) {
+		if (image.getImages() == null) {
 			return null;
 		}
-		return Base64.getEncoder().encodeToString(image.getImageUrl());
+		return Base64.getEncoder().encodeToString(image.getImages());
 	}
 
-	public void deleteCollectByHouseId(Long houseId) {
-		collectRepository.deleteByHouseId(houseId);
-	}
+
 
 	public List<Map<String, Object>> findNoAdHousesByUserId(Long userId) {
 		return houseRepository.findNoAdHouses(userId);

@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -24,9 +25,10 @@ public class HouseImageTableBean {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "image_url")
-    private byte[] imageUrl;
+    
+    @Lob
+    @Column(name = "image_url", columnDefinition = "VARBINARY(MAX)")
+    private byte[] images;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "house_id", nullable = false) // 房屋ID作為外鍵
@@ -38,5 +40,6 @@ public class HouseImageTableBean {
     @JsonIgnore
     private UserTableBean user;
 
+    
 
 }
