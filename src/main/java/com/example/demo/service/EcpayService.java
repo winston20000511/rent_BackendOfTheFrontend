@@ -22,12 +22,10 @@ import ecpay.payment.integration.domain.AioCheckOutALL;
 @Service
 public class EcpayService {
 	
-	private CartItemRepository cartItemRepository;
 	private OrderRepository orderRepository;
 	
 	@Autowired
-	private EcpayService(CartItemRepository cartItemRepository, OrderRepository orderRepository) {
-		this.cartItemRepository = cartItemRepository;
+	private EcpayService(OrderRepository orderRepository) {
 		this.orderRepository = orderRepository;
 	}
 	
@@ -45,10 +43,10 @@ public class EcpayService {
 		obj.setTotalAmount("50");
 		obj.setTradeDesc("test Description");
 		obj.setItemName("TestItem");
-		obj.setOrderResultURL("http://localhost:8080/orders/complete");
-//		obj.setReturnURL("https://seriously-smooth-turkey.ngrok-free.app/api/orders/verify/checkvalue");
-		obj.setReturnURL("<http://211.23.128.214:5000>");
-//		obj.setClientBackURL("http://localhost:8080/orders/complete");
+//		obj.setOrderResultURL("/orders/complete");
+		obj.setReturnURL("https://seriously-smooth-turkey.ngrok-free.app/api/ecpay/verify/checkvalue");
+//		obj.setReturnURL("<http://211.23.128.214:5000>");
+		obj.setClientBackURL("https://seriously-smooth-turkey.ngrok-free.app/orders/complete");
 		obj.setNeedExtraPaidInfo("N");
 		String form = all.aioCheckOut(obj, null);
 		return form;

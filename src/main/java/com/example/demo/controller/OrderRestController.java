@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.OrderConfirmationResponseDTO;
 import com.example.demo.dto.OrderResponseDTO;
-import com.example.demo.model.OrderBean;
 import com.example.demo.service.OrderService;
 
 @RestController
@@ -23,7 +23,7 @@ public class OrderRestController {
 	private OrderService orderService;
 	
 	@Autowired
-	private OrderRestController(OrderService orderService) {
+	public OrderRestController(OrderService orderService) {
 		this.orderService = orderService;
 	}
 	
@@ -73,6 +73,7 @@ public class OrderRestController {
 	}
 	
 	@PostMapping("/create")
+	@Transactional
 	public OrderResponseDTO createOrder(@RequestBody Map<String, String> param) {
 		Integer cartId = Integer.parseInt(param.get("cartId"));
 		String paymentMethod = param.get("paymentMethod");

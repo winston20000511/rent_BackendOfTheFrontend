@@ -45,42 +45,42 @@ document.addEventListener("DOMContentLoaded", async function () {
     const orderRequest = {"cartId" : purchaseParam.cartId, "paymentMethod" : purchaseParam.paymentMethod}
 
     // 建立訂單
-    const orderResponse = await fetch("/api/orders/create",{
-      method: "POST",
-      headers: {"content-type" : "application/json"},
-      body: JSON.stringify(orderRequest)
-    });
-    const newOrder = await orderResponse.json();
-    console.log(newOrder);
+    // const orderResponse = await fetch("/api/orders/create",{
+    //   method: "POST",
+    //   headers: {"content-type" : "application/json"},
+    //   body: JSON.stringify(orderRequest)
+    // });
+    // const newOrder = await orderResponse.json();
+    // console.log(newOrder);
 
     // 暫時先做跳轉
-    setTimeout(function() {
-      window.location.href = "/orders/mylist";
-    }, 200);
+    // setTimeout(function() {
+    //   window.location.href = "/orders/mylist";
+    // }, 200);
 
     // 送ecpay付款
     // goToPay();
-    // try {
-    //   const response = await fetch("/api/ecpay/test/ecpayCheckout", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/x-www-form-urlencoded",
-    //     },
-    //     // body: JSON.stringify({cartId})
-    //   });
+    try {
+      const response = await fetch("/api/ecpay/test/ecpayCheckout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        // body: JSON.stringify({cartId})
+      });
 
-    //   if (!response) {
-    //     throw new Error("沒有回傳值");
-    //   }
+      if (!response) {
+        throw new Error("沒有回傳值");
+      }
 
-    //   const ecpayHTMLform = await response.text();
-    //   const formContainer = document.getElementById("paymentFormContainer");formContainer.innerHTML = ecpayHTMLform;
+      const ecpayHTMLform = await response.text();
+      const formContainer = document.getElementById("paymentFormContainer");formContainer.innerHTML = ecpayHTMLform;
 
-    //   formContainer.querySelector('#allPayAPIForm').submit(); 
+      formContainer.querySelector('#allPayAPIForm').submit(); 
 
-    // } catch (error) {
-    //   throw new Error(`發生錯誤: ${error.message}`);
-    // }
+    } catch (error) {
+      throw new Error(`發生錯誤: ${error.message}`);
+    }
   });
 });
 

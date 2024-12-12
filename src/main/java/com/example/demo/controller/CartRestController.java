@@ -33,14 +33,14 @@ public class CartRestController {
 	// 取得購物車內容
 	@GetMapping("/ads")
 	public ResponseEntity<List<Long>> getCartItemIds(Long userId){
-		userId=45L; //測試資料
+		userId=16L; //測試資料
 		List<Long> addedAdIds = cartService.getCartItems(userId);
 		return ResponseEntity.ok(addedAdIds);
 	}
 	
 	@PostMapping("/list")
 	public List<CartItemBean> getCartItems(Long userId){
-		userId = 45L; //測試資料
+		userId = 16L; //測試資料
 		return cartService.findCartItemsByUserId(userId);
 	}
 	

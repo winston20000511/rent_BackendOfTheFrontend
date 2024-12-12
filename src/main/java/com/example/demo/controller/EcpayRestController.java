@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,8 +37,8 @@ public class EcpayRestController {
 	}
 	
 	@PostMapping("/verify/checkvalue")
-	public String verify(@RequestBody Object objecct) {
-		System.out.println(objecct.toString());
+	public String verify(@RequestBody Map<String, String> params) {
+		System.out.println(params.get("CheckMacValue"));
 //		String response = orderService.verifyEcpayCheckValue(checkValue);
 //		return response;
 		return null;

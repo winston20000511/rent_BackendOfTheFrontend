@@ -153,10 +153,10 @@ public class OrderService {
 			ad.setIsPaid(true);
 			ad.setOrderId(uuId);
 			ad.setPaidDate(date);
-			adRepository.save(ad);
 		}
+		adRepository.saveAll(ads);
 		
-		// 應該要先0，有取得綠界確認的回傳值才改成1
+		// 應該要先0，有取得金流的確認回傳值才改成1
 		newOrder.setOrderStatus((short)1);
 		newOrder.setTradeDesc("宣傳廣告");
 		newOrder.setChoosePayment(paymentMethod);
@@ -170,13 +170,7 @@ public class OrderService {
 			System.out.println("cart item cart id: " + cartItem.getCartId());
 		    cartItemRepository.delete(cartItem);
 		    Long adId = cartItem.getAdId();
-		    
-		    CartItemBean deletedItem = cartItemRepository.findById(adId).orElse(null);
-		    if (deletedItem == null) {
-		        System.out.println("CartItem with adId: " + adId + " successfully deleted.");
-		    } else {
-		        System.out.println("Failed to delete CartItem with adId: " + adId);
-		    }
+		    cartItemRepository.findById(adId).orElse(null);
 		}
 		cartRepository.deleteById(cartId);
 		
@@ -197,7 +191,7 @@ public class OrderService {
 		return false;
 	}
 
-	// 確認訂單付款內容
+	// 給使用者確認訂單付款內容
 	public List<OrderConfirmationResponseDTO> getOrderConfirmationResponseDTOsByCartId(Integer cartId) {
 
 		List<CartItemBean> cartItems = cartItemRepository.findByCartId(cartId);
