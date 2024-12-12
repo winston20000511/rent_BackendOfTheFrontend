@@ -1,15 +1,17 @@
 package com.example.demo.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.AdCreationRequestDTO;
@@ -17,7 +19,9 @@ import com.example.demo.dto.AdDetailsResponseDTO;
 import com.example.demo.model.AdBean;
 import com.example.demo.model.AdtypeBean;
 import com.example.demo.repository.AdRepository;
+import com.example.demo.repository.AdSpecification;
 import com.example.demo.repository.AdtypeRepository;
+import com.example.demo.repository.HouseRepository;
 
 import jakarta.persistence.Tuple;
 
@@ -26,63 +30,57 @@ public class AdService {
 	
 	private AdRepository adRepository;
 	private AdtypeRepository adtypeRepository;
+	private HouseRepository houseRepository;
 	
 	@Autowired
-	public AdService(AdRepository adRepository, AdtypeRepository adtypeRepository) {
+	public AdService(AdRepository adRepository, AdtypeRepository adtypeRepository, HouseRepository houseRepository) {
 		this.adRepository = adRepository;
 		this.adtypeRepository = adtypeRepository;
+		this.houseRepository = houseRepository;
 	}
 	
 
 	/* AdBean */
-	public boolean createAds(List<AdCreationRequestDTO> adCreationRequestDTOs) {
+	public boolean createAd(AdCreationRequestDTO requestDTO) {
 		
-		for(AdCreationRequestDTO dto : adCreationRequestDTOs) {
+			System.out.println(requestDTO.getAdtypeId());
+		
 			AdBean adBean = new AdBean();
-			adBean.setIsPaid(false);
-			adBean.setUserId(dto.getUserId());
-			adBean.setHouseId(dto.getHouseId());
-			List<Tuple> results = adtypeRepository.findAdtypeIdAndPriceByAdtype(dto.getAdName());
+			adBean.setUserId(requestDTO.getUserId());
+			adBean.setHouseId(requestDTO.getHouseId());
 			
-			Map<String, Integer> adtypeMap = new HashMap<>();
-			for(Tuple tuple : results) {
-				Integer adtypeId = tuple.get(0, Integer.class);
-				Integer adPrice = tuple.get(1, Integer.class);
-				
-				adtypeMap.put("adtypeId", adtypeId);
-				adtypeMap.put("adPrice", adPrice);
+			Optional<AdtypeBean> optional = adtypeRepository.findById(requestDTO.getAdtypeId());
+			if(optional != null) {
+				AdtypeBean adtypeBean = optional.get();
+				adBean.setAdtypeId(adtypeBean.getAdtypeId());
+				adBean.setAdPrice(adtypeBean.getAdPrice());
 			}
 			
-			adBean.setAdtypeId(adtypeMap.get("adtypeId"));
-			adBean.setAdPrice(adtypeMap.get("adPrice"));
+			adBean.setIsPaid(false);
 			
 			adRepository.save(adBean);
-		}
 		
 		return true;
 	}
 	
 
-	public AdBean updateAdtypeById(Long adId, Integer newAdtypeId) {
-		
-		Optional<AdBean> adOptional = adRepository.findById(adId);
-		if(adOptional.isPresent()) {
-			AdBean ad = adOptional.get();
-			if(ad.getIsPaid()) return null;
-			
+	public AdDetailsResponseDTO updateAdtypeById(Long adId, Integer newAdtypeId) {
+		Optional<AdBean> optional = adRepository.findById(adId);
+		AdDetailsResponseDTO responseDTO = null;
+		if(optional != null) {
+			AdBean ad = optional.get();
 			ad.setAdtypeId(newAdtypeId);
+			ad.setAdtype(adtypeRepository.findById(newAdtypeId).get());
+			Integer price = adtypeRepository.findById(newAdtypeId).get().getAdPrice();
+			ad.setAdPrice(price);
+			AdBean savedAd = adRepository.save(ad);
 			
-			Optional<AdtypeBean> adTypeOptional = adtypeRepository.findById(newAdtypeId);
+			System.out.println("新adname: " + savedAd.getAdtype().getAdName());
 			
-			if(adTypeOptional.isPresent()) {
-				AdtypeBean adType = adTypeOptional.get();
-				ad.setAdPrice(adType.getAdPrice());
-				adRepository.save(ad);
-				
-				return ad;
-			}
+			responseDTO = setAdDetailResponseDTO(savedAd);
 		}
-		return null;
+		
+		return responseDTO;
 	}
 	
 
@@ -104,29 +102,86 @@ public class AdService {
 	
 	
 	/* DTOs */	
-	public AdDetailsResponseDTO findAdDetailsByAdId(Long adId){
-		AdDetailsResponseDTO adDetails = adRepository.findAdDetailsByAdId(adId);
-		return adDetails;
+	// 之後要加 userId
+	public Page<AdDetailsResponseDTO> findAllAds(Integer pageNumber){
+		Pageable pageable = PageRequest.of(pageNumber-1, 10, Sort.Direction.DESC, "adId");
+		Page<AdBean> adPages = adRepository.findAll(pageable);
+		List<AdBean> ads = adPages.getContent();
+		List<AdDetailsResponseDTO> responseDTOs = setAdDetailsResponseDTO(ads);
+		
+		return new PageImpl<>(responseDTOs, pageable, adPages.getTotalElements());
 	}
 	
-	public List<AdDetailsResponseDTO> findAdTableDataByUserIdAndIsPaid(Long userId, Boolean isPaid, Integer pageNumber) {
-		Pageable pageable = PageRequest.of(pageNumber-1, 10, Sort.Direction.DESC, "adId");
-		List<AdBean> adsData = adRepository.findAdsByUserIdAndIsPaidAndPage(userId, isPaid, pageable);
+	public AdDetailsResponseDTO findAdDetailsByAdId(Long adId){
+		AdDetailsResponseDTO responseDTO = null;
+		Optional<AdBean> optional = adRepository.findById(adId);
 		
-		List<AdDetailsResponseDTO> adTableDataList = new ArrayList<>();
-		for(AdBean adData : adsData) {
-			AdDetailsResponseDTO adTableDataDTO = new AdDetailsResponseDTO();
-			adTableDataDTO.setAdId(adData.getAdId());
-			adTableDataDTO.setAdName(adData.getAdtype().getAdName());
-			adTableDataDTO.setAdPrice(adData.getAdPrice());
-			adTableDataDTO.setHouseTitle(adData.getHouse().getTitle());
-			adTableDataDTO.setIsPaid(adData.getIsPaid());
-			adTableDataDTO.setOrderId(adData.getOrderId());
-			adTableDataDTO.setPaidDate(adData.getPaidDate());
-			
-			adTableDataList.add(adTableDataDTO);
+		if(optional != null) {
+			AdBean ad = optional.get();
+			responseDTO = setAdDetailResponseDTO(ad);
 		}
 		
-		return adTableDataList;
+		return responseDTO;
+	}
+	
+	public Page<AdDetailsResponseDTO> findAdsByConditions(Map<String, String> conditions) {
+		Integer pageNumber = Integer.parseInt(conditions.get("page"));
+		
+		System.out.println("page number: " + pageNumber);
+		
+		// 建立篩選條件
+		Specification<AdBean> spec = AdSpecification.filter(conditions);
+		
+		Pageable pageable = PageRequest.of(pageNumber-1, 10, Sort.Direction.DESC, "adId");
+		Page<AdBean> page = adRepository.findAll(spec, pageable);
+		
+		List<AdDetailsResponseDTO> responseDTOs = setAdDetailsResponseDTO(page.getContent());
+		
+		return new PageImpl<>(responseDTOs, pageable, page.getTotalElements());
+	}
+	
+	/* 搜尋用戶沒有上廣告的房屋 */
+	public Page<Map<String, Object>> findHousesWithoutAds(Integer pageNumber){
+		Pageable pageable = PageRequest.of(pageNumber-1, 10, Sort.Direction.DESC, "houseId");
+		// info: houseId + houseTitle
+		Page<Map<String, Object>> housesInfo = houseRepository.findHousesWithoutAds(pageable);
+		
+		return housesInfo;
+	}
+	
+	
+	/* private methods */
+	private List<AdDetailsResponseDTO> setAdDetailsResponseDTO(List<AdBean> ads) {
+		List<AdDetailsResponseDTO> responseDTOs = new ArrayList<>();
+		for(AdBean ad : ads) {
+			AdDetailsResponseDTO responseDTO = new AdDetailsResponseDTO();
+			responseDTO.setAdId(ad.getAdId());
+			responseDTO.setUserId(ad.getUserId());
+			responseDTO.setHouseTitle(ad.getHouse().getTitle());
+			responseDTO.setAdName(ad.getAdtype().getAdName());
+			responseDTO.setAdPrice(ad.getAdPrice());
+			responseDTO.setIsPaid(ad.getIsPaid());
+			responseDTO.setOrderId(ad.getOrderId());
+			responseDTO.setPaidDate(ad.getPaidDate());
+			
+			responseDTOs.add(responseDTO);
+			System.out.println(responseDTO.toString());
+		}
+		
+		return responseDTOs;
+	}
+	
+	private AdDetailsResponseDTO setAdDetailResponseDTO(AdBean ad) {
+		AdDetailsResponseDTO responseDTO = new AdDetailsResponseDTO();
+		responseDTO.setAdId(ad.getAdId());
+		responseDTO.setUserId(ad.getUserId());
+		responseDTO.setHouseTitle(ad.getHouse().getTitle());
+		responseDTO.setAdName(ad.getAdtype().getAdName());
+		responseDTO.setAdPrice(ad.getAdPrice());
+		responseDTO.setIsPaid(ad.getIsPaid());
+		responseDTO.setOrderId(ad.getOrderId());
+		responseDTO.setPaidDate(ad.getPaidDate());
+			
+		return responseDTO;
 	}
 }

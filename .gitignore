@@ -77,4 +77,6 @@ secrets.yml
 node_modules
 
 googleapikey.properties
+linepayapi.properties
+ecpayapi.properties
 

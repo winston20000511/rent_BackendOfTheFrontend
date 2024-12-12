@@ -10,16 +10,16 @@ public class AdDetailsResponseDTO {
 	private String houseTitle;
 	private String adName;
 	private Integer adPrice;
-	private Boolean isPaid;
+	private String isPaid;
 	private String orderId;
-	private LocalDateTime paidDate;
+	private String paidDate;
 	
 	public AdDetailsResponseDTO() {
 	}
 	
 
 	public AdDetailsResponseDTO(Long adId, Long userId, String userName, String houseTitle, String adName, Integer adPrice,
-			Boolean isPaid, String orderId, LocalDateTime paidDate) {
+			String isPaid, String orderId, String paidDate) {
 		this.adId = adId;
 		this.userId = userId;
 		this.userName = userName;
@@ -79,12 +79,16 @@ public class AdDetailsResponseDTO {
 		this.adPrice = adPrice;
 	}
 
-	public Boolean getIsPaid() {
+	public String getIsPaid() {
 		return isPaid;
 	}
 
 	public void setIsPaid(Boolean isPaid) {
-		this.isPaid = isPaid;
+		if(isPaid) {
+			this.isPaid="已付款";
+		}else {
+			this.isPaid="未付款";
+		}
 	}
 
 	public String getOrderId() {
@@ -95,12 +99,16 @@ public class AdDetailsResponseDTO {
 		this.orderId = orderId;
 	}
 
-	public LocalDateTime getPaidDate() {
+	public String getPaidDate() {
 		return paidDate;
 	}
 
 	public void setPaidDate(LocalDateTime paidDate) {
-		this.paidDate = paidDate;
+		if(paidDate != null) {
+			this.paidDate = paidDate.toString().substring(0,10);;			
+		}else {
+			this.paidDate = "尚未發布";
+		}
 	}
 
 

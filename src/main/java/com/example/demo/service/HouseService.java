@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.HouseDetailsDTO;
@@ -156,8 +158,8 @@ public class HouseService {
 		collectRepository.deleteByHouseId(houseId);
 	}
 
-	public List<Map<String, Object>> findNoAdHousesByUserId(Long userId) {
-		return houseRepository.findNoAdHouses(userId);
+	public Page<Map<String, Object>> findNoAdHousesByUserId(Pageable pageable) {
+		return houseRepository.findHousesWithoutAds(pageable);
 	}
 
 	public List<HouseListByUserIdDTO> getHousesByUserId(Long userId) {

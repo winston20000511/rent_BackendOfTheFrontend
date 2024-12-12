@@ -1,10 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org/">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MY AD</title>
+    <title>Rent house</title>
     <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/adAndOrderFront.css" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://npmcdn.com/flatpickr/dist/themes/dark.css"
+    />
     <link
       href="https://cdn.jsdelivr.net/npm/tailwindcss@^2.2.19/dist/tailwind.min.css"
       rel="stylesheet"
@@ -19,142 +25,209 @@
       href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/css/adAndOrderFront.css" />
   </head>
   <body>
-    <header id="header">
-      <ul class="nav-left">
-        <li><a href="#">Buy</a></li>
-        <li class="link"><a href="#">Rent</a></li>
-      </ul>
+    <div th:replace="~{layout/navbar}"></div>
 
-      <ul class="link-list" id="link-list-1">
-        <a href="#" class="list-item">item 1</a>
-        <a href="#" class="list-item">item 2</a>
-        <a href="#" class="list-item">item 3</a>
-        <a href="#" class="list-item">item 4</a>
-      </ul>
-
-      <div class="nav-middle">
-        <img src="/img/Logo3.jpg" alt="" />
-
-        <div class="nav-title">
-          <h1>house</h1>
-        </div>
-      </div>
-      <div class="nav-right">
-        <li><a href="#">Manage Rentals</a></li>
-        <li><a href="#">Advertise</a></li>
-        <li><a href="#">Help</a></li>
-        <li><a href="#">Sign In</a></li>
-      </div>
-    </header>
-
-    <aside class="border-black">
+    <div class="border-black">
       <div
         id="my-ad-title"
         class="text-xl mb-3 text-center border-b border-black py-2"
       >
-        我的廣告
+        VIP 廣告推播申請列表
       </div>
 
-      <div class="flex">
-        <div class="w-3/4 px-4">
-          <button
-            type="button"
-            id="paid-ads-btn"
-            class="condition-btn bg-blue-700 text-white py-2 px-4 rounded"
-            value="paidAds"
-          >
-            已付款廣告
-          </button>
-          <button
-            type="button"
-            id="unpaid-ads-btn"
-            class="condition-btn bg-blue-500 text-white py-2 px-4 rounded"
-            value="unpaidAds"
-          >
-            未付款廣告
-          </button>
+      <div class="flex flex-wrap items-center space-x-6 mt-4 mb-6 px-6">
+        <div class="flex items-center space-x-6 flex-grow">
+          <!-- 付款狀態篩選 -->
+          <div class="flex items-center">
+            <label
+              for="payment-status-filter"
+              class="text-sm font-medium text-gray-600"
+            >
+              付款狀態：
+            </label>
+            <select
+              id="payment-status-filter"
+              name="paymentstatus"
+              class="condition-filter ml-2 px-3 py-2 text-sm border border-gray-300 rounded-lg"
+            >
+              <option value="all">所有狀態</option>
+              <option value="paid">已付款</option>
+              <option value="unpaid">未付款</option>
+            </select>
+          </div>
+
+          <!-- 發布時間篩選 -->
+          <div class="flex items-center">
+            <label for="date-filter" class="text-sm font-medium text-gray-600">
+              發布時間：
+            </label>
+            <select
+              id="date-filter"
+              name="daterange"
+              class="condition-filter ml-2 px-3 py-2 text-sm border border-gray-300 rounded-lg"
+            >
+              <option value="all">所有時間</option>
+              <option value="week">最近一週</option>
+              <option value="month">最近一個月</option>
+              <option value="year">最近一年</option>
+              <!-- <option value="user-set">自訂時間</option> -->
+            </select>
+            <input
+              id="time-picker"
+              class="ml-2 px-3 py-2 text-sm border border-gray-300 rounded-lg hidden"
+              placeholder="請輸入日期區間"
+            />
+          </div>
         </div>
-        <div class="w-1/4 text-center">
+
+        <!-- 新增廣告按鈕，置右對齊 -->
+        <div class="flex items-center justify-end w-full sm:w-auto">
           <button
             id="add-ad-btn"
             type="button"
-            class="condition-btn bg-blue-500 text-white py-2 px-4 rounded"
-            value="unpaidAds"
+            class="bg-green-500 text-white px-4 py-2 text-sm rounded-lg hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-green-300"
           >
-            新增廣告+
+            為物件新增VIP服務+
           </button>
         </div>
       </div>
-    </aside>
+    </div>
+
+    <div class="flex flex-wrap items-center space-x-6 mt-4 mb-6 px-6">
+      <div class="flex items-center space-x-6 flex-grow">
+        <label class="text-sm font-medium text-gray-600">
+          房屋標題：
+          <input
+            id="user-input"
+            class="ml-2 px-3 py-2 text-sm text-center border border-gray-300 rounded-lg"
+            placeholder="請輸入欲查詢的房屋標題"
+          />
+        </label>
+      </div>
+      <div class="flex justify-end w-full sm:w-auto">
+        <button
+          id="check-cart-btn"
+          type="button"
+          class="bg-green-500 text-white px-4 py-2 text-sm rounded-lg hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-green-300"
+        >
+          查看選購清單
+        </button>
+      </div>
+    </div>
 
     <main class="m-3">
-    
       <div id="view-box" class="border border-gray-400 py-2 px-2 rounded-md">
-      
-        <table
-          id="paid-ads-table"
-          class="table-auto w-full border-collapse border border-gray-300"
-        >
-          <thead>
-            <tr>
-              <th class="px-4 py-2 bg-gray-200 text-left">廣告編號</th>
-              <th class="px-4 py-2 bg-gray-200 text-left">房屋標題</th>
-              <th class="px-4 py-2 bg-gray-200 text-center">詳細內容</th>
-            </tr>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
+        <!-- 篩選出來的廣告列表 -->
+        <div id="ads-table-box">
+          <div
+            class="px-4 py-2 text-sm font-bold text-yellow-600 bg-yellow-100 rounded m-3"
+          >
+            <div>．VIP申請僅保留三天。如逾期未付款，視為取消申請。</div>
+            <div>．加入訂單後，可前往查看訂單內容，並進行付費。</div>
+          </div>
+          <table
+            class="table-auto w-full border-collapse border border-gray-300"
+          >
+            <thead class="bg-gray-100">
+              <tr>
+                <th
+                  class="px-4 py-2 text-left text-sm font-medium text-gray-600 text-center"
+                >
+                  房屋標題
+                </th>
+                <th
+                  class="px-4 py-2 text-center text-sm font-medium text-gray-600"
+                >
+                  發布時間
+                </th>
+                <th
+                  class="px-4 py-2 text-center text-sm font-medium text-gray-600"
+                >
+                  廣告狀態
+                </th>
+                <th
+                  class="px-4 py-2 text-center text-sm font-medium text-gray-600"
+                >
+                  付款狀態
+                </th>
+                <th
+                  class="px-4 py-2 text-center text-sm font-medium text-gray-600"
+                >
+                  剩餘時間
+                </th>
+                <th
+                  class="px-4 py-2 text-center text-sm font-medium text-gray-600"
+                ></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <!-- 篩選廣告的分頁 -->
+          <div class="flex justify-center mt-4">
+            <nav aria-label="Page navigation">
+              <ul class="inline-flex items-center space-x-2 pagination"></ul>
+            </nav>
+          </div>
+        </div>
 
-        <table
-          id="unpaid-ads-table"
-          class="table-auto w-full border-collapse border border-gray-300 hidden"
-        >
-          <thead>
-            <tr>
-              <th class="px-4 py-2 bg-gray-200 text-left">廣告編號</th>
-              <th class="px-4 py-2 bg-gray-200 text-left">房屋標題</th>
-              <th class="px-4 py-2 bg-gray-200 text-right">廣告金額</th>
-              <th class="px-4 py-2 bg-gray-200 text-center">詳細內容</th>
-              <th class="px-4 py-2 bg-gray-200 text-center">購買</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-
-        <table
-          id="add-ad-table"
-          class="table-auto w-full border-collapse border border-gray-300 hidden"
-        >
-          <thead>
-            <tr>
-              <th class="px-4 py-2 bg-gray-200 text-left">廣告編號</th>
-              <th class="px-4 py-2 bg-gray-200 text-left">查看房屋</th>
-              <th class="px-4 py-2 bg-gray-200 text-left">廣告方案</th>
-              <th class="px-4 py-2 bg-gray-200 text-right">廣告價格</th>
-              <th class="px-4 py-2 bg-gray-200 text-center">新增廣告</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+        <!-- 可以新增廣告的物件一覽表（篩選未申請VIP的物件） -->
+        <div id="ad-add-table-box" class="hidden">
+          <div
+            class="px-4 py-2 text-sm font-bold text-yellow-600 bg-yellow-100 rounded m-3"
+          >
+            請選擇想要升級為VIP的物件
+          </div>
+          <table
+            class="table-auto w-full text-sm border border-gray-300 rounded-lg"
+          >
+            <thead>
+              <tr class="bg-green-400 text-white">
+                <th class="px-4 py-3 text-left font-semibold">房屋標題</th>
+                <th class="px-4 py-3 text-left font-semibold">查看房屋</th>
+                <th class="px-4 py-3 text-left font-semibold">廣告方案</th>
+                <th class="px-4 py-3 text-right font-semibold">廣告價格</th>
+                <th class="px-4 py-3 text-center font-semibold">新增廣告</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="4"></td>
+                <td class="px-4 py-4 text-center">
+                  <button
+                    type="button"
+                    id="close-add"
+                    class="px-4 py-2 text-white bg-gray-400 rounded-lg hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                  >
+                    結束新增
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <!-- 無廣告房屋的分頁 -->
+          <div class="flex justify-center mt-4">
+            <nav aria-label="Page navigation">
+              <ul class="inline-flex items-center space-x-2 pagination"></ul>
+            </nav>
+          </div>
+        </div>
       </div>
 
-      <!-- 確認彈跳視窗 -->
-      <div
-        id="modal-background"
-        class="fixed inset-0 bg-gray-500/75 hidden"
-      ></div>
+      <!-- 提示訊息 -->
+      <div id="modal-background" class="overlay hidden"></div>
       <div
         id="success-modal"
         class="fixed inset-0 z-10 bg-gray-500/75 flex items-center justify-center hidden"
       >
         <div class="bg-white rounded-lg shadow-lg w-3/4">
           <div class="m-4">
-            <h3 class="text-2xl font-semibold m-4 text-gray-900 text-center">
-              <i class="fa-solid fa-check" style="color: #63e6be"></i> 新增成功
+            <h3
+              id="success-message"
+              class="text-2xl font-semibold m-4 text-gray-900 text-center"
+            >
+              提示訊息
             </h3>
             <div class="text-right mt-10">
               <button
@@ -177,10 +250,16 @@
         <div class="bg-white rounded-lg shadow-lg w-4/5 h-4/5 p-8">
           <div class="mt-4 text-right">
             <button
+              id="edit-ad-btn"
+              class="px-3 py-1.5 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+            >
+              編輯
+            </button>
+            <button
               id="close-ad-modal-btn"
               class="px-3 py-1.5 bg-red-500 text-white rounded hover:bg-red-600"
             >
-              X
+              關閉
             </button>
           </div>
           <h3 class="text-2xl font-semibold text-gray-900 text-center">
@@ -188,39 +267,70 @@
           </h3>
           <div class="m-4 overflow-auto h-[calc(100%-6rem)]">
             <table class="border border-gray-400 w-full">
-              <thead class="bg-gray-200">
-                <tr>
-                  <th class="px-4 py-2">廣告編號</th>
-                  <th class="px-4 py-2">房屋標題</th>
-                  <th class="px-4 py-2">廣告種類</th>
-                  <th class="px-4 py-2">廣告金額</th>
-                  <th class="px-4 py-2">付款狀態</th>
-                  <th class="px-4 py-2">訂單號碼</th>
-                  <th class="px-4 py-2">付款日期</th>
-                </tr>
-              </thead>
-              <tbody id="ad-details-body">
-                <tr class="text-center">
-                  <td>廣告編號</td>
-                  <td>房屋標題</td>
-                  <td>廣告種類</td>
-                  <td>廣告金額</td>
-                  <td>付款狀態</td>
-                  <td>訂單號碼</td>
-                  <td>付款日期</td>
-                </tr>
-              </tbody>
+              <tbody class="px-10"></tbody>
             </table>
           </div>
         </div>
       </div>
+
+      <!-- 購物車 modal -->
+      <div
+        id="cart"
+        class="fixed top-0 right-0 w-80 h-full bg-white shadow-lg transform hidden-right z-50 hidden"
+      >
+        <div class="flex justify-between p-4 border-b">
+          <h2 class="text-xl font-semibold">選購清單</h2>
+          <button
+            id="close-cart"
+            class="text-xl font-bold text-gray-600 hover:text-gray-800 focus:outline-none"
+          >
+            ×
+          </button>
+        </div>
+
+        <div id="cart-list" class="p-4 space-y-4"></div>
+
+        <div class="p-4 space-y-4">
+          <p class="text-lg font-semibold">選擇付款方式</p>
+          <div class="flex flex-col space-y-2">
+            <label class="flex items-center">
+              <input
+                type="radio"
+                name="payment-method"
+                value="linepay"
+                class="mr-2"
+                checked
+              />
+              <span class="text-gray-700"><img width="70px" src="/img/Line_pay_logo.svg.png"/></span>
+            </label>
+            <label class="flex items-center">
+              <input
+                type="radio"
+                name="payment-method"
+                value="Credit"
+                class="mr-2"
+              />
+              <span class="text-gray-700"><i class="fa-solid fa-credit-card"></i> 信用卡</span>
+            </label>
+          </div>
+        </div>
+        <div class="p-4 text-right border-t">
+          <button id="submit-btn"
+            class="bg-green-600 text-white px-6 py-2 rounded-lg shadow hover:bg-green-700"
+          >
+            前往結帳
+          </button>
+        </div>
+      </div>
+
     </main>
 
     <footer></footer>
-    <script type="module">
-      import * as ListJs from "/js/ListScript.js";
-      ListJs.init();
-    </script>
+    <!-- <script type="module">
+        import * as ListJs from "/js/ListScript.js";
+        ListJs.init();
+    </script> -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script type="module" src="/js/adPage.js"></script>
   </body>
 </html>

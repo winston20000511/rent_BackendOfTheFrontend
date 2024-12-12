@@ -1,11 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org/">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MY ORDER</title>
-    <link rel="stylesheet" href="../static/css/styles.css" />
-
+    <title>Rent house</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/adAndOrderFront.css" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://npmcdn.com/flatpickr/dist/themes/dark.css"
+    />
     <link
       href="https://cdn.jsdelivr.net/npm/tailwindcss@^2.2.19/dist/tailwind.min.css"
       rel="stylesheet"
@@ -20,102 +25,71 @@
       href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
       rel="stylesheet"
     />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
-    />
   </head>
   <body>
-    <header>
-      <ul class="nav-left">
-        <li><a href="#">Buy</a></li>
-        <li class="link"><a href="#">Rent</a></li>
-      </ul>
-
-      <ul class="list" id="list-left-1">
-        <a href="#" class="list-item">item 1</a>
-        <a href="#" class="list-item">item 2</a>
-        <a href="#" class="list-item">item 3</a>
-        <a href="#" class="list-item">item 4</a>
-      </ul>
-
-      <div class="nav-middle">
-        <img src="../static/Logo3.jpg" alt="" />
-
-        <div class="nav-title">
-          <h1>house</h1>
-        </div>
-      </div>
-      <div class="nav-right">
-        <li><a href="#">Manage Rentals</a></li>
-        <li><a href="#">Advertise</a></li>
-        <li><a href="#">Help</a></li>
-        <li><a href="#">Sign In</a></li>
-      </div>
-    </header>
+    <div th:replace="~{layout/navbar}"></div>
 
     <div
-        id="my-ad-title"
-        class="text-xl mb-3 text-center border-b border-black py-2"
-      >
-        訂單確認
+      id="my-ad-title"
+      class="text-xl mb-3 text-center border-b border-black py-2"
+    >
+      訂單確認
     </div>
 
-      <div class="flex items-center mr-64 ml-64 mt-10">
-        <div class="flex flex-col items-center">
-          <div class="w-8 h-8 flex items-center justify-center bg-gray-100 border-2 border-blue-300 rounded-full">
-            <div class="w-3 h-3 rounded-full bg-blue-400"></div>
-          </div>
-          <div class="mt-2 text-sm text-gray-600">確認</div>
+    <div class="flex items-center mr-64 ml-64 mt-10">
+      <div class="flex flex-col items-center">
+        <div
+          class="w-8 h-8 flex items-center justify-center bg-gray-100 border-2 border-blue-300 rounded-full"
+        >
+          <div class="w-3 h-3 rounded-full bg-blue-400"></div>
         </div>
-        <div class="flex-1 h-0.5 bg-gray-200 -mt-6"></div>
-        <div class="flex flex-col items-center">
-          <div class="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full"></div>
-          <div class="mt-2 text-sm text-gray-600">付款</div>
-        </div>
-        <div class="flex-1 h-0.5 bg-gray-200 -mt-6"></div>
-        <div class="flex flex-col items-center">
-          <div class="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full"></div>
-          <div class="mt-2 text-sm text-gray-600">完成</div>
-        </div>
+        <div class="mt-2 text-sm text-gray-600">確認</div>
       </div>
-
-    <br/>
-      <div class="px-1 py-1 m-2 text-center border-b-2 border-blue-400 mr-64 ml-64">step1. 請確認訂單內容</div>
-      <table class="px-4 py-4 w-full">
-        <thead class="bg-gray-200">
-          <tr>
-            <th class="">廣告編號</th>
-            <th class="">房屋標題</th>
-            <th class="">廣告方案</th>
-            <th class="" colspan="2">廣告上架時間</th>
-            <th class="text-right">廣告金額</th>
-            <th class=""></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="text-center">
-            <td>1</td>
-            <td>房屋標題</td>
-            <td>30天</td>
-            <td colspan="2">2024-11-16~2024-12-16</td>
-            <td class="text-right">300</td>
-            <td></td>
-          </tr>
-          <tr class="border-t border-gray-300">
-            <td class="text-right" colspan="5">總計</td>
-            <td class="text-right">300</td>
-            <td class="text-center h-12"><a class="px-3 py-1.5 bg-blue-500 text-white rounded hover:bg-blue-400" href="#">前往付款</a></td>
-          </tr>
-        </tbody>
-      </table>
-      
+      <div class="flex-1 h-0.5 bg-gray-200 -mt-6"></div>
+      <div class="flex flex-col items-center">
+        <div
+          class="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full"
+        ></div>
+        <div class="mt-2 text-sm text-gray-600">付款</div>
+      </div>
+      <div class="flex-1 h-0.5 bg-gray-200 -mt-6"></div>
+      <div class="flex flex-col items-center">
+        <div
+          class="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full"
+        ></div>
+        <div class="mt-2 text-sm text-gray-600">完成</div>
+      </div>
     </div>
-    
+
+    <div
+      class="my-8 px-6 py-3 text-center border-b-2 border-blue-400 text-lg font-medium"
+    >
+      step1. 請確認訂單內容
+    </div>
+
+    <table class="min-w-full table-auto px-4 py-4 mt-4">
+      <thead class="bg-gray-100">
+        <tr class="text-center text-sm font-medium text-gray-700">
+          <th class="px-4 py-2">服務編號</th>
+          <th class="px-4 py-2">物件內容</th>
+          <th class="px-4 py-2">VIP方案</th>
+          <th class="px-4 py-2" colspan="2">VIP服務時間</th>
+          <th class="px-4 py-2 text-right">金額</th>
+          <th class="px-4 py-2"></th>
+        </tr>
+      </thead>
+      <tbody class="text-sm text-gray-700">
+      </tbody>
+    </table>
+
+	<div id="paymentFormContainer"></div>
 
     <footer></footer>
-    <script src="../static/JS/scriptList.js"></script>
-    <script src="../static/JS/scriptButton.js"></script>
+    <!-- <script type="module">
+        import * as ListJs from "/js/ListScript.js";
+        ListJs.init();
+    </script> -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script type="module" src="/js/orderConfirmPage.js"></script>
   </body>
 </html>
