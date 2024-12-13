@@ -1,5 +1,9 @@
 package com.example.demo.model;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -7,7 +11,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name="condition_table")
 public class ConditionTableBean {
@@ -38,96 +47,5 @@ public class ConditionTableBean {
     @JoinColumn(name = "house_id",nullable = false)
     private HouseTableBean house;
 
-	public ConditionTableBean() {
-		
-	}
-
-	public Long getHouseId() {
-		return houseId;
-	}
-
-	public void setHouseId(Long houseId) {
-		this.houseId = houseId;
-	}
-
-	public Boolean getPet() {
-		return pet;
-	}
-
-	public void setPet(Boolean pet) {
-		this.pet = pet;
-	}
-
-	public Boolean getParkingSpace() {
-		return parkingSpace;
-	}
-
-	public void setParkingSpace(Boolean parkingSpace) {
-		this.parkingSpace = parkingSpace;
-	}
-
-	public Boolean getElevator() {
-		return elevator;
-	}
-
-	public void setElevator(Boolean elevator) {
-		this.elevator = elevator;
-	}
-
-	public Boolean getBalcony() {
-		return balcony;
-	}
-
-	public void setBalcony(Boolean balcony) {
-		this.balcony = balcony;
-	}
-
-	public Boolean getShortTerm() {
-		return shortTerm;
-	}
-
-	public void setShortTerm(Boolean shortTerm) {
-		this.shortTerm = shortTerm;
-	}
-
-	public Boolean getCooking() {
-		return cooking;
-	}
-
-	public void setCooking(Boolean cooking) {
-		this.cooking = cooking;
-	}
-
-	public Boolean getWaterDispenser() {
-		return waterDispenser;
-	}
-
-	public void setWaterDispenser(Boolean waterDispenser) {
-		this.waterDispenser = waterDispenser;
-	}
-
-	public Boolean getManagementFee() {
-		return managementFee;
-	}
-
-	public void setManagementFee(Boolean managementFee) {
-		this.managementFee = managementFee;
-	}
-
-	public Byte getGenderRestrictions() {
-		return genderRestrictions;
-	}
-
-	public void setGenderRestrictions(Byte genderRestrictions) {
-		this.genderRestrictions = genderRestrictions;
-	}
-
-	public HouseTableBean getHouse() {
-		return house;
-	}
-
-	public void setHouse(HouseTableBean house) {
-		this.house = house;
-	}
 
 }

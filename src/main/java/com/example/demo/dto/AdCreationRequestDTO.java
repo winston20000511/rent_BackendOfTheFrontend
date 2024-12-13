@@ -6,36 +6,41 @@ public class AdCreationRequestDTO {
 	
 	private Long houseId;
 	
-	private String adName;
-	
-	private Integer adPrice;
-	
-	public AdCreationRequestDTO() {
-		
-	}
+	private Integer adtypeId;
 
-	public AdCreationRequestDTO(Long userId, Long houseId, String adName, Integer adPrice) {
+	public AdCreationRequestDTO() {
+
+	}
+	
+	public AdCreationRequestDTO(Long userId, Long houseId, Integer adtypeId) {
+
 		this.userId = userId;
 		this.houseId = houseId;
-		this.adName = adName;
-		this.adPrice = adPrice;
+		this.adtypeId = adtypeId;
 	}
 
 	public Long getUserId() {
 		return userId;
 	}
 
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
 
 	public Long getHouseId() {
 		return houseId;
 	}
 
-	public String getAdName() {
-		return adName;
+	public void setHouseId(Long houseId) {
+		this.houseId = houseId;
 	}
 
-	public Integer getAdPrice() {
-		return adPrice;
+	public Integer getAdtypeId() {
+		return adtypeId;
+	}
+
+	public void setAdtypeId(Integer adtypeId) {
+		this.adtypeId = adtypeId;
 	}
 
 }

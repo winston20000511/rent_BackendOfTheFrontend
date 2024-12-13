@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org/">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MY ORDER</title>
-    <link rel="stylesheet" href="../static/css/styles.css" />
-
+    <title>Rent house</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/adAndOrderFront.css" />
     <link
       href="https://cdn.jsdelivr.net/npm/tailwindcss@^2.2.19/dist/tailwind.min.css"
       rel="stylesheet"
@@ -22,220 +22,199 @@
     />
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+      type="text/css"
+      href="https://npmcdn.com/flatpickr/dist/themes/dark.css"
     />
-    <link rel="stylesheet" href="../static/css/adAndOrderFront.css" />
   </head>
   <body>
-    <header>
-      <ul class="nav-left">
-        <li><a href="#">Buy</a></li>
-        <li class="link"><a href="#">Rent</a></li>
-      </ul>
+    <div th:replace="~{layout/navbar}"></div>
 
-      <ul class="list" id="list-left-1">
-        <a href="#" class="list-item">item 1</a>
-        <a href="#" class="list-item">item 2</a>
-        <a href="#" class="list-item">item 3</a>
-        <a href="#" class="list-item">item 4</a>
-      </ul>
-
-      <div class="nav-middle">
-        <img src="../static/Logo3.jpg" alt="" />
-
-        <div class="nav-title">
-          <h1>house</h1>
-        </div>
-      </div>
-      <div class="nav-right">
-        <li><a href="#">Manage Rentals</a></li>
-        <li><a href="#">Advertise</a></li>
-        <li><a href="#">Help</a></li>
-        <li><a href="#">Sign In</a></li>
-      </div>
-    </header>
-
-    <aside class="border-black">
+    <div class="border-black p-4">
+      <!-- 標題區 -->
       <div
         id="my-ad-title"
-        class="text-xl mb-3 text-center border-b border-black py-2"
+        class="text-xl mb-4 text-center font-semibold text-gray-800 border-b-2 border-gray-300 py-2"
       >
-        我的廣告訂單
+        VIP服務訂單
       </div>
-      <div id="search-box" class="flex">
-        <div class="px-4">
-          <button
-            type="button"
-            id="all-orders-btn"
-            class="condition-btn bg-blue-700 text-white py-2 px-4 rounded"
-            value="paidAds"
-          >
-            所有訂單
-          </button>
-          <button
-            type="button"
-            id="alive-orders-btn"
-            class="condition-btn bg-blue-500 text-white py-2 px-4 rounded"
-            value="unpaidAds"
-          >
-            一般訂單
-          </button>
-          <button
-            type="button"
-            id="canceled-orders-btn"
-            class="condition-btn bg-blue-500 text-white py-2 px-4 rounded"
-            value="unpaidAds"
-          >
-            已取消之訂單
-          </button>
 
-          <!--其他選項（下拉式選單）-->
-          <div class="relative inline-block text-left">
-            <div>
-              <button
-                type="button"
-                class="condition-btn inline-flex w-full justify-center gap-x-1.5 rounded bg-blue-500 text-white px-4 py-2 whitespace-nowrap"
-                id="menu-button"
-                aria-expanded="true"
-                aria-haspopup="true"
-              >
-                其他搜尋方式
-                <i class="fa-solid fa-arrow-down py-1"></i>
-              </button>
-            </div>
-            <div
-              id="dropdown-menu"
-              class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none hidden"
-              role="menu"
-              aria-orientation="vertical"
-              aria-labelledby="menu-button"
-              tabindex="-1"
-            >
-              <div class="py-1" role="none">
-                <button
-                  type="button"
-                  id="menu-item-marchantTradNo"
-                  class="menu-item block px-4 py-2 hover:text-blue-500"
-                  role="menuitem"
-                  tabindex="-1"
-                >
-                  以訂單號碼搜尋
-                </button>
-                <button
-                  type="button"
-                  id="menu-item-datetimepicker"
-                  class="menu-item block px-4 py-2 hover:text-blue-500"
-                  role="menuitem"
-                  tabindex="-1"
-                >
-                  以時間搜尋
-                </button>
-                <button
-                  type="button"
-                  id="menu-item-houseTitle"
-                  class="menu-item block px-4 py-2 hover:text-blue-500"
-                  role="menuitem"
-                  tabindex="-1"
-                >
-                  以房屋搜尋
-                </button>
-              </div>
-            </div>
+      <!-- 搜尋條件 -->
+      <div class="flex flex-wrap items-center space-x-6 mt-4 mb-6 px-6">
+        <!-- 付款狀態篩選 -->
+        <div class="flex items-center">
+          <label for="order-status-filter" class="text-sm font-medium text-gray-600">
+            訂單狀態：
+          </label>
+          <select
+            id="order-status-filter"
+            name="status"
+            class="condition-filter ml-2 px-3 py-2 text-sm border border-gray-300 rounded-lg"
+          >
+            <option value="all">所有狀態</option>
+            <option value="active">一般訂單</option>
+            <option value="cancelled">已取消</option>
+            <option value="cancelling">取消中</option>
+          </select>
+        </div>
+      
+        <!-- 發布時間篩選 -->
+        <div class="flex items-center">
+          <label for="date-filter" class="text-sm font-medium text-gray-600">
+            下單時間：</label>
+          <select
+            id="date-filter"
+            name="daterange"
+            class="condition-filter ml-2 px-3 py-2 text-sm border border-gray-300 rounded-lg"
+          >
+            <option value="all">所有時間</option>
+            <option value="week">最近一週</option>
+            <option value="month">最近一個月</option>
+            <option value="year">最近一年</option>
+          </select>
+        </div>
+      
+        <!-- 篩選方式選擇 -->
+        <div class="flex items-center">
+          <label for="filter-type" class="text-sm font-medium text-gray-600">
+            篩選方式：
+          </label>
+          <select
+            id="filter-type"
+            name="inputcondition"
+            class="condition-filter ml-2 px-3 py-2 text-sm border border-gray-300 rounded-lg"
+          >
+            <option value="none">不設條件</option>
+            <option value="orderid">訂單編號</option>
+            <option value="housetitle">房屋標題</option>
+          </select>
+          <div id="input-box" class="flex items-center px-4 hidden">
+            <label class="text-sm font-medium text-gray-600">
+              <input
+              id="user-input"
+              type="text"
+              class="ml-2 px-3 py-2 text-sm border border-gray-300 rounded-lg"/>
+            </label>
           </div>
         </div>
-        <input
-          id="search-input"
-          type="text"
-          class="border border-black rounded h-10 text-center w-56 hidden"
-        />
       </div>
-    </aside>
+
+      <div class="w-full text-right px-4">
+        <button
+          id="add-ad-btn"
+          type="button"
+          class="bg-green-500 text-white px-4 py-2 text-sm rounded-lg hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-green-300"
+        >
+          為物件申請 VIP 服務
+        </button>
+      </div>
 
     <main class="m-3">
-      <div id="view-box" class="border border-gray-400 py-2 px-2 rounded-md">
-        訂單列表
+      <div id="order-box" class="border border-gray-400 py-2 px-2 rounded-md">
+        <!-- 訂單列表 -->
         <table
-          id="paid-list-table"
+          id="order-table"
           class="table-auto w-full border-collapse border border-gray-300"
         >
-          <thead>
+          <thead class="bg-gray-100">
             <tr>
-              <th class="px-4 py-2 bg-gray-200 text-left">訂單編號</th>
-              <th class="px-4 py-2 bg-gray-200 text-left">訂單內容</th>
-              <th class="px-4 py-2 bg-gray-200 text-left">下單日期</th>
-              <th class="px-4 py-2 bg-gray-200 text-left">訂單狀態</th>
-              <th class="px-4 py-2 bg-gray-200 text-center">訂單詳細</th>
+              <th class="px-4 py-2 text-center text-sm font-medium text-gray-600">
+                訂單編號
+              </th>
+              <th
+                class="px-4 py-2 text-center text-sm font-medium text-gray-600"
+              >
+                下單時間
+              </th>
+              <th
+                class="px-4 py-2 text-center text-sm font-medium text-gray-600"
+              >
+                訂單狀態
+              </th>
+              <th
+                class="px-4 py-2 text-center text-sm font-medium text-gray-600"
+              >
+                訂單金額
+              </th>
+              <th
+                class="px-4 py-2 text-center text-sm font-medium text-gray-600"
+              >
+                物件內容
+              </th>
+              <th
+                class="px-4 py-2 text-center text-sm font-medium text-gray-600"
+              >
+              </th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td class="px-4 py-2">1</td>
-              <td class="px-4 py-2">
-                <ul>
-                  <li>動態新增訂單內容物</li>
-                  <li>至多兩物件</li>
-                </ul>
-              </td>
-              <td class="px-4 py-2">2024-11-16</td>
-              <td class="px-4 py-2">一般訂單</td>
-              <td class="px-4 py-2 flex justify-center text-center">
-                <button
-                  id = "check-detail-btn"
-                  type="button"
-                  class="bg-blue-500 rounded text-white w-16 py-2 hover:bg-blue-300"
-                >
-                  查看
-                </button>
-              </td>
-            </tr>
-          </tbody>
+          <tbody></tbody>
         </table>
-        </div>
+      </div>
 
-        <!--訂單詳細內容-->
-        <div id="modal-background" class="fixed inset-0 bg-gray-500/75 hidden"></div>
-        <div id="modal" class="fixed inset-0 z-10 bg-gray-500/75 flex items-center justify-center hidden">
-          
-          <div class="bg-white rounded-lg shadow-lg w-4/5 h-4/5 p-8">
-            <div class="mt-4 text-right">
-              <button id="close-modal-btn" class="px-3 py-1.5 bg-red-500 text-white rounded hover:bg-red-600"> X </button>
-            </div>
-            <h3 class="text-2xl font-semibold text-gray-900 text-center" id="modal-title">
-              訂單內容
-            </h3>
-            <div class="m-4 overflow-auto h-[calc(100%-6rem)]">
-              <table class="border border-gray-400 w-full">
-                <thead class="bg-gray-200">
-                  <tr>
-                    <th class="px-4 py-2">訂單號碼</th>
-                    <th class="px-4 py-2">物件內容</th>
-                    <th class="px-4 py-2">廣告種類</th>
-                    <th class="px-4 py-2">訂單金額</th>
-                    <th class="px-4 py-2">付款日期</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr class="text-center">
-                    <td>訂單號碼</td>
-                    <td>物件內容</td>
-                    <td>廣告種類</td>
-                    <td>訂單金額</td>
-                    <td>付款日期</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            
+      <!-- 分頁 -->
+      <div class="flex justify-center mt-4">
+        <nav aria-label="Page navigation">
+          <ul id="pagination" class="inline-flex items-center space-x-2 pagination"></ul>
+        </nav>
+      </div>
+
+      <!--訂單詳細內容-->
+      <div
+        id="modal-background"
+        class="fixed inset-0 bg-gray-500/75 overlay hidden"
+      ></div>
+      <div
+        id="order-detail-modal"
+        class="fixed inset-0 z-20 bg-gray-500/75 flex items-center justify-center hidden"
+      >
+        <div class="bg-white rounded-lg shadow-lg w-4/5 h-4/5 p-8">
+          <div class="mt-4 text-right">
+            <button
+              id="close-modal-btn"
+              class="px-3 py-1.5 bg-red-500 text-white rounded hover:bg-red-600"
+            >
+              關閉
+            </button>
+          </div>
+          <h3 class="text-2xl font-semibold text-gray-900 text-center">
+            訂單內容
+          </h3>
+          <div class="m-4 overflow-auto h-[calc(100%-6rem)]">
+            <table id="order-modal-table" class="border border-gray-400 w-full">
+              <thead class="border border-gray-400">
+                <tr></tr>
+                <tr></tr>
+                <tr></tr>
+                <tr></tr>
+              </thead>
+              <tbody id="order-details-body" class="text-center"></tbody>
+            </table>
           </div>
         </div>
+      </div>
 
+      <!-- 提示訊息 -->
+      <div id="message-modal" class="fixed inset-0 z-10 bg-gray-500/75 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg shadow-lg w-3/4">
+          <div class="m-4">
+            <h3 id="message" class="text-2xl font-semibold m-4 text-gray-900 text-center">
+            </h3>
+            <div class="text-right mt-10">
+              <button id="close-modal" type="button" class="modal-btn px-3 py-1.5 bg-gray-500 text-white rounded hover:bg-gray-400">
+                關閉
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
 
     <footer></footer>
-    <script src="../static/JS/scriptList.js"></script>
-    <script src="../static/JS/scriptButton.js"></script>
+    <!-- <script type="module">
+      import * as ListJs from "/js/ListScript.js";
+      ListJs.init();
+    </script>
+    -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="../static/JS/orderPage.js"></script>
+    <script src="/js/orderPage.js"></script>
   </body>
 </html>

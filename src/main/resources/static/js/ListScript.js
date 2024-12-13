@@ -9,7 +9,7 @@ link.addEventListener('mouseenter',()=>{
 	linklist.style.display='block';
 	
 })
-//link滑鼠移入
+//link滑鼠移出
 link.addEventListener('mouseleave',() =>{
 	setTimeout(()=>{
 	    if(!linklist.matches(':hover')){

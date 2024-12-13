@@ -16,7 +16,7 @@ public class CommonController {
 	private GoogleApiConfig googleApiConfig;
 	
 
-	@GetMapping("/home")
+	@GetMapping("/")
 	public String home(Model model) {
 		
 		model.addAttribute("googleApiKey", googleApiConfig.getGoogleMapKey());

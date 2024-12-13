@@ -30,7 +30,6 @@ public class SearchController {
 		return houseList;
 	}
 	
-	// TODO
 	@CrossOrigin(origins = "*")
 	@PostMapping("/api/map")
 	public List<AddressDTO> searchShowMap(@RequestBody OriginDTO request) {
@@ -38,7 +37,7 @@ public class SearchController {
 		List<AddressDTO> addressDtoList = searchService.findByCityAndTownship(origin.getAddress());
 		addressDtoList.add(0,origin);
 		long startTime = System.currentTimeMillis();
-		addressDtoList = searchService.GetDurationAndDistanceGoogleAPI(addressDtoList);
+		addressDtoList = searchService.GetDurationAndDistance(addressDtoList);
 		long endTime = System.currentTimeMillis();
 		System.out.println("執行時間：" + (endTime - startTime) + " 毫秒");
 		return addressDtoList;

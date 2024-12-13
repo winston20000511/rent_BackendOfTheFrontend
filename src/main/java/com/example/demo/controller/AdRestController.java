@@ -4,8 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,90 +16,80 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.AdCreationRequestDTO;
 import com.example.demo.dto.AdDetailsResponseDTO;
-import com.example.demo.model.AdBean;
 import com.example.demo.model.AdtypeBean;
 import com.example.demo.service.AdService;
-import com.example.demo.service.HouseService;
 
 @RestController
 @RequestMapping("/advertisements")
 public class AdRestController {
 
 	private AdService adService;
-	private HouseService houseService;
 
 	@Autowired
-	public AdRestController(AdService adService, HouseService houseService) {
+	public AdRestController(AdService adService) {
 		this.adService = adService;
-		this.houseService = houseService;
 	}
 	
+	// 取得所有廣告：用戶id
+	@GetMapping("/{pageNumber}")
+	public Page<AdDetailsResponseDTO> findAllAds(@PathVariable Integer pageNumber) {
+		return adService.findAllAds(pageNumber);
+	}
 
-	@GetMapping("/noadhouses/{userId}")
-	public List<Map<String,Object>> findNoAdHousesByUserId(@PathVariable("userId") Long userId){
-		return houseService.findNoAdHousesByUserId(userId);
+	// 依條件篩選：用戶id + 付款狀態 + 上架時間
+	@PostMapping("/filter")
+	public Page<AdDetailsResponseDTO> filter(@RequestBody Map<String, String> conditions) {
+		// {page=1, daterange=week, paymentstatus=paid}
+		Page<AdDetailsResponseDTO> pages= adService.findAdsByConditions(conditions);
+		
+		return pages;
 	}
 	
+	// 找到沒有上廣告的房子：用戶id篩選
+	@GetMapping("/houseswithoutadds/{pageNumber}")
+	public Page<Map<String, Object>> filterHousesWithoutAds(@PathVariable("pageNumber") Integer pageNumber){
+		
+		Page<Map<String, Object>> housesWithoutAds = adService.findHousesWithoutAds(pageNumber);
+		
+		for(Map<String, Object> house : housesWithoutAds) {
+			System.out.println(house.toString());
+		}
+		
+		return housesWithoutAds;
+	}
 	
-	@GetMapping("/adtype")
-	public List<AdtypeBean> findAdType() {
+	// 取得廣告種類
+	@GetMapping("/adtypes")
+	public List<AdtypeBean> findAllAdtypes(){
 		return adService.findAllAdType();
 	}
 	
+	// 取得廣告詳細資料
+	@GetMapping("/adId/{adId}")
+	public AdDetailsResponseDTO findAdDetails(@PathVariable Long adId) {
+		return adService.findAdDetailsByAdId(adId);
+	}
 	
+	// 新增
 	@PostMapping
-	public boolean createAds(@RequestBody List<AdCreationRequestDTO> adCreationRequestDTOs) {
-		return adService.createAds(adCreationRequestDTOs);
+	public boolean createAd(@RequestBody AdCreationRequestDTO requestDTO) {
+		return adService.createAd(requestDTO);
 	}
 	
-	@PutMapping("/{adId}/{newAdtypeId}")
-	public ResponseEntity<?> updateAdtypeById(@PathVariable("adId") Long adId, @PathVariable("newAdtypeId") Integer newAdtypeId) {
-		
-		// 會員登入驗證
-		
-		System.out.println(newAdtypeId);
-		AdBean updatedAd = adService.updateAdtypeById(adId, newAdtypeId);
-		if(updatedAd == null) {
-			// 之後製作禁止修改訂單的錯誤訊息頁面 + 前端網頁控管
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("無法修改");
-		}
-		
-		return ResponseEntity.ok(updatedAd);
-		
-	}
-	
-	// delete an ad by ad id
-	@DeleteMapping("/{adId}")
-	public boolean deleteAdById(@PathVariable("adId") Long adId) {
+	// 刪除
+	@DeleteMapping
+	public boolean deleteAd(@RequestBody Long adId) {
 		return adService.deleteAdById(adId);
 	}
 	
-	
-	
-	/* DTO: get ad details */
-	@GetMapping("/details/{adId}")
-	public AdDetailsResponseDTO findAdsByAdId(@PathVariable("adId") Long adId) {
-		AdDetailsResponseDTO adDetails = adService.findAdDetailsByAdId(adId);
-		System.out.println(adDetails.toString());
-		return adDetails;
+	// 修改
+	@PutMapping
+	public AdDetailsResponseDTO update(@RequestBody Map<String, String> request) {
+		
+		Long adId = Long.parseLong(request.get("adId"));
+		Integer adtypeId = Integer.parseInt(request.get("newAdtypeId"));
+		System.out.println("adId " + adId + " adtypeId " + adtypeId);
+		
+		return adService.updateAdtypeById(adId, adtypeId);
 	}
-	
-	
-	@PostMapping("/search")
-	public List<AdDetailsResponseDTO> findAdTableDataByAdIdAndIsPaid(
-			@RequestBody Map<String, Object> filter //, HttpSession session
-			){
-		
-		//		Long loginUserId = (Long)session.getAttribute("loginUserId");
-
-		Long userId = Long.valueOf(((Integer)filter.get("userId")).longValue());
-		Boolean isPaid = (Boolean)filter.get("isPaid");
-		Integer pageNumber = (Integer)filter.get("pageNumber")==null? 1 : (Integer)filter.get("pageNumber");
-		System.out.println(filter);
-		
-		List<AdDetailsResponseDTO> dtos = adService.findAdTableDataByUserIdAndIsPaid(userId, isPaid, pageNumber);
-		
-		return dtos;
-	}
-	
 }

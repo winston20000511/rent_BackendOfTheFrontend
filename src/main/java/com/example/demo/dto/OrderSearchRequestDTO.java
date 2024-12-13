@@ -8,15 +8,15 @@ public class OrderSearchRequestDTO {
 	private Long userId;
 	private Short orderStatus; // all, active, cancelled
 	private String merchantTradNo;
-	private LocalDateTime startDate;
-	private LocalDateTime endDate;
+	private String startDate;
+	private String endDate;
 	private String houseTitle;
 	
 	public OrderSearchRequestDTO() {
 	}
 
 	public OrderSearchRequestDTO(Long userId, Short orderStatus, String merchantTradNo,
-			LocalDateTime startDate, LocalDateTime endDate, String houseTitle) {
+			String startDate, String endDate, String houseTitle) {
 		this.userId = userId;
 		this.orderStatus = orderStatus;
 		this.merchantTradNo = merchantTradNo;
@@ -55,19 +55,19 @@ public class OrderSearchRequestDTO {
 		this.merchantTradNo = merchantTradNo;
 	}
 
-	public LocalDateTime getStartDate() {
+	public String getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(LocalDateTime startDate) {
+	public void setStartDate(String startDate) {
 		this.startDate = startDate;
 	}
 
-	public LocalDateTime getEndDate() {
+	public String getEndDate() {
 		return endDate;
 	}
 
-	public void setEndDate(LocalDateTime endDate) {
+	public void setEndDate(String endDate) {
 		this.endDate = endDate;
 	}
 

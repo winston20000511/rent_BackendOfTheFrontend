@@ -1,5 +1,10 @@
 package com.example.demo.dto;
 
+import java.util.List;
+
+import lombok.Data;
+
+@Data
 public class HouseDetailsDTO {
 
     private Long houseId;
@@ -36,7 +41,7 @@ public class HouseDetailsDTO {
 	private Boolean channel4;
 	private Boolean sofa;
 	private Boolean tables;
-    private byte[] imageUrl;
+    private List<byte[]> images;
 
 	public HouseDetailsDTO(Long houseId, Long userId, String title, Integer price, String description, Integer size,
 			String address, Byte room, Byte bathroom, Byte livingroom, Byte kitchen, Byte floor, Boolean atticAddition,
@@ -44,7 +49,7 @@ public class HouseDetailsDTO {
 			Boolean waterDispenser, Boolean managementFee, Byte genderRestrictions, Boolean washingMachine,
 			Boolean airConditioner, Boolean network, Boolean bedstead, Boolean mattress, Boolean refrigerator,
 			Boolean ewaterHeater, Boolean gwaterHeater, Boolean television, Boolean channel4, Boolean sofa,
-			Boolean tables, byte[] imageUrl) {
+			Boolean tables, List<byte[]> images) {
 		super();
 		this.houseId = houseId;
 		this.userId = userId;
@@ -80,224 +85,11 @@ public class HouseDetailsDTO {
 		this.channel4 = channel4;
 		this.sofa = sofa;
 		this.tables = tables;
-		this.imageUrl = imageUrl;
+		this.images = images;
 	}
 
 	public HouseDetailsDTO() {
 		
 	}
 	
-	public Long getHouseId() {
-		return houseId;
-	}
-	public void setHouseId(Long houseId) {
-		this.houseId = houseId;
-	}
-	public Long getUserId() {
-		return userId;
-	}
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
-	public String getTitle() {
-		return title;
-	}
-	public void setTitle(String title) {
-		this.title = title;
-	}
-	public Integer getPrice() {
-		return price;
-	}
-	public void setPrice(Integer price) {
-		this.price = price;
-	}
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	public Integer getSize() {
-		return size;
-	}
-	public void setSize(Integer size) {
-		this.size = size;
-	}
-	public String getAddress() {
-		return address;
-	}
-	public void setAddress(String address) {
-		this.address = address;
-	}
-	public Byte getRoom() {
-		return room;
-	}
-	public void setRoom(Byte room) {
-		this.room = room;
-	}
-	public Byte getBathroom() {
-		return bathroom;
-	}
-	public void setBathroom(Byte bathroom) {
-		this.bathroom = bathroom;
-	}
-	public Byte getLivingroom() {
-		return livingroom;
-	}
-	public void setLivingroom(Byte livingroom) {
-		this.livingroom = livingroom;
-	}
-	public Byte getKitchen() {
-		return kitchen;
-	}
-	public void setKitchen(Byte kitchen) {
-		this.kitchen = kitchen;
-	}
-	public Byte getFloor() {
-		return floor;
-	}
-	public void setFloor(Byte floor) {
-		this.floor = floor;
-	}
-	public Boolean getAtticAddition() {
-		return atticAddition;
-	}
-	public void setAtticAddition(Boolean atticAddition) {
-		this.atticAddition = atticAddition;
-	}
-	public Boolean getPet() {
-		return pet;
-	}
-	public void setPet(Boolean pet) {
-		this.pet = pet;
-	}
-	public Boolean getParkingSpace() {
-		return parkingSpace;
-	}
-	public void setParkingSpace(Boolean parkingSpace) {
-		this.parkingSpace = parkingSpace;
-	}
-	public Boolean getElevator() {
-		return elevator;
-	}
-	public void setElevator(Boolean elevator) {
-		this.elevator = elevator;
-	}
-	public Boolean getBalcony() {
-		return balcony;
-	}
-	public void setBalcony(Boolean balcony) {
-		this.balcony = balcony;
-	}
-	public Boolean getShortTerm() {
-		return shortTerm;
-	}
-	public void setShortTerm(Boolean shortTerm) {
-		this.shortTerm = shortTerm;
-	}
-	public Boolean getCooking() {
-		return cooking;
-	}
-	public void setCooking(Boolean cooking) {
-		this.cooking = cooking;
-	}
-	public Boolean getWaterDispenser() {
-		return waterDispenser;
-	}
-	public void setWaterDispenser(Boolean waterDispenser) {
-		this.waterDispenser = waterDispenser;
-	}
-	public Boolean getManagementFee() {
-		return managementFee;
-	}
-	public void setManagementFee(Boolean managementFee) {
-		this.managementFee = managementFee;
-	}
-	public Byte getGenderRestrictions() {
-		return genderRestrictions;
-	}
-	public void setGenderRestrictions(Byte genderRestrictions) {
-		this.genderRestrictions = genderRestrictions;
-	}
-	public Boolean getWashingMachine() {
-		return washingMachine;
-	}
-	public void setWashingMachine(Boolean washingMachine) {
-		this.washingMachine = washingMachine;
-	}
-	public Boolean getAirConditioner() {
-		return airConditioner;
-	}
-	public void setAirConditioner(Boolean airConditioner) {
-		this.airConditioner = airConditioner;
-	}
-	public Boolean getNetwork() {
-		return network;
-	}
-	public void setNetwork(Boolean network) {
-		this.network = network;
-	}
-	public Boolean getBedstead() {
-		return bedstead;
-	}
-	public void setBedstead(Boolean bedstead) {
-		this.bedstead = bedstead;
-	}
-	public Boolean getMattress() {
-		return mattress;
-	}
-	public void setMattress(Boolean mattress) {
-		this.mattress = mattress;
-	}
-	public Boolean getRefrigerator() {
-		return refrigerator;
-	}
-	public void setRefrigerator(Boolean refrigerator) {
-		this.refrigerator = refrigerator;
-	}
-	public Boolean getEwaterHeater() {
-		return ewaterHeater;
-	}
-	public void setEwaterHeater(Boolean ewaterHeater) {
-		this.ewaterHeater = ewaterHeater;
-	}
-	public Boolean getGwaterHeater() {
-		return gwaterHeater;
-	}
-	public void setGwaterHeater(Boolean gwaterHeater) {
-		this.gwaterHeater = gwaterHeater;
-	}
-	public Boolean getTelevision() {
-		return television;
-	}
-	public void setTelevision(Boolean television) {
-		this.television = television;
-	}
-	public Boolean getChannel4() {
-		return channel4;
-	}
-	public void setChannel4(Boolean channel4) {
-		this.channel4 = channel4;
-	}
-	public Boolean getSofa() {
-		return sofa;
-	}
-	public void setSofa(Boolean sofa) {
-		this.sofa = sofa;
-	}
-	public Boolean getTables() {
-		return tables;
-	}
-	public void setTables(Boolean tables) {
-		this.tables = tables;
-	}
-
-	public byte[] getImageUrl() {
-		return imageUrl;
-	}
-
-	public void setImageUrl(byte[] imageUrl) {
-		this.imageUrl = imageUrl;
-	}
-
 }

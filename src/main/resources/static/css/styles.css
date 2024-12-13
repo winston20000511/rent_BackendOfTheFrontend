@@ -148,13 +148,46 @@ header{
     margin-right: 10px;
 }
 .btn-list{
+    margin-top: 10px;
     display: none;
     position: absolute;
-    padding: 30px;
     z-index: 3;
     background-color: white;
-    width: 20%;
+    width: 15%;
     height: 200px;
+}
+.btn-list>p{
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+    background-color: #F0F0F0;
+    height: 30%;
+    font-weight: 700;
+}
+.btn-list .inputPrice{
+    display: flex;
+    padding: 20px 10px 0px;
+}
+.btn-list .left-minimum{
+    width: 50%;
+
+}
+.btn-list .left-minimum input{
+    font-weight: bold;
+    margin-top: 10px;
+}
+.btn-list .right-maximum{
+    width: 50%;
+
+}
+.btn-list .right-maximum input{
+    font-weight: bold;
+    margin-top: 10px;
+    
+}
+
+.btn-list .checkHomeType{
+    margin-top: 10px;
 }
 
 .main{
@@ -231,4 +264,8 @@ display: none !important;
 .gm-style-iw-d{
     overflow: hidden !important; /* 關閉滾動條 */
     max-height: none !important; /* 確保內容高度無限制 */
+}
+
+.red-height{
+    background-color: burlywood;
 }

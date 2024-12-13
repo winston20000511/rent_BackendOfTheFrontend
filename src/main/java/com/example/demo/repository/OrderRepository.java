@@ -17,5 +17,6 @@ public interface OrderRepository extends JpaRepository<OrderBean, String>, JpaSp
 	@Query("From OrderBean where userId = :userId")
 	public List<OrderBean> findOrdersByUserIdAndPageNumber(Long userId, Pageable pageable);
 	
+	@Query("From OrderBean where merchantTradNo = :merchantTradNo")
 	public OrderBean findByMerchantTradNo(String merchantTradNo);
 }

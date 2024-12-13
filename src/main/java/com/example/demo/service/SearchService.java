@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +20,11 @@ import com.example.demo.helper.SearchHelper;
 import com.example.demo.model.HouseTableBean;
 import com.example.demo.repository.SearchRepository;
 
+
 @Service
 public class SearchService {
 	
+
 	@Autowired
 	private SearchRepository searchRepo;
 	
@@ -31,19 +34,17 @@ public class SearchService {
 	public List<HouseTableBean> findAll() {
 		return searchRepo.findAll();
 	}
-//	
-//	public List<Address> findByCity(String city){
-//		return searchRepo.findByCity(city);
-//	}
-//	
+
 	public List<AddressDTO> findByCityAndTownship(String address){
 		
 		String[] Parts = SearchHelper.splitCityTown(address);
-		return searchRepo.findByCityAndTownship(Parts[0]+Parts[1]);
+		return searchRepo.findByCityAndTownship(Parts[0]);
 	}
 	
 	public List<AddressDTO> findByKeyWord(String name){
-		return searchRepo.findByKeyWord(name);
+		List<AddressDTO> listAddressDTO = searchRepo.findByKeyWord(name);
+		listAddressDTO.sort(Comparator.comparing(AddressDTO::getPaidDate).reversed());
+		return listAddressDTO;
 	}
 
 
@@ -70,7 +71,7 @@ public class SearchService {
 		try {
 			encodedAddress = java.net.URLEncoder.encode(origin,"UTF-8");
 			String urlString = "https://maps.googleapis.com/maps/api/geocode/json?address=" 
-	                + encodedAddress + "&components=country:TW&language=zh-TW&key=" + googleApiConfig.getGoogleMapKey();
+	                + encodedAddress + "&components=country:TW&bounds=21.5,119.5|25.5,122.5&language=zh-TW&key=" + googleApiConfig.getGoogleMapKey();
 			StringBuilder content = SearchHelper.urlConnection(urlString);
 			
 			JSONObject json = new JSONObject(content.toString());
@@ -79,7 +80,10 @@ public class SearchService {
 										.getJSONObject(0);
 										
 				String address = location.getString("formatted_address");
-				if (address.indexOf("台灣") > -1 && address.indexOf("台灣大道") == -1) {
+				if (address.length()<=2 ) {
+					address = "";
+				}
+				else if (address.indexOf("台灣") > -1 && address.indexOf("台灣大道") == -1) {
 					address = address.split("台灣")[1];
 				}
 				
@@ -96,16 +100,12 @@ public class SearchService {
 			}
 			
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -161,7 +161,7 @@ public class SearchService {
 		return houseList;
 	}
 	
-	public List<AddressDTO> GetDurationAndDistanceGoogleAPI(List<AddressDTO> addressDtoList) {
+	public List<AddressDTO> GetDurationAndDistance(List<AddressDTO> addressDtoList) {
 		
 		//String encodedOrigin;
 		List<AddressDTO> newAddressDtoList = new ArrayList<>();
@@ -179,60 +179,5 @@ public class SearchService {
 
 	}
 	
-	public List<HouseTableBean> GetDurationAndDistanceGoogleAPI2(List<HouseTableBean> houseList) {
-		
-		String encodedOrigin;
-		List<HouseTableBean> newHouseList = new ArrayList<>();
-		
-		try {
-			String address = houseList.get(0).getAddress();
-			encodedOrigin = java.net.URLEncoder.encode( address ,"UTF-8");
-			
-			for(int i = 1 ; i < houseList.size() ; i++) {
-				
-				address = houseList.get(i).getAddress();
-				String encodeDestination= java.net.URLEncoder.encode(address,"UTF-8");
-				String urlString = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" 
-		                + encodedOrigin + "&destinations=" + encodeDestination + "&mode=driving&language=zh-TW&key=" + googleApiConfig.getGoogleMapKey();
-				StringBuilder content = SearchHelper.urlConnection(urlString);
-				
-				JSONObject json = new JSONObject(content.toString());
-				if("OK".equals(json.getString("status"))) {
-					JSONObject distance = json.getJSONArray("rows")
-											.getJSONObject(0)
-											.getJSONArray("elements")
-											.getJSONObject(0)
-											.getJSONObject("distance");
-					
-					JSONObject duration = json.getJSONArray("rows")
-											.getJSONObject(0)
-											.getJSONArray("elements")
-											.getJSONObject(0)
-											.getJSONObject("duration");		
-					
-					if (distance.getInt("value") <2000 && duration.getInt("value") < 3600) {
-						newHouseList.add(houseList.get(i));
-					}
-//					System.out.println(distance.getInt("value"));
-//					System.out.println(duration.getInt("value"));						
-					
-				}
-			}
-			
-
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return newHouseList;
-
-	}
 	
 }

@@ -12,7 +12,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "adtype_table")
 public class AdtypeBean {
@@ -32,31 +37,4 @@ public class AdtypeBean {
 	@JsonIgnore
 	private List<AdBean> ads;
 
-	public AdtypeBean() {
-	}
-
-	public Integer getAdTypeId() {
-		return adtypeId;
-	}
-
-	public void setAdTypeId(Integer adTypeId) {
-		this.adtypeId = adTypeId;
-	}
-
-	public String getAdName() {
-		return adName;
-	}
-
-	public void setAdName(String adName) {
-		this.adName = adName;
-	}
-
-	public Integer getAdPrice() {
-		return adPrice;
-	}
-
-	public void setAdPrice(Integer adPrice) {
-		this.adPrice = adPrice;
-	}
-	
 }
