@@ -19,7 +19,7 @@ public interface AdRepository extends JpaRepository<AdBean, Long>{
 	@Query(value="select new com.example.demo.dto.AdDetailsResponseDTO"
 			+ "(a.adId, u.userId, u.name, h.title, adt.adName, a.adPrice, a.isPaid, a.orderId, a.paidDate) "
 			+ "from AdBean a "
-			+ "join AdtypeBean adt on a.adtypeId = adt.adTypeId "
+			+ "join AdtypeBean adt on a.adtypeId = adt.adtypeId "
 			+ "join UserTableBean u on a.userId = u.userId "
 			+ "join HouseTableBean h on a.houseId = h.houseId "
 			+ "where a.adId = :adId")
