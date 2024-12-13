@@ -49,9 +49,6 @@ iconButton.addEventListener('click',()=>{
 	//addMarkerByAddress();
 })
 
-
-
-
 function initMap() {
 	map = new google.maps.Map(document.getElementById('map'), {
 		center: { lat: 23.023535, lng: 120.222776 }, // 台灣的中心點 緯度 經度
@@ -112,10 +109,18 @@ async function updateKeyWordList(data){
 	const search = document.getElementById('search');
 	searchList.innerHTML = '';
 	data.forEach(k=>{
+
 		const li = document.createElement('li');
-		//if (k.adress === null){ k.address=""};
-		
-		li.textContent=k.address;
+		const dateSpec = '1999-01-01T00:00:00';
+
+		const sourceDate = new Date(k.paidDate);
+		const targetDate = new Date(dateSpec)
+
+		if (sourceDate > targetDate){
+			console.log(k.paidDate)
+			li.classList.add('red-height')
+		}
+		li.textContent=k.address
 		li.classList.add('px-4', 'py-2', 'cursor-pointer', 'hover:bg-blue-500', 'hover:text-white');
 
 		li.addEventListener('click',()=>{
@@ -185,56 +190,65 @@ async function addMarkerByAddress(data) {
 	var cardCount =1;
 	//新增標記
 	data.forEach(k=>{
+		
+		/*
 		let beachFlagImg = document.createElement('img');
 		beachFlagImg.src= "/img/house.png"
-		const buttonElement = document.createElement("div");
-		buttonElement.innerHTML = `<button id="infoWindowButton" class="bg-purple-500 text-white w-8 h-6 rounded-lg hover:bg-purple-700">
-		    ${Number(k.price)/1000}K
-		  </button>`;
-		var pos = k.city + k.township + k.street;
-		var latlng = new google.maps.LatLng(k.lat, k.lng);;
-		var marker = new google.maps.marker.AdvancedMarkerElement({
-			position: latlng,
-			map: map,
-			title: k.street,
-			content: buttonElement
-		});
+		*/
+		
+		console.log(k.address + " , " + search.value)
+		if (k.address != search.value){
+			
+			const buttonElement = document.createElement("div");
+			buttonElement.innerHTML = `<button id="infoWindowButton" class="bg-purple-500 text-white w-8 h-6 rounded-lg hover:bg-purple-700">
+			    ${Number(k.price)/1000}K
+			  </button>`;
+			
+			var latlng = new google.maps.LatLng(k.lat, k.lng);;
+			var marker = new google.maps.marker.AdvancedMarkerElement({
+				position: latlng,
+				map: map,
+				title: k.street,
+				content: buttonElement
+			});
 
-		//新增卡片
-		const card = document.createElement('div');
-		card.classList.add('bg-white', 'rounded-lg', 'shadow-md', 'p-3', 'hover:shadow-lg', 'transition-shadow', 'duration-200');
-		card.id = `card${cardCount}` 
-		card.innerHTML = `
-		  <img src="./img/view1.jpg" alt="Card image" class="w-full h-48 object-cover mb-4 rounded-md">
-		  <h3 class="text-lg font-semibold mb-2">Price ${k.price}</h3>
-		  <p class="text-gray-600 mb-4">${k.address}</p>
-		  <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">View</button>
-		`;
-		cardContainer.appendChild(card);
-		cardCount++;
+			//新增卡片
+			const card = document.createElement('div');
+			card.classList.add('bg-white', 'rounded-lg', 'shadow-md', 'p-3', 'hover:shadow-lg', 'transition-shadow', 'duration-200');
+			card.id = `card${cardCount}` 
+			card.innerHTML = `
+			  <img src="./img/view1.jpg" alt="Card image" class="w-full h-48 object-cover mb-4 rounded-md">
+			  <h3 class="text-lg font-semibold mb-2">Price ${k.price}</h3>
+			  <p class="text-gray-600 mb-4">${k.address}</p>
+			  <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">View</button>
+			`;
+			cardContainer.appendChild(card);
+			cardCount++;
 
-		const contentString = `
-		<div style="width:250px; height:250px">
-			<img src="./img/view1.jpg" loading="lazy" alt="Card image" class="w-full h-40 object-cover mb-4 rounded-md">
-			<h3 class="text-lg font-semibold mb-2 ml-2 ">Price ${k.price}</h3>
-			<p class="text-gray-600 mb-4 ml-2">${k.address}</p>
-		</div>
-	  `;
+			const contentString = `
+			<div style="width:250px; height:250px">
+				<img src="./img/view1.jpg" loading="lazy" alt="Card image" class="w-full h-40 object-cover mb-4 rounded-md">
+				<h3 class="text-lg font-semibold mb-2 ml-2 ">Price ${k.price}</h3>
+				<p class="text-gray-600 mb-4 ml-2">${k.address}</p>
+			</div>
+		  `;
 
-		marker.addListener('click',()=>{
-			//map.setZoom(15);
-			//map.panTo(marker.position);
-			infoWindow.setContent(contentString);
-			cardSelected(card.id);
-			//// infoWindow.setContent('<h3>' + marker.title + '</h3><p>' +`<strong>Distance</strong> ${distancematrix.distance.text}`+ '<p><p>' + `<strong>Duration</strong> ${distancematrix.duration.text}` + '</p>')
-			infoWindow.open(map, marker)
-		});
+			marker.addListener('click',()=>{
+				//map.setZoom(15);
+				//map.panTo(marker.position);
+				infoWindow.setContent(contentString);
+				cardSelected(card.id);
+				//// infoWindow.setContent('<h3>' + marker.title + '</h3><p>' +`<strong>Distance</strong> ${distancematrix.distance.text}`+ '<p><p>' + `<strong>Duration</strong> ${distancematrix.duration.text}` + '</p>')
+				infoWindow.open(map, marker)
+			});
 
-		markers.push(marker);
-		// map.setCenter(latlng);
-    	// map.setZoom(16);
+			markers.push(marker);
+			// map.setCenter(latlng);
+			// map.setZoom(16);
+			}
+		})
+	
 
-	})
     // var origin = document.getElementById('search').value;
     // var originPosition= await geocodeAddress(origin);
     // var originMaker = new google.maps.Marker({
@@ -249,6 +263,8 @@ async function addMarkerByAddress(data) {
     // 將地圖中心移動到新標記位置
 	const address = document.getElementById('search').value;
 	const origin = await geocodeAddress(address)
+	console.log(address)
+	console.log(origin)
     const originMaker = new google.maps.marker.AdvancedMarkerElement({
         position: origin,
 		map: map,

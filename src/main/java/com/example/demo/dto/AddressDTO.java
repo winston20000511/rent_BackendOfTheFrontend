@@ -1,4 +1,5 @@
 package com.example.demo.dto;
+import java.time.LocalDateTime;
 
 public class AddressDTO {
 
@@ -6,21 +7,20 @@ public class AddressDTO {
 	private Double lat;
 	private Double lng;
 	private Integer price;
-	private boolean isPaid;
-	
+	private String adName;
+	private LocalDateTime paidDate;
 
 	public AddressDTO() {
-
+        
 	}
 
-
-	public AddressDTO(String address, Double lat, Double lng, Integer price, boolean isPaid) {
-		super();
+	public AddressDTO(String address, Double lat, Double lng, Integer price ,String adName, LocalDateTime paidDate) {
 		this.address = address;
 		this.lat = lat;
 		this.lng = lng;
 		this.price = price;
-		this.isPaid = isPaid;
+		this.adName = adName;
+		this.paidDate = paidDate;
 	}
 
 	public String getAddress() {
@@ -48,14 +48,19 @@ public class AddressDTO {
 		this.price = price;
 	}
 
-	public boolean isPaid() {
-		return isPaid;
+	public String getAdName() {
+		return adName;
+	}
+	public void setAdName(String adName) {
+		this.adName = adName;
 	}
 
-	public void setPaid(boolean isPaid) {
-		this.isPaid = isPaid;
+	public LocalDateTime getPaidDate() {
+		return paidDate;
 	}
-	
 
-	
+	public void setPaidDate(LocalDateTime paidDate) {
+		this.paidDate = paidDate;
+	}
+
 }

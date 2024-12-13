@@ -15,12 +15,13 @@ import com.example.demo.repository.CartRepository;
 
 @Service
 public class CartService {
-
+	@Autowired
 	private CartRepository cartRepository;
+	@Autowired
 	private CartItemRepository cartItemRepository;
+	@Autowired
 	private AdRepository adRepository;
 	
-	@Autowired
 	private CartService(CartRepository cartRepository, CartItemRepository cartItemRepository, AdRepository adRepository) {
 		this.cartRepository = cartRepository;
 		this.cartItemRepository = cartItemRepository;

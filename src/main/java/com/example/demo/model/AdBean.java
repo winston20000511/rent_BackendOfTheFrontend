@@ -51,7 +51,7 @@ public class AdBean {
 	@Column(name = "paid_date")
 	private LocalDateTime paidDate;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="adtype_id", insertable=false, updatable=false)
 	@JsonIgnore
 	private AdtypeBean adtype;
