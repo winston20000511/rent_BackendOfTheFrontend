@@ -2,7 +2,9 @@ package com.example.demo.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -23,4 +25,11 @@ public interface AdRepository extends JpaRepository<AdBean, Long>{
 			+ "where a.adId = :adId")
 	public AdDetailsResponseDTO findAdDetailsByAdId(Long adId);
 	
+	@Query("From AdBean where adId = :adId and userId = :userId")
+	public AdBean findAdByAdIdAndUserId(Long adId, Long userId);
+
+	public Page<AdBean> findAll(Specification<AdBean> spec, Pageable pageable);
+	
+	
+
 }
