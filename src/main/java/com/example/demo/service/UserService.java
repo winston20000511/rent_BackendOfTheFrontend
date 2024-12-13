@@ -84,12 +84,12 @@ public class UserService {
     // test checkLogin 
     public Optional<UserTableBean> checkLoginOK(String userEmail, String loginPwd) {
 		UserTableBean dbUsers = userRepository.findByEmail(userEmail);
-		
-		if (dbUsers.isPresent()) {
-			 if(dbUsers.get().getPassword().equals(loginPwd)) {
-				 return dbUsers;
-			 }
-		}
+//		
+//		if (dbUsers.isPresent()) {
+//			 if(dbUsers.get().getPassword().equals(loginPwd)) {
+//				 return dbUsers;
+//			 }
+//		}
 		return Optional.empty();
 	}
 }
