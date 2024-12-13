@@ -48,6 +48,6 @@ public class UserController {
 	public UserTableBean checkLogin(String username, String password) {
         // TODO Auto-generated method stub
         return null;
-}
+	}
 	
 }
