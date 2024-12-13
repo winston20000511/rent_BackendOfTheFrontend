@@ -33,7 +33,7 @@ import com.example.demo.service.HouseService;
 
 @RestController
 @RequestMapping("/api/houses")
-@CrossOrigin(origins = "http://localhost:5174")
+@CrossOrigin(origins = "http://localhost:5173")
 public class HouseController {
 	@Autowired
 	private HouseService houseService;
