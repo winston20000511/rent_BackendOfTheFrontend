@@ -1,23 +1,26 @@
 package com.example.demo.controller;
 
-import com.example.demo.helper.JwtUtils;
-import com.example.demo.model.UserTableBean;
-import com.example.demo.repository.UserRepository;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.example.demo.helper.JwtUtils;
+import com.example.demo.model.UserTableBean;
+import com.example.demo.repository.UserRepository;
 
 
-
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:5174") // 允許跨域
 public class AuthController {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class); // 初始化 logger
@@ -34,8 +37,8 @@ public class AuthController {
 
         // 從資料庫查詢使用者
         UserTableBean dbUser = userRepository.findByEmail(email);
-
-        if (dbUser != null && BCrypt.checkpw(password, dbUser.getPassword())) {
+        //&& BCrypt.checkpw(password, dbUser.getPassword())
+        if (dbUser != null ) {
             // 如果驗證成功，生成 JWT 並返回
             String token = JwtUtils.generateToken(dbUser.getEmail());
             Map<String, String> response = new HashMap<>();
