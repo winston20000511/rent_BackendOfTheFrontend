@@ -5,8 +5,10 @@ import java.util.Map;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.example.demo.dto.HouseDetailsDTO;
+import com.example.demo.dto.HouseListByUserIdDTO;
 import com.example.demo.dto.HouseOwnerDetailDTO;
 import com.example.demo.model.HouseImageTableBean;
 import com.example.demo.model.HouseTableBean;
@@ -24,4 +26,8 @@ public interface HouseRepository extends JpaRepository<HouseTableBean, Long> {
 
 	@Query(value = "SELECT h.house_id, u.email FROM  house_table h JOIN user_table u ON h.user_id = u.user_id WHERE h.user_id = :houseId", nativeQuery = true)
 	HouseOwnerDetailDTO getOwnerDetailByHouseId(Long houseId);
+	
+	@Query("SELECT new com.example.demo.dto.HouseListByUserIdDTO(h.houseId, h.user.userId) " +
+		       "FROM HouseTableBean h WHERE h.user.userId = :userId")
+		List<HouseListByUserIdDTO> findHousesByUserId(@Param("userId") Long userId);
 }

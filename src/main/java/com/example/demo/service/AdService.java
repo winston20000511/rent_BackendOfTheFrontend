@@ -28,11 +28,13 @@ import jakarta.persistence.Tuple;
 @Service
 public class AdService {
 	
+	@Autowired
 	private AdRepository adRepository;
+	@Autowired
 	private AdtypeRepository adtypeRepository;
+	@Autowired
 	private HouseRepository houseRepository;
 	
-	@Autowired
 	public AdService(AdRepository adRepository, AdtypeRepository adtypeRepository, HouseRepository houseRepository) {
 		this.adRepository = adRepository;
 		this.adtypeRepository = adtypeRepository;
