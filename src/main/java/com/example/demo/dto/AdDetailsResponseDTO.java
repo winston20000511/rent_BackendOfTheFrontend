@@ -13,6 +13,7 @@ public class AdDetailsResponseDTO {
 	private String isPaid;
 	private String orderId;
 	private String paidDate;
+	private Long remainingDays;
 	
 	public AdDetailsResponseDTO() {
 	}
@@ -110,13 +111,21 @@ public class AdDetailsResponseDTO {
 			this.paidDate = "尚未發布";
 		}
 	}
+	
+    public Long getRemainingDays() {
+        return remainingDays;
+    }
+
+    public void setRemainingDays(Long remainingDays) {
+        this.remainingDays = remainingDays;
+    }
 
 
 	@Override
 	public String toString() {
 		return "AdDetailsResponseDTO [adId=" + adId + ", userId=" + userId + ", userName=" + userName + ", houseTitle="
 				+ houseTitle + ", adName=" + adName + ", adPrice=" + adPrice + ", isPaid=" + isPaid + ", orderId="
-				+ orderId + ", paidDate=" + paidDate + "]";
+				+ orderId + ", paidDate=" + paidDate + ", remainingDays=" + remainingDays + "]";
 	}
 	
 	

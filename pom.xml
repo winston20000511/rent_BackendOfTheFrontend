@@ -105,10 +105,6 @@
 		    <artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
 
-		<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-security</artifactId>
-</dependency>
 			<!-- <jwt加密依賴注入> -->
 <dependency>
     <groupId>io.jsonwebtoken</groupId>

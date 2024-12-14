@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +25,7 @@ import com.example.demo.repository.AdSpecification;
 import com.example.demo.repository.AdtypeRepository;
 import com.example.demo.repository.HouseRepository;
 
-import jakarta.persistence.Tuple;
+
 
 @Service
 public class AdService {
@@ -45,8 +47,6 @@ public class AdService {
 	/* AdBean */
 	public boolean createAd(AdCreationRequestDTO requestDTO) {
 		
-			System.out.println(requestDTO.getAdtypeId());
-		
 			AdBean adBean = new AdBean();
 			adBean.setUserId(requestDTO.getUserId());
 			adBean.setHouseId(requestDTO.getHouseId());
@@ -54,7 +54,7 @@ public class AdService {
 			Optional<AdtypeBean> optional = adtypeRepository.findById(requestDTO.getAdtypeId());
 			if(optional != null) {
 				AdtypeBean adtypeBean = optional.get();
-				adBean.setAdtypeId(adtypeBean.getAdTypeId());
+				adBean.setAdtypeId(adtypeBean.getAdtypeId());
 				adBean.setAdPrice(adtypeBean.getAdPrice());
 			}
 			
@@ -76,8 +76,6 @@ public class AdService {
 			Integer price = adtypeRepository.findById(newAdtypeId).get().getAdPrice();
 			ad.setAdPrice(price);
 			AdBean savedAd = adRepository.save(ad);
-			
-			System.out.println("新adname: " + savedAd.getAdtype().getAdName());
 			
 			responseDTO = setAdDetailResponseDTO(savedAd);
 		}
@@ -118,7 +116,7 @@ public class AdService {
 		AdDetailsResponseDTO responseDTO = null;
 		Optional<AdBean> optional = adRepository.findById(adId);
 		
-		if(optional != null) {
+		if(optional.isPresent()) {
 			AdBean ad = optional.get();
 			responseDTO = setAdDetailResponseDTO(ad);
 		}
@@ -128,8 +126,6 @@ public class AdService {
 	
 	public Page<AdDetailsResponseDTO> findAdsByConditions(Map<String, String> conditions) {
 		Integer pageNumber = Integer.parseInt(conditions.get("page"));
-		
-		System.out.println("page number: " + pageNumber);
 		
 		// 建立篩選條件
 		Specification<AdBean> spec = AdSpecification.filter(conditions);
@@ -166,6 +162,13 @@ public class AdService {
 			responseDTO.setOrderId(ad.getOrderId());
 			responseDTO.setPaidDate(ad.getPaidDate());
 			
+			LocalDateTime now = LocalDateTime.now();
+			LocalDateTime paidDate = ad.getPaidDate();
+			if(ad.getPaidDate() != null) {
+				Duration duration = Duration.between(now, paidDate);
+				responseDTO.setRemainingDays(duration.toDays());
+			}
+	
 			responseDTOs.add(responseDTO);
 			System.out.println(responseDTO.toString());
 		}
@@ -183,7 +186,17 @@ public class AdService {
 		responseDTO.setIsPaid(ad.getIsPaid());
 		responseDTO.setOrderId(ad.getOrderId());
 		responseDTO.setPaidDate(ad.getPaidDate());
-			
+		
+		// 計算廣到剩餘時間
+		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime paidDate = ad.getPaidDate();
+		if(ad.getPaidDate() != null) {
+			Duration duration = Duration.between(now, paidDate);
+			responseDTO.setRemainingDays(duration.toDays());
+			responseDTO.setRemainingDays(duration.toDays());
+		}
+		
 		return responseDTO;
 	}
+	
 }

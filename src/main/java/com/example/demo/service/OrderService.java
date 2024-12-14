@@ -54,7 +54,7 @@ public class OrderService {
 	// get orders by conditions and page
 	public Page<OrderResponseDTO> findOrdersByConditions(Map<String, String> conditions) {
 		Integer pageNumber = Integer.parseInt(conditions.get("page"));
-
+		
 		Specification<OrderBean> spec = OrderSpecification.filter(conditions);
 
 		Pageable pageable = PageRequest.of(pageNumber - 1, 10, Sort.Direction.DESC, "merchantTradNo");

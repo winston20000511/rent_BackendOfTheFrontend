@@ -50,11 +50,6 @@ public class AdRestController {
 	public Page<Map<String, Object>> filterHousesWithoutAds(@PathVariable("pageNumber") Integer pageNumber){
 		
 		Page<Map<String, Object>> housesWithoutAds = adService.findHousesWithoutAds(pageNumber);
-		
-		for(Map<String, Object> house : housesWithoutAds) {
-			System.out.println(house.toString());
-		}
-		
 		return housesWithoutAds;
 	}
 	
@@ -88,7 +83,6 @@ public class AdRestController {
 		
 		Long adId = Long.parseLong(request.get("adId"));
 		Integer adtypeId = Integer.parseInt(request.get("newAdtypeId"));
-		System.out.println("adId " + adId + " adtypeId " + adtypeId);
 		
 		return adService.updateAdtypeById(adId, adtypeId);
 	}

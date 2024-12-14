@@ -69,6 +69,7 @@ public class OrderRestController {
 	// 要加上 user id
 	@PostMapping("/filter")
 	public Page<OrderResponseDTO> filterOrders(@RequestBody Map<String, String> conditions){
+		//conditions: {page=, status=, dateRange=, inputcondition=, userInput=}
 		return orderService.findOrdersByConditions(conditions);
 	}
 	
