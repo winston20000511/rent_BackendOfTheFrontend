@@ -42,6 +42,8 @@ public class CartService {
 	// 取得購物車內容
 	public List<CartItemBean> findCartItemsByUserId(Long userId){
 		CartBean cart = cartRepository.findCartByUserId(userId);
+		if(cart == null) return null;
+		
 		return cart.getCartItems();
 	}
 	

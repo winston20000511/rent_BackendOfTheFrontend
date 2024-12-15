@@ -45,10 +45,9 @@ public class AdRestController {
 		return pages;
 	}
 	
-	// 找到沒有上廣告的房子：用戶id篩選
-	@GetMapping("/houseswithoutadds/{pageNumber}")
-	public Page<Map<String, Object>> filterHousesWithoutAds(@PathVariable("pageNumber") Integer pageNumber){
-		
+	// 找到沒有上廣告的房子：用戶id篩選 => 要加上篩選出廣告已過期的
+	@PostMapping("/houseswithoutadds")
+	public Page<Map<String, Object>> filterHousesWithoutAds(@RequestBody Integer pageNumber){
 		Page<Map<String, Object>> housesWithoutAds = adService.findHousesWithoutAds(pageNumber);
 		return housesWithoutAds;
 	}

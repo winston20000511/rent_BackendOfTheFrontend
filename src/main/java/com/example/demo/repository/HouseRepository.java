@@ -32,11 +32,25 @@ public interface HouseRepository extends JpaRepository<HouseTableBean, Long> {
 	@Query("SELECT new com.example.demo.dto.HouseListByUserIdDTO(h.houseId, h.user.userId) " +
 		       "FROM HouseTableBean h WHERE h.user.userId = :userId")
 		List<HouseListByUserIdDTO> findHousesByUserId(@Param("userId") Long userId);
-	@Query(value = "select h.house_id as houseId, h.title as houseTitle from house_table h "
-			+ "left join ads_table a on a.house_id = h.house_id "
-			+ "where a.ad_id is null", countQuery = "select count(*) " + "from house_table h "
-					+ "left join ads_table a on a.house_id = h.house_id where a.ad_id is null", nativeQuery = true)
+	
+	@Query(value = "select h.house_id as houseId, h.title as houseTitle " +
+	        "from house_table h " +
+	        "left join ads_table a on a.house_id = h.house_id " +
+	        "where h.status = 1 and a.ad_id is null " +
+	        "or (a.is_paid = 1 and a.paid_date is not null and " +
+	        "DATEADD(DAY, CASE WHEN a.adtype_id = 1 THEN 30 " +
+	        "WHEN a.adtype_id = 2 THEN 60 " +
+	        "END, CAST(a.paid_date AS DATE)) < CAST(GETDATE() AS DATE))", 
+	        countQuery = "select count(*) from house_table h " +
+	        "left join ads_table a on a.house_id = h.house_id " +
+	        "where h.status = 1 and a.ad_id is null " +
+	        "or (a.is_paid = 1 and a.paid_date is not null and " +
+	        "DATEADD(DAY, CASE WHEN a.adtype_id = 1 THEN 30 " +
+	        "WHEN a.adtype_id = 2 THEN 60 " +
+	        "END, CAST(a.paid_date AS DATE)) < CAST(GETDATE() AS DATE))", 
+	        nativeQuery = true)
 	public Page<Map<String, Object>> findHousesWithoutAds(Pageable pageable);
+
 
 
 	
