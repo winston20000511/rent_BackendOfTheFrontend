@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rent house</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/adAndOrderFront.css" />
+    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css"/>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@^2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet"/>
+</head>
+<body>
+	<div th:replace="~{layout/navbar}"></div>
+
+    <div
+        id="my-ad-title"
+        class="text-xl mb-3 text-center border-b border-black py-2"
+      >
+        訂單確認
+    </div>
+
+      <div class="flex items-center mr-64 ml-64 mt-10">
+        <div class="flex flex-col items-center">
+          <div class="w-8 h-8 flex items-center justify-center bg-blue-400 rounded-full">
+            <i class="fa-solid fa-check" style="color: #fafcff;"></i>
+          </div>
+          <div class="mt-2 text-sm text-gray-600">確認</div>
+        </div>
+        <div class="flex-1 h-0.5 bg-blue-400 -mt-6"></div>
+        <div class="flex flex-col items-center">
+          <div class="w-8 h-8 flex items-center justify-center bg-blue-400 rounded-full">
+            <i class="fa-solid fa-check" style="color: #fafcff;"></i>
+          </div>
+          <div class="mt-2 text-sm text-gray-600">付款</div>
+        </div>
+        <div class="flex-1 h-0.5 bg-blue-400 -mt-6"></div>
+        <div class="flex flex-col items-center">
+          <div class="w-8 h-8 flex items-center justify-center bg-blue-400 rounded-full">
+            <i class="fa-solid fa-check" style="color: #fafcff;"></i>
+          </div>
+          <div class="mt-2 text-sm text-gray-600">完成</div>
+        </div>
+      </div>
+
+    <br/>
+      <div class="px-1 py-1 m-2 text-center border-b-2 border-blue-400 mr-64 ml-64">step3. 付款完成！</div>
+      
+      <main class="text-center">三秒後將自動跳轉至訂單一覽表</main>
+      
+    </div>
+    
+
+    <footer></footer>
+    <!-- <script type="module">
+        import * as ListJs from "/js/ListScript.js";
+        ListJs.init();
+    </script> -->
+    <script>
+      window.onload = function(){
+        setTimeout(() => {
+          // 不允許用戶返回上一頁
+          // window.location.replace("/orders/mylist");
+          window.location.replace("/users/loginPost");
+        }, 3000);
+      }
+    </script>
+  </body>
+</html>

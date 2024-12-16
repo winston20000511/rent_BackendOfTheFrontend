@@ -1,0 +1,18 @@
+select, input {
+    border: 1px solid #ced4da;
+    border-radius: .375rem;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+}
+
+.search-input{
+    display: none;
+}
+
+.search-btn{
+    display: none;
+}
+
+#datepicker{
+    display: none;
+}

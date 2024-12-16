@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>租賃房屋網站</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #3579C0;
+            color: white;
+            padding: 10px 20px;
+        }
+
+        .header .logo {
+            font-size: 20px;
+        }
+
+        .header .nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        .header .nav a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 24px;
+            margin: 20px 0;
+        }
+
+        /* Slideshow */
+        .slideshow {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #ccc;
+            height: 200px;
+            margin: 20px;
+        }
+
+        .slideshow .arrow {
+            font-size: 30px;
+            cursor: pointer;
+            padding: 0 20px;
+        }
+
+        .slideshow .images {
+            display: flex;
+            gap: 10px;
+        }
+
+        .slideshow .images img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+        }
+
+        /* Google Map */
+        .map {
+            background-color: #fff;
+            padding: 50px;
+            margin: 20px;
+            text-align: center;
+        }
+
+        /* Owner Info */
+        .owner-section {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px;
+            background-color: #fff;
+            padding: 20px;
+        }
+
+        .owner-intro {
+            flex: 2;
+            padding: 0 20px;
+        }
+
+        .owner-details {
+            flex: 1;
+            padding: 0 20px;
+        }
+
+        .owner-details button {
+            background-color: #3579C0;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        /* Comments Section */
+        .comments-section {
+            background-color: #fff;
+            margin: 20px;
+            padding: 20px;
+        }
+
+        /* Recommended Houses */
+        .recommended-section {
+            background-color: #fff;
+            margin: 20px;
+            padding: 20px;
+        }
+
+        .recommended-list {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .recommended-list .recommended-item {
+            background-color: #f5f5f5;
+            padding: 20px;
+            width: 150px;
+            text-align: center;
+        }
+
+        .recommended-list .recommended-item:hover {
+            background-color: #3579C0;
+            color: white;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #3579C0;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: 20px;
+        }
+    </style>
+     <style scoped>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 0;
+          background-color: #f2f2f2;
+        }
+        
+        /* Header */
+        .title {
+          text-align: center;
+          font-size: 24px;
+          margin: 20px 0;
+        }
+        
+        /* Swiper */
+        .swiper-slide img {
+          width: 100%;
+          height: auto;
+        }
+        
+        /* 房屋資料、地圖、屋主介紹、評論、推薦等樣式保持不變 */
+        .house-info-section,
+        .map-section,
+        .owner-section,
+        .comments-section,
+        .recommended-section {
+          background-color: #fff;
+          margin: 20px;
+          padding: 20px;
+        }
+        
+        .footer {
+          background-color: #3579C0;
+          color: white;
+          text-align: center;
+          padding: 10px 0;
+        }
+        </style>
+        
+  
+</head>
+<body>
+
+    <!-- Title 標題 -->
+    <div class="title">房屋標題</div>
+
+    <!-- 圖片輪播區域 -->
+    <template>
+        <div id="app">
+          <!-- Title 標題 -->
+          <div class="title">房屋標題</div>
+      
+          <!-- 圖片輪播區域 -->
+          <swiper :slides-per-view="1" pagination navigation>
+            <swiper-slide v-for="(image, index) in images" :key="index">
+              <img :src="image" alt="房屋圖片" />
+            </swiper-slide>
+          </swiper>
+      
+          <!-- 房屋資料區塊 -->
+          <div class="house-info-section">
+            <h3>房屋資料</h3>
+            <ul>
+              <li>位置：台北市大安區</li>
+              <li>租金：每月 NT$ 25,000</li>
+              <li>面積：50 平方公尺</li>
+              <li>房型：2 房 1 廳 1 衛</li>
+            </ul>
+            <hr />
+            <div>限制：</div>
+            <hr />
+            <div>家具與服務：</div>
+          </div>
+      
+          <!-- Google 地圖 -->
+          <div class="map-section">
+            <h2>Google 地圖</h2>
+            <div class="map-placeholder">這裡是 Google 地圖的佔位區</div>
+          </div>
+      
+          <!-- 屋主介紹與簡介 -->
+          <div class="owner-section">
+            <div class="owner-description">
+              <h3>屋主對房屋的介紹</h3>
+              <p>這裡可以展示屋主對房屋的詳細描述，包含周圍環境和屋內設施的說明。</p>
+            </div>
+            <div class="owner-info">
+              <h3>屋主簡介</h3>
+              <p>屋主姓名：王小明</p>
+              <p>屋主電話：0987-654-321</p>
+              <button @click="contactOwner">預約房屋</button>
+            </div>
+          </div>
+      
+          <!-- 評價與留言功能 -->
+          <div class="comments-section">
+            <h3>評價與留言</h3>
+            <p>此區域可顯示租客的評價和留言。</p>
+          </div>
+      
+          <!-- 推薦房屋區域 -->
+          <div class="recommended-section">
+            <h3>推薦房屋列表</h3>
+            <div class="recommended-list">
+              <div class="recommended-item" v-for="item in recommendedHouses" :key="item.id">{{ item.name }}</div>
+            </div>
+          </div>
+      
+          <!-- Footer 底部 -->
+          <div class="footer">
+            <p>&copy; 2024 租賃房屋網站. 版權所有.</p>
+          </div>
+        </div>
+      </template>
+      
+      <script>
+      // 引入 Swiper 的組件
+
+      export default {
+        components: {
+          Swiper,
+          SwiperSlide,
+        },
+        data() {
+          return {
+            images: [
+              'image1.jpg',
+              'image2.jpg',
+              'image3.jpg',
+              'image4.jpg',
+            ],
+            recommendedHouses: [
+              { id: 1, name: '推薦房屋1' },
+              { id: 2, name: '推薦房屋2' },
+              { id: 3, name: '推薦房屋3' },
+            ],
+          };
+        },
+        methods: {
+          contactOwner() {
+            alert('預約功能尚未實作！');
+          },
+        },
+      };
+      </script>
+</html>

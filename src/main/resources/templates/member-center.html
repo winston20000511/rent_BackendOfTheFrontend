@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet" />
+    <style>
+        /* 設定 Rent189 文字為藍色 */
+        .navbar-brand {
+            color: blue;
+            font-weight: bold;
+        }
+
+        /* 設定滑鼠懸停時變色 */
+        .navbar-brand:hover {
+            color: darkblue;
+        }
+
+        /* 頁籤內容的間距 */
+        .tab-content {
+            margin-top: 20px;
+        }
+    </style>
+    <title>會員中心</title>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <!-- Left side: 房產選項 -->
+            <div class="navbar-nav me-auto">
+                <a class="nav-link" th:href="@{/buy}">買房</a>
+                <a class="nav-link" th:href="@{/rent}">租房</a>
+                <a class="nav-link" th:href="@{/sell}">賣房</a>
+            </div>
+
+            <!-- Center: 網站名稱 -->
+            <a class="navbar-brand mx-auto" href="#">Rent189</a>
+
+            <!-- Right side: 登入、幫助、廣告 -->
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" th:href="@{/ads}">廣告</a>
+                <a class="nav-link" th:href="@{/help}">幫助</a>
+                <a class="nav-link" th:href="@{/login}">會員中心</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Tabs -->
+    <div class="container mt-3">
+        <!-- 頁籤選項 -->
+        <ul class="nav nav-tabs" id="memberCenterTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="edit-profile-tab" data-bs-toggle="tab" data-bs-target="#edit-profile" type="button" role="tab" aria-controls="edit-profile" aria-selected="true">
+                    修改會員資料
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="favorite-houses-tab" data-bs-toggle="tab" data-bs-target="#favorite-houses" type="button" role="tab" aria-controls="favorite-houses" aria-selected="false">
+                    房屋收藏
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="appointments-overview-tab" data-bs-toggle="tab" data-bs-target="#appointments-overview" type="button" role="tab" aria-controls="appointments-overview" aria-selected="false">
+                    預約介面總覽
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="my-ads-tab" data-bs-toggle="tab" data-bs-target="#my-ads" type="button" role="tab" aria-controls="my-ads" aria-selected="false">
+                    我的廣告
+                </button>
+            </li>
+        </ul>
+
+        <!-- 頁籤內容 -->
+        <div class="tab-content" id="memberCenterTabsContent">
+            <!-- 修改會員資料 -->
+            <div class="tab-pane fade show active" id="edit-profile" role="tabpanel" aria-labelledby="edit-profile-tab">
+                <h3>修改會員資料</h3>
+                <p>這裡可以修改您的會員資料，例如名稱、密碼等。</p>
+            </div>
+            <!-- 房屋收藏 -->
+            <div class="tab-pane fade" id="favorite-houses" role="tabpanel" aria-labelledby="favorite-houses-tab">
+                <h3>房屋收藏</h3>
+                <p>查看您收藏的房屋清單。</p>
+            </div>
+            <!-- 預約介面總覽 -->
+            <div class="tab-pane fade" id="appointments-overview" role="tabpanel" aria-labelledby="appointments-overview-tab">
+                <h3>預約介面總覽</h3>
+                <p>這裡顯示您所有的預約記錄。</p>
+            </div>
+            <!-- 我的廣告 -->
+            <div class="tab-pane fade" id="my-ads" role="tabpanel" aria-labelledby="my-ads-tab">
+                <h3>我的廣告</h3>
+                <p>管理和查看您發布的廣告。</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
