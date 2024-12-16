@@ -1,12 +1,18 @@
 package com.example.demo.service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.dto.HouseOwnerInfoDTO;
 import com.example.demo.model.UserTableBean;
+import com.example.demo.repository.HouseRepository;
 import com.example.demo.repository.UserRepository;
-
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -92,5 +98,35 @@ public class UserService {
 //		}
 		return Optional.empty();
 	}
+    
+    public HouseOwnerInfoDTO getOwnerInfo(Long houseId) {
+        // 查詢屋主信息，返回 Object[] 類型的數據
+        Object[] ownerData = userRepository.getOwnerByHouseId(houseId);
+
+        if (ownerData == null || ownerData.length == 0) {
+            System.out.println("No owner data found for houseId: " + houseId);
+            return null;
+        }
+
+        // 檢查數據並進行正確的轉換
+        String name = (ownerData[0] != null) ? ownerData[0].toString() : "";  // 轉換為 String
+        String phone = (ownerData[1] != null) ? ownerData[1].toString() : "";  // 轉換為 String
+        byte[] picture = (ownerData[2] != null) ? (byte[]) ownerData[2] : null; // 轉換為 byte[]
+
+        // 將 byte[] 類型的圖片轉換為 Base64 字符串
+        String base64Picture = null;
+        if (picture != null) {
+            base64Picture = Base64.getEncoder().encodeToString(picture);
+        }
+
+        // 打印查詢結果以進行調試
+        System.out.println("Owner Data: " + Arrays.toString(ownerData));
+
+        // 返回包含圖片的 DTO
+        return new HouseOwnerInfoDTO(name, phone, base64Picture);
+    }
+
+    
+    
 }
 

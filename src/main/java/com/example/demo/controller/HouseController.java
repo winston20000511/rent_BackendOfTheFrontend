@@ -22,25 +22,32 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.dto.HouseDetailsDTO;
 import com.example.demo.dto.HouseListByUserIdDTO;
+import com.example.demo.dto.HouseOwnerInfoDTO;
 import com.example.demo.model.CollectTableBean;
 import com.example.demo.model.ConditionTableBean;
 import com.example.demo.model.FurnitureTableBean;
 import com.example.demo.model.HouseImageTableBean;
 import com.example.demo.model.HouseTableBean;
 import com.example.demo.model.UserTableBean;
+import com.example.demo.repository.HouseRepository;
 import com.example.demo.service.CollectService;
 import com.example.demo.service.HouseService;
+import com.example.demo.service.UserService;
 
 @RestController
 @RequestMapping("/api/houses")
 @CrossOrigin(origins = "http://localhost:5173")
 public class HouseController {
 	@Autowired
+	private HouseRepository houseRepository;
+	@Autowired
 	private HouseService houseService;
 
 	@Autowired
 	private CollectService collectService;
 
+	@Autowired
+	private UserService userService;
 	
 	    @PostMapping("/add")
 	    @ResponseBody
@@ -187,6 +194,44 @@ public class HouseController {
 		HouseDetailsDTO houseDetails = houseService.getHouseDetails(houseId);
 		return ResponseEntity.ok(houseDetails);
 	}
+	@GetMapping("/Description/{houseId}")
+	public ResponseEntity<String> getHouseDescription(@PathVariable Long houseId) {
+	    // 查找 HouseTable 資料
+	    HouseTableBean house = houseRepository.findById(houseId)
+	        .orElseThrow(() -> new RuntimeException("House not found"));
+
+	    // 返回簡介部分
+	    return ResponseEntity.ok(house.getDescription());  // 只返回簡介資料
+	}
+
+	
+	@GetMapping("/Title/{houseId}")
+	public ResponseEntity<String> getHouseTitle(@PathVariable Long houseId) {
+	    // 查找 HouseTable 資料
+	    HouseTableBean house = houseRepository.findById(houseId)
+	        .orElseThrow(() -> new RuntimeException("House not found"));
+
+	    // 返回簡介部分
+	    return ResponseEntity.ok(house.getTitle());  // 只返回簡介資料
+	}
+
+	 @GetMapping("/Owner/{houseId}")
+	    public ResponseEntity<HouseOwnerInfoDTO> getOwner(@PathVariable Long houseId) {
+		 System.out.println(houseId);
+	        try {
+	            // 获取屋主信息
+	            HouseOwnerInfoDTO houseOwnerInfo = userService.getOwnerInfo(houseId);
+	            System.out.println("houseOwnerInfo:"+ houseOwnerInfo);
+	            if (houseOwnerInfo == null) {
+	                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+	            }
+
+	            return ResponseEntity.ok(houseOwnerInfo);
+	        } catch (Exception e) {
+	        	e.printStackTrace();
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+	        }
+	    }
 
 	@DeleteMapping("/collect/delete/{userId}/{houseId}")
 	public ResponseEntity<String> deleteCollectByUserIdAndHouseId(@PathVariable Long userId, @PathVariable Long houseId) {

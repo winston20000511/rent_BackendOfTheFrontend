@@ -39,5 +39,4 @@ public interface HouseRepository extends JpaRepository<HouseTableBean, Long> {
 	public Page<Map<String, Object>> findHousesWithoutAds(Pageable pageable);
 
 
-	
 }
