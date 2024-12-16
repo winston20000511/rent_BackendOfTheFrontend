@@ -38,6 +38,11 @@ public class BookingService {
 	@Autowired
 	private JavaMailSender mailSender;
 
+	public List<String> findBookingedByHouseId(Long houseId){
+		List<String> bookingedList = bookingRepo.findBookingedByHouseId(houseId);
+		return bookingedList;
+	}
+	
 	public BookingSlotDTO findTimeSlotByHouseId(Long houseId) {
 		Optional<HouseBookingTimeSlotBean> op = timeSlotRepo.findById(houseId);
 		return op.map(this::convertToDTO).orElse(null);
