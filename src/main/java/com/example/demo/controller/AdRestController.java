@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,7 +41,10 @@ public class AdRestController {
 	@PostMapping("/filter")
 	public Page<AdDetailsResponseDTO> filter(@RequestBody Map<String, String> conditions) {
 		// {page=1, daterange=week, paymentstatus=paid}
+		System.out.println("conditions: " + conditions.toString());
 		Page<AdDetailsResponseDTO> pages= adService.findAdsByConditions(conditions);
+		
+		System.out.println("pages: " + pages);
 		
 		return pages;
 	}
@@ -71,12 +75,14 @@ public class AdRestController {
 	}
 	
 	// 刪除
+	@Transactional
 	@DeleteMapping
 	public boolean deleteAd(@RequestBody Long adId) {
 		return adService.deleteAdById(adId);
 	}
 	
 	// 修改
+	@Transactional
 	@PutMapping
 	public AdDetailsResponseDTO update(@RequestBody Map<String, String> request) {
 		
@@ -84,5 +90,12 @@ public class AdRestController {
 		Integer adtypeId = Integer.parseInt(request.get("newAdtypeId"));
 		
 		return adService.updateAdtypeById(adId, adtypeId);
+	}
+	
+	// 測試用：取得登入的使用者id
+	@GetMapping("/api/userid")
+	public Integer getUserId() {
+		Integer userId = 1;
+		return userId;
 	}
 }

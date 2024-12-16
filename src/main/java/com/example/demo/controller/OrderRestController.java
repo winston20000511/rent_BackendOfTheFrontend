@@ -95,6 +95,7 @@ public class OrderRestController {
 	// 取得訂單確認資料
 	@PostMapping("/content/confirmation")
 	public List<OrderConfirmationResponseDTO> confirmOrderContent(@RequestBody Integer cartId) {
+		System.out.println("confirm page cart id: " + cartId);
 		return orderService.getOrderConfirmationResponseDTOsByCartId(cartId);
 	}
 	

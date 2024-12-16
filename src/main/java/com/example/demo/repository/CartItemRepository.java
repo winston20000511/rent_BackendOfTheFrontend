@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.demo.model.CartItemBean;
@@ -20,5 +22,9 @@ public interface CartItemRepository extends JpaRepository<CartItemBean, Long>{
 	
 	@Query("select ci.adId from CartItemBean ci join ci.cart c where c.userId = :userId")
 	public Optional<List<Long>> findAdIdsByUserId(Long userId);
+	
+	@Modifying
+	@Query("delete from CartItemBean c where c.adId = :adId")
+	void deleteByAdId(@Param("adId") Long adId);
 	
 }
