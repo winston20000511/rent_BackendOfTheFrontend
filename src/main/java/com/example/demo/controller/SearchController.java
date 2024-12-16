@@ -34,7 +34,7 @@ public class SearchController {
 	@PostMapping("/api/map")
 	public List<AddressDTO> searchShowMap(@RequestBody OriginDTO request) {
 		AddressDTO origin = searchService.placeConvertToAdress(request.getOrigin());
-		List<AddressDTO> addressDtoList = searchService.findByCityAndTownship(origin.getAddress());
+		List<AddressDTO> addressDtoList = searchService.findByCityAndTownship(origin);
 		addressDtoList.add(0,origin);
 		long startTime = System.currentTimeMillis();
 		addressDtoList = searchService.GetDurationAndDistance(addressDtoList);

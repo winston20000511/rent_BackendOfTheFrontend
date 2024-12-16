@@ -7,6 +7,7 @@ import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,10 +36,14 @@ public class SearchService {
 		return searchRepo.findAll();
 	}
 
-	public List<AddressDTO> findByCityAndTownship(String address){
+	public List<AddressDTO> findByCityAndTownship(AddressDTO origin){
+		String[] Parts = SearchHelper.splitCityTown(origin.getAddress());
+		HashSet<AddressDTO> setAddressDTO = searchRepo.findByCityAndTownship(Parts[0]);
+		setAddressDTO.add(origin);
 		
-		String[] Parts = SearchHelper.splitCityTown(address);
-		return searchRepo.findByCityAndTownship(Parts[0]);
+		List<AddressDTO> listAddressDTO = new ArrayList<>(setAddressDTO);
+		
+		return listAddressDTO;
 	}
 	
 	public List<AddressDTO> findByKeyWord(String name){
