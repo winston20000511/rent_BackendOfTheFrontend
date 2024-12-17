@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,21 +41,18 @@ public class AdRestController {
 	@PostMapping("/filter")
 	public Page<AdDetailsResponseDTO> filter(@RequestBody Map<String, String> conditions) {
 		// {page=1, daterange=week, paymentstatus=paid}
+		System.out.println("conditions: " + conditions.toString());
 		Page<AdDetailsResponseDTO> pages= adService.findAdsByConditions(conditions);
+		
+		System.out.println("pages: " + pages);
 		
 		return pages;
 	}
 	
-	// 找到沒有上廣告的房子：用戶id篩選
-	@GetMapping("/houseswithoutadds/{pageNumber}")
-	public Page<Map<String, Object>> filterHousesWithoutAds(@PathVariable("pageNumber") Integer pageNumber){
-		
+	// 找到沒有上廣告的房子：用戶id篩選 => 要加上篩選出廣告已過期的
+	@PostMapping("/houseswithoutadds")
+	public Page<Map<String, Object>> filterHousesWithoutAds(@RequestBody Integer pageNumber){
 		Page<Map<String, Object>> housesWithoutAds = adService.findHousesWithoutAds(pageNumber);
-		
-		for(Map<String, Object> house : housesWithoutAds) {
-			System.out.println(house.toString());
-		}
-		
 		return housesWithoutAds;
 	}
 	
@@ -77,19 +75,27 @@ public class AdRestController {
 	}
 	
 	// 刪除
+	@Transactional
 	@DeleteMapping
 	public boolean deleteAd(@RequestBody Long adId) {
 		return adService.deleteAdById(adId);
 	}
 	
 	// 修改
+	@Transactional
 	@PutMapping
 	public AdDetailsResponseDTO update(@RequestBody Map<String, String> request) {
 		
 		Long adId = Long.parseLong(request.get("adId"));
 		Integer adtypeId = Integer.parseInt(request.get("newAdtypeId"));
-		System.out.println("adId " + adId + " adtypeId " + adtypeId);
 		
 		return adService.updateAdtypeById(adId, adtypeId);
+	}
+	
+	// 測試用：取得登入的使用者id
+	@GetMapping("/api/userid")
+	public Integer getUserId() {
+		Integer userId = 1;
+		return userId;
 	}
 }

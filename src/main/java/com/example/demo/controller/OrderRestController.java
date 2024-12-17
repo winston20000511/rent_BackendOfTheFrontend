@@ -69,6 +69,7 @@ public class OrderRestController {
 	// 要加上 user id
 	@PostMapping("/filter")
 	public Page<OrderResponseDTO> filterOrders(@RequestBody Map<String, String> conditions){
+		//conditions: {page=, status=, dateRange=, inputcondition=, userInput=}
 		return orderService.findOrdersByConditions(conditions);
 	}
 	
@@ -94,6 +95,7 @@ public class OrderRestController {
 	// 取得訂單確認資料
 	@PostMapping("/content/confirmation")
 	public List<OrderConfirmationResponseDTO> confirmOrderContent(@RequestBody Integer cartId) {
+		System.out.println("confirm page cart id: " + cartId);
 		return orderService.getOrderConfirmationResponseDTOsByCartId(cartId);
 	}
 	

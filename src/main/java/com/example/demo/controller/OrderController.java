@@ -29,7 +29,7 @@ public class OrderController {
 	@PostMapping("/confirm")
 	@ResponseBody
 	public Map<String, String> confirmToPay(HttpSession session, @RequestBody Map<String, String> param) {
-	    
+		// paymentMethod, cartId
 		System.out.println("payment method: " + param.get("paymentMethod") + ", cart id: " + param.get("cartId"));
 		
 		session.setAttribute("paymentMethod", param.get("paymentMethod"));
