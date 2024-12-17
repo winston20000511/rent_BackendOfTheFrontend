@@ -21,12 +21,34 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable()) // 禁用 CSRF 保護
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll() 
-                .anyRequest().authenticated() // 其他請求需驗證
+            .requestMatchers("/**").permitAll() 
+            .anyRequest().authenticated() // 其他請求需驗證
             )
+            .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class)
             .sessionManagement(session -> session
                 .maximumSessions(1) // 限制同一用戶只能有一個 Session
             );
+        
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http
+//            .csrf(csrf -> csrf.disable()) // 禁用 CSRF 保護
+//            .authorizeHttpRequests(auth -> auth
+//            .requestMatchers(
+//            			"/api/messages/**", 
+//            			"/api/notifications/**", 
+//            			"/api/profile/**",
+//            			"/advertisements/**"
+//            	
+//            	)
+//            .authenticated()
+//            .requestMatchers("/api/auth/**").permitAll() 
+//            .anyRequest().authenticated() // 其他請求需驗證
+//            )
+//            .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class)
+//            .sessionManagement(session -> session
+//                .maximumSessions(1) // 限制同一用戶只能有一個 Session
+//            );
 
         // 添加 JWT 過濾器
         http.addFilterAfter(jwtFilter(), UsernamePasswordAuthenticationFilter.class);

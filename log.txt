@@ -48,6 +48,8 @@ userTableBean
 @PrePersist meth
 
 postman
+not login get []
+now no need login can arrival all path
 http://192.168.2.200:8080/api/auth/register
 POST
 raw (JSON)
@@ -67,3 +69,5 @@ raw (JSON)
 
 http://192.168.2.200:8080/api/auth/forgot-password
 (not try yet)
+
+//******* only /api/auth/ path not need login request *******

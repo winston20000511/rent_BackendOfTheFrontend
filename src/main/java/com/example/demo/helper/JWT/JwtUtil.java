@@ -15,11 +15,18 @@ import io.jsonwebtoken.security.Keys;
 
 public class JwtUtil {
 
-//	private static final String SECRET_KEY = "weary";
-	private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+//	private static final String SECRET_KEY = "weary!!!";
+//	private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+	private static final String SECRET_STRING  = "Vfbv+6vnZIDBbuv5mf0o+hLxUMy9d8FXL+bnl8kAwD4=";
+	private static final Key SECRET_KEY = Keys.hmacShaKeyFor(Base64.getDecoder().decode(SECRET_STRING));
+	public static Key getSecretKey() {
+	    return SECRET_KEY;
+	}
+	
 	private static final int EXPIRATION_TIME = 1000 * 60 * 60; 
 	
     public static void main(String[] args) {
+    	System.out.println("your key:");
         System.out.println(Base64.getEncoder().encodeToString(SECRET_KEY.getEncoded()));
     }
 

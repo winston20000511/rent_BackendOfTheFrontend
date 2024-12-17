@@ -26,6 +26,10 @@ import com.example.demo.repository.AuthenticateRepository;
 	    	authRepo.save(userRegister);
 	    }
 
+	    public UserTableBean findByEmail(String email) {
+	        return authRepo.findByEmail(email).orElse(null);
+	    }
+	    
 	    public UserTableBean validateUser(String email, String rawPassword) {
 	        UserTableBean user = authRepo.findByEmail(email).orElse(null);
 	        

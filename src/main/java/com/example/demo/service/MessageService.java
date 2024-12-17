@@ -46,27 +46,27 @@ public class MessageService {
 	*/
 	
 //	String welocomeMessage = "歡迎你來到我們網站," +user.name() + "!";
-//	MessageService.sendSystemMSG(user.getUserId(), welcomeMessage );
+//	MSGservice.sendSystemMSG(user.getUserId(), welcomeMessage );
 	
 
 	// office gift coupon 	
 //	String giftMessage = "你獲得了一張優惠券, " + user.getName() + "!";
-//	MessageService.sendSystemMSG(user.getUserId(), giftMessage);
+//	MSGservice.sendSystemMSG(user.getUserId(), giftMessage);
 	
 	
 	// you has a new booking	
 //	String bookingMessage = "你有一個新的預約申請, " + user.getName() + "!";
-//	MessageService.sendSystemMSG(user.getUserId(), bookingMessage);
+//	MSGservice.sendSystemMSG(user.getUserId(), bookingMessage);
 	
 	
 	// you submission has been approved	
 //	String approvalMessage = "你的申請已被核准, " + user.getName() + "!";
-//	MessageService.sendSystemMSG(user.getUserId(), approvalMessage);
+//	MSGservice.sendSystemMSG(user.getUserId(), approvalMessage);
 	
 	
 	// we receive you complaint form
 //	String Message = "我們已經收到你的申訴單," +user.name() + "!";
-//	MessageService.sendSystemMSG(user.getUserId(), Message );
+//	MSGservice.sendSystemMSG(user.getUserId(), Message );
 	
 	
 	

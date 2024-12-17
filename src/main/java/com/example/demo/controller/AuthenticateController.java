@@ -16,6 +16,7 @@ import com.example.demo.dto.UserRegisterDTO;
 import com.example.demo.helper.JWT.JwtUtil;
 import com.example.demo.model.UserTableBean;
 import com.example.demo.service.AuthenticateService;
+import com.example.demo.service.MessageService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -26,11 +27,25 @@ public class AuthenticateController {
     @Autowired
     private AuthenticateService authService;
     
+	@Autowired
+	private MessageService MSGservice;
+	
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody UserRegisterDTO registerDTO) {
         
         authService.registerUser(registerDTO);
-        return ResponseEntity.ok("註冊成功");
+        
+        UserTableBean registeredUser = authService.findByEmail(registerDTO.getEmail());
+     // we receive you complaint form
+
+        if (registeredUser != null) {
+            String userName = registeredUser.getName();
+            String welcomeMessage = "歡迎你" + userName + "來到我們網站!";
+            MSGservice.sendSystemMSG(registeredUser.getUserId(), welcomeMessage);
+
+            return ResponseEntity.ok("註冊成功，歡迎訊息已發送！");
+        } 
+        return null;
     }
 
     @PostMapping("/login")

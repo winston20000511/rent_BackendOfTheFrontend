@@ -12,7 +12,7 @@ import com.example.demo.model.ComplaintBean;
 import com.example.demo.model.MessageBean;
 
 public interface MessageRepository extends JpaRepository<MessageBean, Long> {
-
+	
 	/*
 	 * join user table then me to sort data use user name
 	 * make front end friend list can show list
