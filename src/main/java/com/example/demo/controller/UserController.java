@@ -29,12 +29,12 @@ public class UserController {
 	@PostMapping("/users/loginPost")
 	public String loginPost(String username, String password, HttpSession httpSession, Model model) {
 
-		Optional<UserTableBean> result = userService.checkLoginOK(username, password);
+		UserTableBean result = userService.checkLoginOK(username, password);
 		
-		if (result.isPresent()) {
-			httpSession.setAttribute("loginUserId", result.get().getUserId());
-			httpSession.setAttribute("loginUsername", result.get().getName());
-			httpSession.setAttribute("loginUserEmail", result.get().getEmail());
+		if (result!=null) {
+			httpSession.setAttribute("loginUserId", result.getUserId());
+			httpSession.setAttribute("loginUsername", result.getName());
+			httpSession.setAttribute("loginUserEmail", result.getEmail());
 			model.addAttribute("loginOkMsg", "登入成功");
 			return "redirect:/";
 			
