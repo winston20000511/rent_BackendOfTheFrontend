@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -19,6 +20,7 @@ import com.example.demo.dto.AddressDTO;
 import com.example.demo.helper.GoogleApiConfig;
 import com.example.demo.helper.SearchHelper;
 import com.example.demo.model.HouseTableBean;
+import com.example.demo.pojo.ResponseMapPOJO;
 import com.example.demo.repository.SearchRepository;
 
 
@@ -36,14 +38,13 @@ public class SearchService {
 		return searchRepo.findAll();
 	}
 
-	public List<AddressDTO> findByCityAndTownship(AddressDTO origin){
+	public ResponseMapPOJO findByCityAndTownship(AddressDTO origin){
 		String[] Parts = SearchHelper.splitCityTown(origin.getAddress());
 		HashSet<AddressDTO> setAddressDTO = searchRepo.findByCityAndTownship(Parts[0]);
+		Integer placeAvgPrice = SearchHelper.getPlaceAvgPrice(setAddressDTO);
 		setAddressDTO.add(origin);
-		
 		List<AddressDTO> listAddressDTO = new ArrayList<>(setAddressDTO);
-		
-		return listAddressDTO;
+		return new ResponseMapPOJO(listAddressDTO,origin,placeAvgPrice);
 	}
 	
 	public List<AddressDTO> findByKeyWord(String name){
@@ -166,16 +167,16 @@ public class SearchService {
 		return houseList;
 	}
 	
-	public List<AddressDTO> GetDurationAndDistance(List<AddressDTO> addressDtoList) {
+	public List<AddressDTO> GetDurationAndDistance(List<AddressDTO> addressDtoList , AddressDTO origin) {
 		
 		//String encodedOrigin;
 		List<AddressDTO> newAddressDtoList = new ArrayList<>();
 		
 		for(int i = 1 ; i < addressDtoList.size() ; i++) {
 			
-			Double distance = SearchHelper.getDistance(addressDtoList.get(0), addressDtoList.get(i));
+			Double distance = SearchHelper.getDistance(origin, addressDtoList.get(i));
 			BigDecimal roundedValue = new BigDecimal(distance).setScale(5, RoundingMode.HALF_UP);
-			if (roundedValue.compareTo(BigDecimal.valueOf(2.0))< 0) {
+			if (roundedValue.compareTo(BigDecimal.valueOf(2.0))< 0 && origin.getAddress() != addressDtoList.get(i).getAddress()) {
 				newAddressDtoList.add(addressDtoList.get(i));
 			}
 		}

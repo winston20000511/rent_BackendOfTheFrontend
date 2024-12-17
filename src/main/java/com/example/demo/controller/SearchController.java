@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.dto.AddressDTO;
 import com.example.demo.dto.OriginDTO;
 import com.example.demo.model.HouseTableBean;
+import com.example.demo.pojo.ResponseMapPOJO;
 import com.example.demo.service.SearchService;
 
 @RestController
@@ -32,15 +33,14 @@ public class SearchController {
 	
 	@CrossOrigin(origins = "*")
 	@PostMapping("/api/map")
-	public List<AddressDTO> searchShowMap(@RequestBody OriginDTO request) {
+	public ResponseMapPOJO searchShowMap(@RequestBody OriginDTO request) {
 		AddressDTO origin = searchService.placeConvertToAdress(request.getOrigin());
-		List<AddressDTO> addressDtoList = searchService.findByCityAndTownship(origin);
-		addressDtoList.add(0,origin);
+		ResponseMapPOJO mapPOJO = searchService.findByCityAndTownship(origin);
 		long startTime = System.currentTimeMillis();
-		addressDtoList = searchService.GetDurationAndDistance(addressDtoList);
+		mapPOJO.setSearchList(searchService.GetDurationAndDistance(mapPOJO.getSearchList(), origin));
 		long endTime = System.currentTimeMillis();
 		System.out.println("執行時間：" + (endTime - startTime) + " 毫秒");
-		return addressDtoList;
+		return mapPOJO;
 	}
 	
 	@CrossOrigin(origins="*")
