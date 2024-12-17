@@ -810,7 +810,7 @@ async function addSelectedAd(huoseId, adTypeId) {
     }),
   });
 
-  const result = (await response).json();
+  const result = await response.json();
 
   if (result) {
     toggleSucessModal();

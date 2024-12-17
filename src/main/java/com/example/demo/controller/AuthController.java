@@ -1,30 +1,30 @@
-//package com.example.demo.controller;
-//
+package com.example.demo.controller;
+
 //import com.example.demo.helper.JwtUtils;
-//import com.example.demo.model.UserTableBean;
-//import com.example.demo.repository.UserRepository;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.http.ResponseEntity;
+import com.example.demo.model.UserTableBean;
+import com.example.demo.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 //import org.springframework.security.crypto.bcrypt.BCrypt;
-//import org.springframework.web.bind.annotation.*;
-//
-//import java.util.HashMap;
-//import java.util.Map;
-//
-//
-//
-//@RestController
-//@RequestMapping("/api")
-//@CrossOrigin(origins = "http://localhost:5173") // 允許跨域
-//public class AuthController {
-//
-//    private static final Logger logger = LoggerFactory.getLogger(AuthController.class); // 初始化 logger
-//
-//    @Autowired
-//    private UserRepository userRepository;
-//
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
+
+
+@RestController
+@RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:5174") // 允許跨域
+public class AuthController {
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class); // 初始化 logger
+
+    @Autowired
+    private UserRepository userRepository;
+
 //    @PostMapping("/login")
 //    public ResponseEntity<?> login(@RequestBody Map<String, String> user) {
 //        logger.info("Login attempt with email: {}", user.get("email"));
@@ -47,4 +47,4 @@
 //        logger.warn("Invalid credentials for email: {}", email);
 //        return ResponseEntity.status(401).body("Invalid credentials");
 //    }
-//}
+}
