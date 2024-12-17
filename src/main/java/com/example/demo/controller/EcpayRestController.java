@@ -19,7 +19,7 @@ public class EcpayRestController {
 	
 	
 	@Autowired
-	private EcpayRestController(EcpayService ecpayService) {
+	public EcpayRestController(EcpayService ecpayService) {
 		this.ecpayService = ecpayService;
 	}
 	
