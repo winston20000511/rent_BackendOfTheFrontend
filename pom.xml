@@ -54,15 +54,14 @@
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-mail</artifactId>
-</dependency>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<optional>true</optional>
-		</dependency>
+
+
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -77,19 +76,23 @@
 			<artifactId>mssql-jdbc</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-<dependency>
-    <groupId>org.projectlombok</groupId>
-    <artifactId>lombok</artifactId>
-    <version>1.18.36</version>
-    <scope>provided</scope>
-</dependency>
+
 		<!-- <https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api> -->
+		<!--
 		<dependency>
 		    <groupId>javax.servlet</groupId>
 		    <artifactId>javax.servlet-api</artifactId>
 		    <version>3.0.1</version>
 		    <scope>provided</scope>
 		</dependency>
+		-->
+		<dependency>
+    		<groupId>jakarta.servlet</groupId>
+   			<artifactId>jakarta.servlet-api</artifactId>
+    		<version>5.0.0</version>
+   			<scope>provided</scope>
+		</dependency>
+
 		
 		<!-- <https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core> -->
 		<dependency>
@@ -99,43 +102,43 @@
 		</dependency>
 		
 
-		
+		<!-- send mail -->
 		<dependency>
-		    <groupId>org.springframework.boot</groupId>
+			<groupId>org.springframework.boot</groupId>
 		    <artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
- <!-- 
+			
+		<!-- JWT -->
 		<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-security</artifactId>
-</dependency>-->
-			<!-- <jwt加密依賴注入> 
-<dependency>
-    <groupId>io.jsonwebtoken</groupId>
-    <artifactId>jjwt-api</artifactId>
-    <version>0.11.5</version>
-</dependency>
-<dependency>
-    <groupId>io.jsonwebtoken</groupId>
-    <artifactId>jjwt-impl</artifactId>
-    <version>0.11.5</version>
-</dependency>
-<dependency>
-    <groupId>io.jsonwebtoken</groupId>
-    <artifactId>jjwt-jackson</artifactId>
-    <version>0.11.5</version>
-</dependency>
--->
+	    <groupId>org.springframework.boot</groupId>
+	    <artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+			 
+		<dependency>
+    	<groupId>io.jsonwebtoken</groupId>
+    	<artifactId>jjwt-api</artifactId>
+    	<version>0.11.5</version>
+		</dependency>
+		
+		<dependency>
+    	<groupId>io.jsonwebtoken</groupId>
+    	<artifactId>jjwt-impl</artifactId>
+    	<version>0.11.5</version>
+		</dependency>
+ 
+		<dependency>
+    	<groupId>io.jsonwebtoken</groupId>
+   		 <artifactId>jjwt-jackson</artifactId>
+   		 <version>0.11.5</version>
+		</dependency>
+
 <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
 <dependency>
     <groupId>commons-codec</groupId>
     <artifactId>commons-codec</artifactId>
 </dependency>
-<!--
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-security</artifactId>
-</dependency>-->
+
+
 		<!-- Message -->
 		<dependency>
     		<groupId>org.springframework.boot</groupId>

@@ -11,3 +11,59 @@ CorsConfig
 
 Delete
 W-websocket
+
+1217
+    modify pom.xml 
+          * 
+         **
+        ****
+       ******
+      ********  
+     **********
+    ************
+   **************
+  ****************
+ ******************
+** modify pom.xml **
+most importantly
+1.lombok
+2.jakarta.servlet
+(don't use javax)
+
+add:
+JWT folder{
+    JwtFilter
+    JwtUtil
+    LoggingFilter
+    SecurityConfig
+},
+UserDTO,
+UserRegisterDTO,
+AuthenticateRepository,
+AuthenticateService,
+AuthenticateController
+
+modify
+userTableBean
+@PrePersist meth
+
+postman
+http://192.168.2.200:8080/api/auth/register
+POST
+raw (JSON)
+{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "123"
+}
+
+http://192.168.2.200:8080/api/auth/login
+POST
+raw (JSON)
+{
+    "email": "john@example.com",
+    "password": "123"
+}
+
+http://192.168.2.200:8080/api/auth/forgot-password
+(not try yet)
