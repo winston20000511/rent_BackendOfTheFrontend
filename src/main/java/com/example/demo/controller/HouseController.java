@@ -1,13 +1,17 @@
 package com.example.demo.controller;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -26,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.demo.dto.HouseDetailsDTO;
 import com.example.demo.dto.HouseListByUserIdDTO;
 import com.example.demo.dto.HouseOwnerInfoDTO;
+import com.example.demo.helper.SearchHelper;
 import com.example.demo.model.CollectTableBean;
 import com.example.demo.model.ConditionTableBean;
 import com.example.demo.model.FurnitureTableBean;
@@ -55,6 +60,8 @@ public class HouseController {
 	@Autowired
 	private UserService userService;
 	
+	 @Autowired
+	 private SearchHelper searchHelper;
 	    @PostMapping("/add")
 	    @ResponseBody
 	    public Map<String, String> addHouse(
@@ -115,9 +122,30 @@ public class HouseController {
 	        house.setAtticAddition(atticAddition);
 	        house.setDescription(description);
 	        house.setHouseType(houseType);
-	        house.setStatus((byte) 0);
+	        house.setStatus((byte) 1);
 	        house.setClickCount(0);
-
+	              
+	        try {
+	            JSONObject geocodeJson = searchHelper.fetchGeocodeFromAPI(address); // 使用 searchHelper 調用方法
+	            Optional<double[]> latLng = searchHelper.parseLatLng(geocodeJson);
+	            
+	            if (latLng.isPresent()) {
+	                house.setLat(latLng.get()[0]); // 設置緯度
+	                house.setLng(latLng.get()[1]); // 設置經度
+	            } else {
+	                System.out.println("無法獲取經緯度，將 lat 和 lng 設置為 null");
+	                house.setLat(null);
+	                house.setLng(null);
+	            }
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	            house.setLat(null);
+	            house.setLng(null);
+	        } catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    	
 	        // 添加 Furniture 資訊
 	        FurnitureTableBean furniture = new FurnitureTableBean();
 	        furniture.setWashingMachine(washingMachine);

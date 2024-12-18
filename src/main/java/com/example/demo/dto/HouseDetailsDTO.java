@@ -19,6 +19,7 @@ public class HouseDetailsDTO {
     private Byte livingroom;
     private Byte kitchen;
     private Byte floor;
+    private String houseType;
     private Boolean atticAddition;
     private Boolean pet;
 	private Boolean parkingSpace;
@@ -43,13 +44,21 @@ public class HouseDetailsDTO {
 	private Boolean tables;
     private List<byte[]> images;
 
+    
+
+	public HouseDetailsDTO() {
+		
+	}
+
+
+
 	public HouseDetailsDTO(Long houseId, Long userId, String title, Integer price, String description, Integer size,
-			String address, Byte room, Byte bathroom, Byte livingroom, Byte kitchen, Byte floor, Boolean atticAddition,
-			Boolean pet, Boolean parkingSpace, Boolean elevator, Boolean balcony, Boolean shortTerm, Boolean cooking,
-			Boolean waterDispenser, Boolean managementFee, Byte genderRestrictions, Boolean washingMachine,
-			Boolean airConditioner, Boolean network, Boolean bedstead, Boolean mattress, Boolean refrigerator,
-			Boolean ewaterHeater, Boolean gwaterHeater, Boolean television, Boolean channel4, Boolean sofa,
-			Boolean tables, List<byte[]> images) {
+			String address, Byte room, Byte bathroom, Byte livingroom, Byte kitchen, Byte floor, String houseType,
+			Boolean atticAddition, Boolean pet, Boolean parkingSpace, Boolean elevator, Boolean balcony,
+			Boolean shortTerm, Boolean cooking, Boolean waterDispenser, Boolean managementFee, Byte genderRestrictions,
+			Boolean washingMachine, Boolean airConditioner, Boolean network, Boolean bedstead, Boolean mattress,
+			Boolean refrigerator, Boolean ewaterHeater, Boolean gwaterHeater, Boolean television, Boolean channel4,
+			Boolean sofa, Boolean tables, List<byte[]> images) {
 		super();
 		this.houseId = houseId;
 		this.userId = userId;
@@ -63,6 +72,7 @@ public class HouseDetailsDTO {
 		this.livingroom = livingroom;
 		this.kitchen = kitchen;
 		this.floor = floor;
+		this.houseType = houseType;
 		this.atticAddition = atticAddition;
 		this.pet = pet;
 		this.parkingSpace = parkingSpace;
@@ -86,10 +96,6 @@ public class HouseDetailsDTO {
 		this.sofa = sofa;
 		this.tables = tables;
 		this.images = images;
-	}
-
-	public HouseDetailsDTO() {
-		
 	}
 	
 }
