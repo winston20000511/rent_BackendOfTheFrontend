@@ -73,7 +73,7 @@ public class HouseService {
 		dto.setWaterDispenser(condition.getWaterDispenser());
 		dto.setManagementFee(condition.getManagementFee());
 		dto.setGenderRestrictions(condition.getGenderRestrictions());
-
+		System.out.println(dto);
 		return dto;
 	}
 
@@ -82,20 +82,20 @@ public class HouseService {
 		return houseRepository.save(house);
 	}
 
-	public List<String> getHouseImagesByHouseId(Long houseId) {
-		List<HouseImageTableBean> images = houseRepository.findByHouseId(houseId);
-
-		return images.stream().map(this::convertImageToBase64).collect(Collectors.toList());
-	}
-
-	// 將byte[]轉換為Base64編碼的字串
-	private String convertImageToBase64(HouseImageTableBean image) {
-		if (image.getImages() == null) {
-			return null;
-		}
-		return Base64.getEncoder().encodeToString(image.getImages());
-	}
-
+//	public List<String> getHouseImagesByHouseId(Long houseId) {
+//		List<HouseImageTableBean> images = houseRepository.findByHouseId(houseId);
+//
+//		return images.stream().map(this::convertImageToBase64).collect(Collectors.toList());
+//	}
+//
+//	// 將byte[]轉換為Base64編碼的字串
+//	private String convertImageToBase64(HouseImageTableBean image) {
+//		if (image.getImages() == null) {
+//			return null;
+//		}
+//		return Base64.getEncoder().encodeToString(image.getImages());
+//	}
+//
 
 
 	public List<Map<String, Object>> findNoAdHousesByUserId(Long userId) {
