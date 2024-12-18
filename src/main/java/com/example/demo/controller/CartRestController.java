@@ -27,7 +27,7 @@ public class CartRestController {
 	private CartService cartService;
 	
 	@Autowired
-	private CartRestController(CartService cartService) {
+	public CartRestController(CartService cartService) {
 		this.cartService = cartService;
 	}
 	

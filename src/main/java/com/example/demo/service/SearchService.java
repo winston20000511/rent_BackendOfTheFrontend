@@ -70,10 +70,58 @@ public class SearchService {
 		return houseList;
 	}
 	
+	public double[] placeToLagLngForRegister(String registerAddress) {
+		String encodedAddress;
+		double loactionLat=0;
+		double locationLng=0;
+		try {
+			encodedAddress = java.net.URLEncoder.encode(registerAddress,"UTF-8");
+			String urlString = "https://maps.googleapis.com/maps/api/geocode/json?address=" 
+	                + encodedAddress + "&components=country:TW&bounds=21.5,119.5|25.5,122.5&language=zh-TW&key=" + googleApiConfig.getGoogleMapKey();
+			StringBuilder content = SearchHelper.urlConnection(urlString);
+			
+			JSONObject json = new JSONObject(content.toString());
+			if("OK".equals(json.getString("status"))) {
+				JSONObject location = json.getJSONArray("results")
+										.getJSONObject(0);
+										
+				String address = location.getString("formatted_address");
+				if (address.length()<=2 ) {
+					address = "";
+				}
+				else if (address.indexOf("台灣") > -1 && address.indexOf("台灣大道") == -1) {
+					address = address.split("台灣")[1];
+				}
+				
+				
+				location = json.getJSONArray("results")
+						.getJSONObject(0)
+						.getJSONObject("geometry")
+						.getJSONObject("location");
+				
+				loactionLat = (location.getDouble("lat"));
+				locationLng = (location.getDouble("lng"));
+				
+			}
+			
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return new double[] {loactionLat,locationLng};
+		
+	}
+	
 	public AddressDTO placeConvertToAdress(String origin) {
 		
 		String encodedAddress;
-		AddressDTO adress = new AddressDTO();
+		AddressDTO addressDTO = new AddressDTO();
 		try {
 			encodedAddress = java.net.URLEncoder.encode(origin,"UTF-8");
 			String urlString = "https://maps.googleapis.com/maps/api/geocode/json?address=" 
@@ -93,15 +141,15 @@ public class SearchService {
 					address = address.split("台灣")[1];
 				}
 				
-				adress.setAddress(address);
+				addressDTO.setAddress(address);
 				
 				location = json.getJSONArray("results")
 						.getJSONObject(0)
 						.getJSONObject("geometry")
 						.getJSONObject("location");
 				
-				adress.setLat(location.getDouble("lat"));
-				adress.setLng(location.getDouble("lng"));
+				addressDTO.setLat(location.getDouble("lat"));
+				addressDTO.setLng(location.getDouble("lng"));
 				
 			}
 			
@@ -115,7 +163,7 @@ public class SearchService {
 			e.printStackTrace();
 		}
 		
-		return adress;
+		return addressDTO;
 		
 	}
 	

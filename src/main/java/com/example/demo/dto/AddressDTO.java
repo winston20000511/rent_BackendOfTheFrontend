@@ -2,7 +2,8 @@ package com.example.demo.dto;
 import java.time.LocalDateTime;
 
 public class AddressDTO {
-
+	
+	private Long houseid;
 	private String address;
 	private Double lat;
 	private Double lng;
@@ -14,7 +15,10 @@ public class AddressDTO {
         
 	}
 
-	public AddressDTO(String address, Double lat, Double lng, Integer price ,String adName, LocalDateTime paidDate) {
+
+	public AddressDTO(Long houseid, String address, Double lat, Double lng, Integer price, String adName,
+			LocalDateTime paidDate) {
+		this.houseid = houseid;
 		this.address = address;
 		this.lat = lat;
 		this.lng = lng;
@@ -23,6 +27,16 @@ public class AddressDTO {
 		this.paidDate = paidDate;
 	}
 
+
+	public Long getHouseid() {
+		return houseid;
+	}
+
+	public void setHouseid(Long houseid) {
+		this.houseid = houseid;
+	}
+
+	
 	public String getAddress() {
 		return address;
 	}
