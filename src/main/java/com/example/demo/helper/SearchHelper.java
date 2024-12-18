@@ -11,19 +11,28 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.TreeMap;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.stereotype.Component;
 
 import com.example.demo.dto.AddressDTO;
-import com.example.demo.model.HouseTableBean;
+import com.example.demo.dto.DrawLatLngDTO;
 
+@Component
 public class SearchHelper {
+	
+	@Autowired
+	private GoogleApiConfig googleApiConfig;
 	
 	//地球半徑 單位公里
 	private static final double earthRadiusKm = 6371.0; 
 	
 	
 	//將地址切割成縣市 , 鄉鎮區 , 街路號
-	public static String[] splitCityTown(String address) {
+	public String[] splitCityTown(String address) {
 		
 		String[] Parts = new String[3];
 
@@ -55,7 +64,7 @@ public class SearchHelper {
 	}
 
 	//呼叫API 回傳JOSN字串格式
-	public static StringBuilder urlConnection(String urlString) throws IOException {
+	public StringBuilder urlConnection(String urlString) throws IOException {
 		
 		URL url = new URL(urlString);
 		HttpURLConnection conn = (HttpURLConnection)url.openConnection();
@@ -75,8 +84,53 @@ public class SearchHelper {
 		return content;
 	}
 	
+	public JSONObject fetchGeocodeFromAPI(String address) throws IOException, JSONException {
+		String encodedAddress;
+		
+		encodedAddress = java.net.URLEncoder.encode(address,"UTF-8");
+		String urlString = "https://maps.googleapis.com/maps/api/geocode/json?address=" 
+                + encodedAddress + "&components=country:TW&bounds=21.5,119.5|25.5,122.5&language=zh-TW&key=" + googleApiConfig.getGoogleMapKey();
+		StringBuilder content = urlConnection(urlString);
+		return new JSONObject(content.toString());
+	}
+	public JSONObject fetchReverseGeocodingFromAPI(DrawLatLngDTO drawDto) throws IOException, JSONException{
+		
+		String encodeLatLng = drawDto.getLat() + "," + drawDto.getLng();
+		String urlString="https://maps.googleapis.com/maps/api/geocode/json?latlng=" 
+		+ encodeLatLng + "&language=zh-TW&key=" + googleApiConfig.getGoogleMapKey();
+		StringBuilder content = urlConnection(urlString);
+		return new JSONObject(content.toString());
+	}
+	
+	public Optional<double[]> parseLatLng(JSONObject json) throws JSONException{
+		
+        if ("OK".equals(json.getString("status"))) {
+            JSONObject location = json.getJSONArray("results")
+                                      .getJSONObject(0)
+                                      .getJSONObject("geometry")
+                                      .getJSONObject("location");
+            double lat = location.getDouble("lat");
+            double lng = location.getDouble("lng");
+            return Optional.of(new double[]{lat, lng});
+        }
+        return Optional.empty();
+		
+	}
+	
+	public Optional<String> parseAddress(JSONObject json) throws JSONException{
+		
+		if("OK".equals(json.getString("status"))) {
+			JSONObject location = json.getJSONArray("results")
+									.getJSONObject(0);
+									
+			String address = location.getString("formatted_address");
+			return Optional.of(address);
+		}
+		return Optional.empty();
+	}
+	
 	//開啟檔案
-	public static List<String> openfileRead(String filePath){
+	public List<String> openfileRead(String filePath){
 		
 		List<String> lists = new ArrayList<String>();
 		
@@ -97,7 +151,7 @@ public class SearchHelper {
 	}
 	
 	//哈弗賽因公式計算
-	public static Double getDistance(AddressDTO Origin , AddressDTO Target) {
+	public Double getDistance(AddressDTO Origin , AddressDTO Target) {
 		
 		//緯度&經度 角度轉成弧度
 		double lat1Rad = Math.toRadians(Origin.getLat());
@@ -121,7 +175,7 @@ public class SearchHelper {
 	}
 	
 	//計算地區平均價格
-	public static Integer getPlaceAvgPrice(HashSet<AddressDTO> setAddressDTO) {
+	public Integer getPlaceAvgPrice(HashSet<AddressDTO> setAddressDTO) {
 		
 		
 		int sum = 0;
@@ -132,6 +186,27 @@ public class SearchHelper {
 		BigDecimal bd = new BigDecimal(sum / setAddressDTO.size()).setScale(0, RoundingMode.HALF_UP);
 		return bd.intValue();
 		
+	}
+	
+	public DrawLatLngDTO getAvgLatLng(List<DrawLatLngDTO> drawDtoList) {
+		
+		BigDecimal latBd = BigDecimal.ZERO;
+		BigDecimal lngBd = BigDecimal.ZERO;
+		
+		for (DrawLatLngDTO draw : drawDtoList) {
+			latBd = latBd.add(BigDecimal.valueOf(draw.getLat()));
+			lngBd = lngBd.add(BigDecimal.valueOf(draw.getLng()));
+			
+		}
+		
+		latBd = latBd.divide(BigDecimal.valueOf(drawDtoList.size()), 4,RoundingMode.HALF_UP);
+		lngBd = lngBd.divide(BigDecimal.valueOf(drawDtoList.size()),4,RoundingMode.HALF_UP);
+		
+		return new DrawLatLngDTO(latBd.doubleValue(),lngBd.doubleValue());
+		
+		
+		
 		
 	}
+	
 }
