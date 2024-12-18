@@ -89,6 +89,8 @@ public class HouseController {
 	        @RequestParam Boolean waterDispenser,
 	        @RequestParam Boolean managementFee,
 	        @RequestParam Byte genderRestrictions,
+	        @RequestParam String description,
+	        @RequestParam String houseType,
 	        @RequestParam("images") List<MultipartFile> images
 	    ) {
 
@@ -111,6 +113,8 @@ public class HouseController {
 	        house.setKitchen(kitchen);
 	        house.setFloor(floor);
 	        house.setAtticAddition(atticAddition);
+	        house.setDescription(description);
+	        house.setHouseType(houseType);
 	        house.setStatus((byte) 0);
 	        house.setClickCount(0);
 
