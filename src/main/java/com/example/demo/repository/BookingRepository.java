@@ -16,6 +16,10 @@ public interface BookingRepository extends JpaRepository<BookingBean, Long> {
 	List<BookingBean> findByUserId(Long userId);
 	List<BookingBean> findByHouseId(Long houserId);
 	
+	@Query("SELECT CONCAT(bookingDate,' ',bookingTime) FROM BookingBean WHERE houseId = :houseId AND status <=1")
+	List<String> findBookingedByHouseId(Long houseId);
+	
+	
 	@Query(value = "SELECT new com.example.demo.dto.BookingDetailDTO(ow.name, ow.email, u.name, u.email, "
 			+ "b.createDate, b.bookingDate, b.bookingTime, b.status) " + "FROM BookingBean b "
 			+ "JOIN b.house h " 
@@ -32,7 +36,6 @@ public interface BookingRepository extends JpaRepository<BookingBean, Long> {
 			+ "AND booking_time = CAST(:time AS time) "
 			+ "AND status <= 1", nativeQuery = true)
 	Integer isExistBooking(Long houseId, Date date, Time time);
-
 	/* status 0:待確認 1:房東接受 2:房東拒絕 3:預約取消 4:過期 */
 
 }

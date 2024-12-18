@@ -88,7 +88,7 @@ public class UserService {
 
     
     // test checkLogin 
-    public Optional<UserTableBean> checkLoginOK(String userEmail, String loginPwd) {
+    public UserTableBean checkLoginOK(String userEmail, String loginPwd) {
 		UserTableBean dbUsers = userRepository.findByEmail(userEmail);
 //		
 //		if (dbUsers.isPresent()) {
@@ -96,7 +96,11 @@ public class UserService {
 //				 return dbUsers;
 //			 }
 //		}
-		return Optional.empty();
+		
+		if(dbUsers!=null) {
+			return dbUsers;
+		}
+		return null;
 	}
     
     public HouseOwnerInfoDTO getOwnerInfo(Long houseId) {
