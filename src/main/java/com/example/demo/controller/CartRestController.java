@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,21 +27,21 @@ public class CartRestController {
 	private CartService cartService;
 	
 	@Autowired
-	private CartRestController(CartService cartService) {
+	public CartRestController(CartService cartService) {
 		this.cartService = cartService;
 	}
 	
 	// 取得購物車內容
 	@GetMapping("/ads")
 	public ResponseEntity<List<Long>> getCartItemIds(Long userId){
-		userId=16L; //測試資料
+		userId = 1787L; //測試資料
 		List<Long> addedAdIds = cartService.getCartItems(userId);
 		return ResponseEntity.ok(addedAdIds);
 	}
 	
 	@PostMapping("/list")
 	public List<CartItemBean> getCartItems(Long userId){
-		userId = 16L; //測試資料
+		userId = 1787L; //測試資料
 		return cartService.findCartItemsByUserId(userId);
 	}
 	
@@ -48,7 +49,7 @@ public class CartRestController {
 	@PostMapping("/additem")
 	public boolean addToCart(@RequestBody Long adId) {
 		// ad id(直接取當前資料庫儲存的資料), cart id, user id(HTTP)
-		Long userId = adId; //測試資料
+		Long userId = 1787L; // 測試資料
 		System.out.println("ad id: " + adId + " user id: " + userId);
 		return cartService.addToCart(adId, userId);
 	}
@@ -69,7 +70,7 @@ public class CartRestController {
 	// 刪除購物車內容物
 	@DeleteMapping("/deleteitem")
 	public boolean deleteCartItem(@RequestBody Long adId) {
-		Long userId = adId; //測試資料
+		Long userId = 1787L; //測試資料
 		return cartService.deleteCartItem(adId, userId);
 	}
 	

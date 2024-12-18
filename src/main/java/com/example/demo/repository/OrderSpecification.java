@@ -21,14 +21,14 @@ public class OrderSpecification {
 	
 	public static Specification<OrderBean> filter(Map<String, String> conditions){
 		return (root, query, builder) ->{
-			query.distinct(true);
 			
 			List<Predicate> predicates = new ArrayList<>();
 			
 			String dateRange = conditions.get("daterange");
 	        String status = conditions.get("status");
 	        String inputCondition = conditions.get("inputcondition");
-	        String userInput = conditions.get("input");
+	        String userInput = conditions.get("userInput");
+
 			
 	        if (dateRange != null && !dateRange.equals("all")) {
 	            LocalDateTime endDate = LocalDateTime.now();
@@ -66,20 +66,21 @@ public class OrderSpecification {
 	        }
 			
 	        
-	        if(inputCondition != null && !inputCondition.equals("none")) {
+	        if(inputCondition != null && !inputCondition.equals("none") && userInput != null) {
 	        	
-	        	if(userInput != null) {
-	        		Join<OrderBean, AdBean> adJoin = root.join("ads", JoinType.INNER);
-	        		switch(inputCondition) {
-		        	case "orderid": 
-						predicates.add(builder.like(adJoin.get("orderId"), "%" + userInput + "%"));
-						break;
-		        	case "housetitle": 
-						Join<AdBean, HouseTableBean> houseJoin = adJoin.join("house", JoinType.INNER);
-						predicates.add(builder.like(houseJoin.get("title"), "%" + userInput + "%"));
-						break;
-		        	}
-	        	}
+	        	System.out.println("user input: " + userInput);
+	        	Join<OrderBean, AdBean> adJoin = root.join("ads", JoinType.INNER);
+	            switch(inputCondition) {
+	                case "orderid": 
+	                    predicates.add(builder.like(adJoin.get("orderId"), "%" + userInput + "%"));
+	                    System.out.println("order id predicates: " + predicates);
+	                    break;
+	                case "housetitle": 
+	                    Join<AdBean, HouseTableBean> houseJoin = adJoin.join("house", JoinType.INNER);
+	                    predicates.add(builder.like(houseJoin.get("title"), "%" + userInput + "%"));
+	                    System.out.println("house title predicates: " + userInput);
+	                    break;
+	            }
 	        }
 			
 			return builder.and(predicates.toArray(new Predicate[0]));

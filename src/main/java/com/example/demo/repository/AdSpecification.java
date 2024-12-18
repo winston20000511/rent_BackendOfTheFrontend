@@ -32,6 +32,8 @@ public class AdSpecification {
 	        String dateRange = conditions.get("daterange");
 	        String paymentStatus = conditions.get("paymentstatus");
 	        String houseTitle = conditions.get("input");
+	        
+	        System.out.println("houseTitle: " + houseTitle);
 
 	        // 如何避免N+1??
 

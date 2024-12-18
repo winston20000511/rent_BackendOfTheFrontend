@@ -23,8 +23,6 @@ import com.example.demo.repository.HouseRepository;
 public class HouseService {
 
 	@Autowired
-	private CollectRepository collectRepository;
-	@Autowired
 	private HouseRepository houseRepository;
 
 	@Autowired
@@ -32,7 +30,7 @@ public class HouseService {
 
 	@Autowired
 	private ConditionRepository conditionRepository;
-
+	
 	public HouseDetailsDTO getHouseDetails(Long houseId) {
 		// 查詢 HouseTable
 		HouseTableBean house = houseRepository.findById(houseId)
@@ -51,6 +49,7 @@ public class HouseService {
 		dto.setPrice(house.getPrice());
 		dto.setSize(house.getSize());
 		dto.setAddress(house.getAddress());
+		dto.setAtticAddition(house.getAtticAddition());
 
 		// 設置 Furniture 信息
 		dto.setWashingMachine(furniture.getWashingMachine());
