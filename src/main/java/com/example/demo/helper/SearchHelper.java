@@ -4,10 +4,14 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.TreeMap;
 
 import com.example.demo.dto.AddressDTO;
 import com.example.demo.model.HouseTableBean;
@@ -113,6 +117,21 @@ public class SearchHelper {
 
         //計算距離
         return earthRadiusKm * c;
+		
+	}
+	
+	//計算地區平均價格
+	public static Integer getPlaceAvgPrice(HashSet<AddressDTO> setAddressDTO) {
+		
+		
+		int sum = 0;
+		for (AddressDTO a : setAddressDTO) {
+			sum += a.getPrice();
+		}
+		
+		BigDecimal bd = new BigDecimal(sum / setAddressDTO.size()).setScale(0, RoundingMode.HALF_UP);
+		return bd.intValue();
+		
 		
 	}
 }

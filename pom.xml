@@ -104,8 +104,12 @@
 		    <groupId>org.springframework.boot</groupId>
 		    <artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
-
-			<!-- <jwt加密依賴注入> -->
+ <!-- 
+		<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>-->
+			<!-- <jwt加密依賴注入> 
 <dependency>
     <groupId>io.jsonwebtoken</groupId>
     <artifactId>jjwt-api</artifactId>
@@ -121,7 +125,7 @@
     <artifactId>jjwt-jackson</artifactId>
     <version>0.11.5</version>
 </dependency>
-
+-->
 <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
 <dependency>
     <groupId>commons-codec</groupId>
