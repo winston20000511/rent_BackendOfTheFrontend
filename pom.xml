@@ -34,24 +34,10 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
-		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-		
-		 <dependency>
-        <!-- Spring Boot AOP Starter，提供面向切面編程所需的基本依賴 -->
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-aop</artifactId>
-    </dependency>
-    
-     <dependency>
-        <!-- Java JWT，提供JSON Web Token的生成和驗證功能 -->
-        <groupId>com.auth0</groupId>
-        <artifactId>java-jwt</artifactId>
-        <version>3.18.1</version> <!-- 確保版本正確 -->
-    </dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -59,7 +45,6 @@
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
-		
 		<dependency>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-logging</artifactId>
@@ -69,7 +54,6 @@
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
 		</dependency>
-		
 		<dependency>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-mail</artifactId>
@@ -114,13 +98,32 @@
 		    <version>2.17.1</version><!--$NO-MVN-MAN-VER$-->
 		</dependency>
 		
-
-		
 		<dependency>
 		    <groupId>org.springframework.boot</groupId>
 		    <artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
- 
+ <!-- 
+		<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>-->
+			<!-- <jwt加密依賴注入> 
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-api</artifactId>
+    <version>0.11.5</version>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-impl</artifactId>
+    <version>0.11.5</version>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-jackson</artifactId>
+    <version>0.11.5</version>
+</dependency>
+-->
 <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
 <dependency>
     <groupId>commons-codec</groupId>
