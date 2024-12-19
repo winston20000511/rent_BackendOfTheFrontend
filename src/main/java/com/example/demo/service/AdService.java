@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Logger;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -26,25 +26,28 @@ import com.example.demo.repository.AdtypeRepository;
 import com.example.demo.repository.HouseRepository;
 
 
-
 @Service
 public class AdService {
 	
-	@Autowired
+	private Logger logger = Logger.getLogger(AdService.class.getName());
+	
 	private AdRepository adRepository;
-	@Autowired
 	private AdtypeRepository adtypeRepository;
-	@Autowired
 	private HouseRepository houseRepository;
 	
-	public AdService(AdRepository adRepository, AdtypeRepository adtypeRepository, HouseRepository houseRepository) {
+	public AdService(AdRepository adRepository, AdtypeRepository adtypeRepository, 
+			HouseRepository houseRepository) {
 		this.adRepository = adRepository;
 		this.adtypeRepository = adtypeRepository;
 		this.houseRepository = houseRepository;
 	}
 	
 
-	/* AdBean */
+	/**
+	 * 以請求資料取得資料庫的AD資料
+	 * @param requestDTO
+	 * @return
+	 */
 	public boolean createAd(AdCreationRequestDTO requestDTO) {
 		
 			AdBean adBean = new AdBean();
@@ -95,13 +98,20 @@ public class AdService {
 	}
 	
 	
-	/* AdtypeBean */
+	/**
+	 * 取得資料庫中Adtype的資料
+	 * @return
+	 */
 	public List<AdtypeBean> findAllAdType(){
 		return adtypeRepository.findAll();
 	}
 	
 	
-	/* DTOs */	
+	/**
+	 * 以使用者ID及頁碼取得使用者擁有的所有AD資料
+	 * @param pageNumber
+	 * @return
+	 */
 	// 之後要加 userId
 	public Page<AdDetailsResponseDTO> findAllAds(Integer pageNumber){
 		Pageable pageable = PageRequest.of(pageNumber-1, 10, Sort.Direction.DESC, "adId");
@@ -138,16 +148,23 @@ public class AdService {
 		return new PageImpl<>(responseDTOs, pageable, page.getTotalElements());
 	}
 	
-	/* 搜尋用戶沒有上廣告的房屋 */
+	/**
+	 * 搜尋特定使用者擁有的物件中，當前無有效AD資料者
+	 * @param pageNumber
+	 * @return
+	 */
 	public Page<Map<String, Object>> findHousesWithoutAds(Integer pageNumber){
 		Pageable pageable = PageRequest.of(pageNumber-1, 10, Sort.Direction.DESC, "houseId");
-		// info: houseId + houseTitle
 		Page<Map<String, Object>> housesInfo = houseRepository.findHousesWithoutAds(pageable);
 		return housesInfo;
 	}
 	
 	
-	/* private methods */
+	/**
+	 * 建立多筆提供給使用者看的 AdDetailsResponseDTO 資料
+	 * @param ads
+	 * @return
+	 */
 	private List<AdDetailsResponseDTO> setAdDetailsResponseDTO(List<AdBean> ads) {
 		List<AdDetailsResponseDTO> responseDTOs = new ArrayList<>();
 		for(AdBean ad : ads) {
@@ -175,6 +192,11 @@ public class AdService {
 		return responseDTOs;
 	}
 	
+	/**
+	 * 建立單筆提供給使用者看的 AdDetailsResponseDTO 資料
+	 * @param ad
+	 * @return
+	 */
 	private AdDetailsResponseDTO setAdDetailResponseDTO(AdBean ad) {
 		AdDetailsResponseDTO responseDTO = new AdDetailsResponseDTO();
 		responseDTO.setAdId(ad.getAdId());

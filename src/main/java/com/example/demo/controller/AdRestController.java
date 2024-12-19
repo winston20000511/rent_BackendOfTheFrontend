@@ -85,12 +85,11 @@ public class AdRestController {
 	@Transactional
 	@PutMapping
 	public AdDetailsResponseDTO update(@RequestBody Map<String, String> request) {
-		
 		Long adId = Long.parseLong(request.get("adId"));
 		Integer adtypeId = Integer.parseInt(request.get("newAdtypeId"));
-		
 		return adService.updateAdtypeById(adId, adtypeId);
 	}
+
 	
 	// 測試用：取得登入的使用者id
 	@GetMapping("/api/userid")

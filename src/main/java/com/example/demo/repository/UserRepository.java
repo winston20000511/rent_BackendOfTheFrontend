@@ -13,5 +13,7 @@ public interface UserRepository extends JpaRepository<UserTableBean, Long> {
 	@Query(value = "SELECT u.name, u.phone, u.picture " + "FROM user_table u "
 			+ "JOIN house_table h ON u.user_id = h.user_id " + "WHERE h.house_id = :houseId", nativeQuery = true)
 	Object[] getOwnerByHouseId(@Param("houseId") Long houseId);
-
+	
+	@Query("SELECT u.coupon FROM UserTableBean u WHERE u.userId =:userId")
+	public Byte getCouponNumber(Long userId);
 }

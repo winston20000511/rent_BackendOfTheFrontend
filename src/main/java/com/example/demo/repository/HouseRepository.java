@@ -33,6 +33,12 @@ public interface HouseRepository extends JpaRepository<HouseTableBean, Long> {
 		       "FROM HouseTableBean h WHERE h.user.userId = :userId")
 		List<HouseListByUserIdDTO> findHousesByUserId(@Param("userId") Long userId);
 	
+	/**
+	 * 搜尋特定使用者擁有的物件中，當前無有效AD資料者；
+	 * 回傳Map中的KEY：houseId 及 houseTitle
+	 * @param pageable
+	 * @return
+	 */
 	@Query(value = "select h.house_id as houseId, h.title as houseTitle " +
 	        "from house_table h " +
 	        "left join ads_table a on a.house_id = h.house_id " +

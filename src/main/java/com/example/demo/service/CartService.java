@@ -13,6 +13,7 @@ import com.example.demo.model.CartItemBean;
 import com.example.demo.repository.AdRepository;
 import com.example.demo.repository.CartItemRepository;
 import com.example.demo.repository.CartRepository;
+import com.example.demo.repository.UserRepository;
 
 @Service
 public class CartService {
@@ -20,15 +21,18 @@ public class CartService {
 	private CartRepository cartRepository;
 	private CartItemRepository cartItemRepository;
 	private AdRepository adRepository;
+	private UserRepository userRepository;
 	
 	public CartService() {
     }
 	
 	@Autowired
-	private CartService(CartRepository cartRepository, CartItemRepository cartItemRepository, AdRepository adRepository) {
+	private CartService(CartRepository cartRepository, CartItemRepository cartItemRepository, 
+			AdRepository adRepository, UserRepository userRepository) {
 		this.cartRepository = cartRepository;
 		this.cartItemRepository = cartItemRepository;
 		this.adRepository = adRepository;
+		this.userRepository = userRepository;
 	}
 	
 	// 取得購物車內的廣告ID
@@ -149,5 +153,14 @@ public class CartService {
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * 取得使用者持有的優惠券數量
+	 * @param userId
+	 * @return
+	 */
+	public Byte getUserCouponNumber(Long userId) {
+		return userRepository.getCouponNumber(userId);
 	}
 }

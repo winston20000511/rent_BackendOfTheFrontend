@@ -2,12 +2,15 @@ package com.example.demo.controller;
 
 import java.util.Map;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.helper.EcpayApiConfig;
 import com.example.demo.model.OrderBean;
 import com.example.demo.service.EcpayService;
 
@@ -16,7 +19,6 @@ import com.example.demo.service.EcpayService;
 public class EcpayRestController {
 
 	private EcpayService ecpayService;
-	
 	
 	@Autowired
 	public EcpayRestController(EcpayService ecpayService) {
@@ -42,9 +44,11 @@ public class EcpayRestController {
 		System.out.println("印啊111");
 		System.out.println(params);
 		System.out.println("印啊222");
-//		String response = orderService.verifyEcpayCheckValue(checkValue);
-//		return response;
+//		String response = 驗證
+//		驗證後將資料庫order status 改為 1
+//		if(response是true) return OK; // 回傳OK給綠界
 		return null;
 	}
+	
 	
 }

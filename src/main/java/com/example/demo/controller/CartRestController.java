@@ -4,11 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,22 +25,20 @@ public class CartRestController {
 
 	private CartService cartService;
 	
-	@Autowired
-	private CartRestController(CartService cartService) {
+	public CartRestController(CartService cartService) {
 		this.cartService = cartService;
 	}
 	
-	// 取得購物車內容
 	@GetMapping("/ads")
 	public ResponseEntity<List<Long>> getCartItemIds(Long userId){
-		userId = 1787L; //測試資料
+		userId = 2599L; //測試資料
 		List<Long> addedAdIds = cartService.getCartItems(userId);
 		return ResponseEntity.ok(addedAdIds);
 	}
 	
 	@PostMapping("/list")
 	public List<CartItemBean> getCartItems(Long userId){
-		userId = 1787L; //測試資料
+		userId = 2599L; //測試資料
 		return cartService.findCartItemsByUserId(userId);
 	}
 	
@@ -49,7 +46,7 @@ public class CartRestController {
 	@PostMapping("/additem")
 	public boolean addToCart(@RequestBody Long adId) {
 		// ad id(直接取當前資料庫儲存的資料), cart id, user id(HTTP)
-		Long userId = 1787L; // 測試資料
+		Long userId = 2599L; // 測試資料
 		System.out.println("ad id: " + adId + " user id: " + userId);
 		return cartService.addToCart(adId, userId);
 	}
@@ -70,7 +67,7 @@ public class CartRestController {
 	// 刪除購物車內容物
 	@DeleteMapping("/deleteitem")
 	public boolean deleteCartItem(@RequestBody Long adId) {
-		Long userId = 1787L; //測試資料
+		Long userId = 2599L; //測試資料
 		return cartService.deleteCartItem(adId, userId);
 	}
 	
@@ -80,5 +77,13 @@ public class CartRestController {
 	public boolean deleteCart(@RequestBody Integer cartId) {
 		return cartService.deleteCart(cartId);
 	}
+
 	
+	@GetMapping("/coupon")
+	public Byte getUserCouponNumber() {
+		Long userId = 2599L; //測試資料
+		return cartService.getUserCouponNumber(userId);
+	}
+	
+
 }

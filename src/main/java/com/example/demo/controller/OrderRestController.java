@@ -25,6 +25,7 @@ public class OrderRestController {
 	private OrderService orderService;
 	private SerialOrderNoService serialNoService;
 	
+	
 	@Autowired
 	public OrderRestController(OrderService orderService, SerialOrderNoService serialNoService) {
 		this.orderService = orderService;
@@ -77,13 +78,6 @@ public class OrderRestController {
 		return orderService.findOrdersByConditions(conditions);
 	}
 	
-	
-	@GetMapping("/test/generateOrderId")
-	public String generateOrderId() {
-		String orderId = serialNoService.generateSerialNumber(); // 要送到資料庫
-		return orderId;
-	}
-	
 	@PostMapping("/create")
 	@Transactional
 	public OrderResponseDTO createOrder(@RequestBody Map<String, String> param) {
@@ -114,5 +108,9 @@ public class OrderRestController {
 		return orderService.getOrderConfirmationResponseDTOsByCartId(cartId);
 	}
 	
+	@GetMapping("/generate")
+    public String generateSerialNumber() {
+        return "流水號: " + serialNoService.generateSerialNumber();
+    }
 	
 }

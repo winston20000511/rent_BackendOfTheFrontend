@@ -1,34 +1,139 @@
 package com.example.demo.service;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.model.CartItemBean;
+import com.example.demo.helper.EcpayApiConfig;
 import com.example.demo.model.OrderBean;
-import com.example.demo.repository.CartItemRepository;
 import com.example.demo.repository.OrderRepository;
 
 import ecpay.payment.integration.AllInOne;
 import ecpay.payment.integration.domain.AioCheckOutALL;
+import org.springframework.web.bind.annotation.*;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Map;
 
 @Service
 public class EcpayService {
 	
+	private Logger logger = Logger.getLogger(EcpayService.class.getName());
+	
 	private OrderRepository orderRepository;
+	private EcpayApiConfig ecpayApiConfig;
 	
 	@Autowired
-	public EcpayService(OrderRepository orderRepository) {
+	public EcpayService(OrderRepository orderRepository, EcpayApiConfig ecpayApiConfig) {
 		this.orderRepository = orderRepository;
+		this.ecpayApiConfig = ecpayApiConfig;
+	}
+
+	/**
+	 * 將訂單資料送給綠界
+	 * @param merchantTradNo
+	 * @return form 綠界的付款回傳表單
+	 */
+	public String ecpayCheckout(String merchantTradNo) {
+
+		OrderBean order = orderRepository.findByMerchantTradNo(merchantTradNo);
+		AllInOne all = new AllInOne("");
+		Object obj = getEcpayOrderObj(order);
+		String form = all.aioCheckOut(obj, null);
+		return form;
+	}
+
+	/**
+	 * 接收綠界回傳的值
+	 * @param response
+	 * @return 1/OK 通知綠界有收到驗證資料
+	 */
+	public String verifyEcpayCheckValue(String response) {
+		logger.severe("response: " + response);
+		System.out.println(response);
+		// 抓出綠界回傳值中的checkMacValue 及 MerchantTradeNo 
+		String hashKey = ecpayApiConfig.getHashKey(); 
+		String hashIV = ecpayApiConfig.getHashIV();
+		
+		
+		JSONObject queryStringToJson = queryStringToJson(response);
+		queryStringToJson.toString(); // 存入資料庫
+		
+		/*
+		OrderBean order = orderRepository.findByMerchantTradNo(merchantTradNo);
+		Object ecpayOrderObj = getEcpayOrderObj(order);
+		
+		String genMheckMacValue = EcpayEncrpytUtil.getCheckMacValue(hashKey, hashIV, ecpayOrderObj);
+		logger.severe("自己生成的checkMacValue: " + genMheckMacValue);
+		
+//		if response 的 checkMacValue.equals(checkMacValue) 將order status改為1 ; else 不做動作
+		*/
+		
+		return "1|OK"; // 單純回報有收到確認碼
 	}
 	
+	/**
+	 * 取得以資料庫訂單內容建立的，給綠界的訂單資料
+	 * @param order
+	 * @return
+	 */
+	private Object getEcpayOrderObj(OrderBean order) {
+		AioCheckOutALL obj = new AioCheckOutALL();
+		obj.setIgnorePayment("ApplePay#WebATM#ATM#CVS#BARCODE#TWQR#BNPL");
+
+		obj.setMerchantTradeNo(order.getMerchantTradNo());
+
+		// 寫時間格式轉換工具
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		String dateTimeStr = order.getMerchantTradDate().format(formatter);
+		obj.setMerchantTradeDate(dateTimeStr);
+
+		// 抓cartItem計算出來的價格總計
+		obj.setTotalAmount(order.getTotalAmount().toString());
+
+		// 其他需要的資料設定
+		obj.setTradeDesc(order.getTradeDesc());
+		obj.setItemName(order.getItemName());
+		
+		// 接收回傳驗證碼路徑
+		obj.setReturnURL("/api/ecpay/verify/checkvalue");
+		
+		obj.setNeedExtraPaidInfo("N");
+		
+		// 返回商店後呈現給客戶看的葉面
+		obj.setClientBackURL("http://localhost:8080/orders/complete");
+		
+		return obj;
+	}
+	
+	private JSONObject queryStringToJson(String queryString) {
+		JSONObject jsonObject = new JSONObject();
+		try {
+			String[] pairs = queryString.split("&");
+			
+			for(String pair : pairs) {
+				String[] keyValue = pair.split("=");
+				
+				if(keyValue.length == 2) {
+					String key = URLDecoder.decode(keyValue[0], "UTF-8");
+					String value = URLDecoder.decode(keyValue[1], "UTF-8");
+					jsonObject.put(key, value);
+				}else {
+					String key = URLDecoder.decode(keyValue[0], "UTF-8");
+					jsonObject.put(key, "");
+				}
+			}
+		}catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+		
+		return jsonObject;
+	}
 	
 	/* ecpay */
 	// 測試用
@@ -44,69 +149,10 @@ public class EcpayService {
 		obj.setTradeDesc("test Description");
 		obj.setItemName("TestItem");
 //		obj.setOrderResultURL("/orders/complete");
-		obj.setReturnURL("/api/ecpay/verify/checkvalue");
-//		obj.setReturnURL("<http://211.23.128.214:5000>");
+		obj.setReturnURL("https://4c2c-58-114-167-137.ngrok-free.app/api/ecpay/verify/checkvalue");
 		obj.setClientBackURL("/orders/complete");
 		obj.setNeedExtraPaidInfo("N");
 		String form = all.aioCheckOut(obj, null);
 		return form;
-
-		/*
-		 * AllInOne all = new AllInOne(""); AioCheckOutALL obj = new AioCheckOutALL();
-		 * obj.setIgnorePayment("ApplePay#WebATM");
-		 * obj.setMerchantTradeNo("textCompany1013");
-		 * obj.setMerchantTradeDate("2024/11/18 08:05:23"); obj.setTotalAmount("50");
-		 * obj.setTradeDesc("test Description"); obj.setItemName("TestItem"); //
-		 * 交易結果回傳網址，只接受 https 開頭的網站，可以使用 ngrok //
-		 * obj.setReturnURL("<http://211.23.128.214:5000>"); obj.setReturnURL("OK");
-		 * obj.setNeedExtraPaidInfo("N"); // 商店轉跳網址 //
-		 * obj.setClientBackURL("<http://192.168.1.37:8080/>");
-		 * obj.setClientBackURL("http://localhost:8080/complete"); String form =
-		 * all.aioCheckOut(obj, null); return form;
-		 */
-	}
-
-	public String ecpayCheckout(String merchantTradNo) {
-		// 前端傳入值：cartId, paymentMethod
-
-		OrderBean order = orderRepository.findByMerchantTradNo(merchantTradNo);
-		
-		AllInOne all = new AllInOne("");
-		AioCheckOutALL obj = new AioCheckOutALL();
-		obj.setIgnorePayment("ApplePay#WebATM#ATM#CVS#BARCODE#TWQR#BNPL");
-
-		String uuId = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 20);
-		// 使用訂單生成程式碼帶入
-		obj.setMerchantTradeNo(uuId);
-		// obj.setMerchantTradeNo(order.getMerchantTradeNo());
-
-		// 寫時間格式轉換工具
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		String dateTimeStr = LocalDateTime.now().format(formatter);
-		// String dateTimeStr = order.getMerchantTradDate().format(formatter);
-		
-		System.out.println("dateTimeStr" + dateTimeStr);
-		obj.setMerchantTradeDate(dateTimeStr);
-
-		// 抓cartItem計算出來的價格總計
-		obj.setTotalAmount(order.getTotalAmount().toString());
-
-		obj.setTradeDesc(order.getTradeDesc());
-		obj.setItemName(order.getItemName());
-		obj.setReturnURL("<http://211.23.128.214:80>");
-		obj.setNeedExtraPaidInfo("N");
-		obj.setClientBackURL("http://localhost:8080/orders/complete");
-		String form = all.aioCheckOut(obj, null);
-
-		return form;
-	}
-
-	// get ecpay check value and verify
-	public String verifyEcpayCheckValue(String checkValue) {
-
-		System.out.println("check value: " + checkValue);
-//		AllInOne all = new AllInOne("");
-
-		return "1|OK";
 	}
 }
