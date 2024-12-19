@@ -55,11 +55,13 @@ public class BookingController {
 		return "redirect:/";
 	}
 	
-	
+	// 獲取 房子的預約設定
 	@GetMapping("/api/booking/list")
 	public ResponseEntity<?> getTimeSlot(@RequestParam Long houseId) {
+		System.out.println(houseId);
 		List<String> list = bookingService.findBookingedByHouseId(houseId);
 		BookingSlotDTO house = bookingService.findTimeSlotByHouseId(houseId);
+		
 		house.setExcludedTime(list);
 		return ResponseEntity.ok(house);
 	}
@@ -92,6 +94,7 @@ public class BookingController {
         return ResponseEntity.ok().body(bookingList);
     }
 	
+	// 建立新的預約
 	@ResponseBody
 	@PostMapping("/api/booking/host")
     public ResponseEntity<?> postBooking(@RequestBody BookingDTO bookingDTO) throws MessagingException {

@@ -93,22 +93,25 @@ public class BookingService {
 			if (newBean != null) {
 				BookingDetailDTO b = bookingRepo.findBookingDetailsById(newBean.getBookingId());
 				
+				// 房東的查看預約網址
+				String url = "http://localhost:8080/" ;
+				
 				String formattedMessage = booking.getMessage()
-		                .replace("\n", "<br>")
 		                .replace("<", "&lt;")
-		                .replace(">", "&gt;");
+		                .replace(">", "&gt;")
+		                .replace("\n", "<br/>");
 				
 				String msg = "<div style='width:400px; border: 1px solid #007bff; border-radius: 10px; padding: 15px;'>" +
-			             "<h2 style='text-align: center;'>您在 <span style='color:red;'>" + 
+			             "<h2 style='text-align: left ;'>您在 <span style='color:red;'>" + 
 			             b.getBookingDate() + " " + b.getBookingTime() + "</span> 有新的預約</h2>" +
-			             "<p style='text-align: center;'>請使用以下連結以查看預約：</p>" +
-			             "<p style='text-align: center;'><a href='http://localhost:8080/' style='color: blue;'>查看預約</a></p>" +
-			             "<div style='border: 1px dashed #ccc; padding: 10px; margin-top: 15px;'>" +
+			             "<span style='text-align: center;'>立即查看： </span>" +
+			             "<span style='text-align: center;'><a href='"+ url +"' style='color: blue;'>"+url+"</a></span>" +
 			             "<h3 style='text-align: start;'>給您的留言:</h3>" +
+			             "<div style='border: 1px dashed #ccc; padding: 10px; margin-top: 15px;'>" +
 			             "<p style='text-align: start;'>" + formattedMessage + "</p>" +
 			             "</div>" +
 			             "<hr style='border-top: 1px solid #ccc;'>" +
-			             "<footer style='text-align: center; font-size: small; color: gray;'>感謝您的使用！</footer>" +
+			             "<footer style='text-align: end; font-size: small; color: gray;'>感謝您的使用！</footer>" +
 			             "</div>";
 
 				sendSimpleEmail(b.getOwnerEmail(), "您有新的預約", msg);
