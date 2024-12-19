@@ -203,10 +203,7 @@ public class SearchHelper {
 		lngBd = lngBd.divide(BigDecimal.valueOf(drawDtoList.size()),4,RoundingMode.HALF_UP);
 		
 		return new DrawLatLngDTO(latBd.doubleValue(),lngBd.doubleValue());
-		
-		
-		
-		
+
 	}
 	
 }
