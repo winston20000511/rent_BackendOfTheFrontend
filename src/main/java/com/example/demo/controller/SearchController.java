@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.AddressDTO;
+import com.example.demo.dto.DrawLatLngDTO;
 import com.example.demo.dto.OriginDTO;
 import com.example.demo.model.HouseTableBean;
 import com.example.demo.pojo.ResponseMapPOJO;
@@ -37,7 +38,7 @@ public class SearchController {
 		AddressDTO origin = searchService.placeConvertToAdress(request.getOrigin());
 		ResponseMapPOJO mapPOJO = searchService.findByCityAndTownship(origin);
 		long startTime = System.currentTimeMillis();
-		mapPOJO.setSearchList(searchService.GetDurationAndDistance(mapPOJO.getSearchList(), origin));
+		mapPOJO.setSearchList(searchService.getDurationAndDistance(mapPOJO.getSearchList(), origin));
 		long endTime = System.currentTimeMillis();
 		System.out.println("執行時間：" + (endTime - startTime) + " 毫秒");
 		return mapPOJO;
@@ -58,5 +59,11 @@ public class SearchController {
 		}
 	}
 	
+	@CrossOrigin(origins="*")
+	@PostMapping("/api/draw")
+	public void drawShowMap(@RequestBody List<DrawLatLngDTO> drawDtoList) {
+		searchService.getPlaceGoogleAPI(drawDtoList);
+		
+	}
 	
 }

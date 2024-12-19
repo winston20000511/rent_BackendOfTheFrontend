@@ -25,7 +25,7 @@ public class EcpayService {
 	private OrderRepository orderRepository;
 	
 	@Autowired
-	private EcpayService(OrderRepository orderRepository) {
+	public EcpayService(OrderRepository orderRepository) {
 		this.orderRepository = orderRepository;
 	}
 	
@@ -44,9 +44,9 @@ public class EcpayService {
 		obj.setTradeDesc("test Description");
 		obj.setItemName("TestItem");
 //		obj.setOrderResultURL("/orders/complete");
-		obj.setReturnURL("https://seriously-smooth-turkey.ngrok-free.app/api/ecpay/verify/checkvalue");
+		obj.setReturnURL("/api/ecpay/verify/checkvalue");
 //		obj.setReturnURL("<http://211.23.128.214:5000>");
-		obj.setClientBackURL("https://seriously-smooth-turkey.ngrok-free.app/orders/complete");
+		obj.setClientBackURL("/orders/complete");
 		obj.setNeedExtraPaidInfo("N");
 		String form = all.aioCheckOut(obj, null);
 		return form;

@@ -1,8 +1,11 @@
 package com.example.demo.controller;
 
 import java.time.LocalDateTime;
+import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,6 +32,7 @@ import com.example.demo.model.FurnitureTableBean;
 import com.example.demo.model.HouseImageTableBean;
 import com.example.demo.model.HouseTableBean;
 import com.example.demo.model.UserTableBean;
+import com.example.demo.repository.HouseImageRepository;
 import com.example.demo.repository.HouseRepository;
 import com.example.demo.service.CollectService;
 import com.example.demo.service.HouseService;
@@ -38,6 +42,8 @@ import com.example.demo.service.UserService;
 @RequestMapping("/api/houses")
 @CrossOrigin(origins = "http://localhost:5173")
 public class HouseController {
+	@Autowired
+	private HouseImageRepository houseImageRepository;
 	@Autowired
 	private HouseRepository houseRepository;
 	@Autowired
@@ -83,12 +89,13 @@ public class HouseController {
 	        @RequestParam Boolean waterDispenser,
 	        @RequestParam Boolean managementFee,
 	        @RequestParam Byte genderRestrictions,
+	        @RequestParam String description,
+	        @RequestParam String houseType,
 	        @RequestParam("images") List<MultipartFile> images
 	    ) {
 
 	        System.out.println("Received house details: " + title + ", images count: " + (images != null ? images.size() : 0));
-	        
-	        
+	       	        
 	        // 創建 User 物件
 	        UserTableBean user = new UserTableBean();
 	        user.setUserId(1L);
@@ -106,6 +113,8 @@ public class HouseController {
 	        house.setKitchen(kitchen);
 	        house.setFloor(floor);
 	        house.setAtticAddition(atticAddition);
+	        house.setDescription(description);
+	        house.setHouseType(houseType);
 	        house.setStatus((byte) 0);
 	        house.setClickCount(0);
 
@@ -179,14 +188,18 @@ public class HouseController {
 	}
 
 	@GetMapping("/getPhotos/{houseId}")
-	public ResponseEntity<List<String>> getHousePhotos(@PathVariable Long houseId) {
-		List<String> base64Images = houseService.getHouseImagesByHouseId(houseId);
+	public ResponseEntity<?> getHousePhotos(@PathVariable Long houseId) {
+	    List<byte[]> images = houseImageRepository.findImagesByHouseId(houseId);
+	    if (images == null || images.isEmpty()) {
+	        return ResponseEntity.ok(Collections.emptyList()); // 返回空數組
+	    }
 
-		if (base64Images.isEmpty()) {
-			return ResponseEntity.noContent().build();
-		}
+	    // 將每個圖片轉換為 Base64 編碼字串
+	    List<String> base64Images = images.stream()
+	            .map(image -> Base64.getEncoder().encodeToString(image))
+	            .collect(Collectors.toList());
 
-		return ResponseEntity.ok(base64Images);
+	    return ResponseEntity.ok(base64Images); // 返回 Base64 編碼的圖片數據
 	}
 
 	@GetMapping("/details/{houseId}")

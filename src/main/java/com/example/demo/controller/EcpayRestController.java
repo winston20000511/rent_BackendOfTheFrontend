@@ -37,8 +37,11 @@ public class EcpayRestController {
 	}
 	
 	@PostMapping("/verify/checkvalue")
-	public String verify(@RequestBody Map<String, String> params) {
-		System.out.println(params.get("CheckMacValue"));
+//	public String verify(@RequestBody Map<String, String> params) 
+	public String verify(@RequestBody String params) {
+		System.out.println("印啊111");
+		System.out.println(params);
+		System.out.println("印啊222");
 //		String response = orderService.verifyEcpayCheckValue(checkValue);
 //		return response;
 		return null;
