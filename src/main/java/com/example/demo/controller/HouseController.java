@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.sql.Time;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Collections;
@@ -34,6 +36,7 @@ import com.example.demo.helper.SearchHelper;
 import com.example.demo.model.CollectTableBean;
 import com.example.demo.model.ConditionTableBean;
 import com.example.demo.model.FurnitureTableBean;
+import com.example.demo.model.HouseBookingTimeSlotBean;
 import com.example.demo.model.HouseImageTableBean;
 import com.example.demo.model.HouseTableBean;
 import com.example.demo.model.UserTableBean;
@@ -98,7 +101,13 @@ public class HouseController {
 	        @RequestParam Byte genderRestrictions,
 	        @RequestParam String description,
 	        @RequestParam String houseType,
-	        @RequestParam("images") List<MultipartFile> images
+	        @RequestParam("images") List<MultipartFile> images,
+	        @RequestParam Date fromDate,
+	        @RequestParam Date toDate,
+	        @RequestParam Time fromTime,
+	        @RequestParam Time toTime,
+	        @RequestParam Short duration,
+	        @RequestParam String weekDay
 	    ) {
 
 	        System.out.println("Received house details: " + title + ", images count: " + (images != null ? images.size() : 0));
@@ -199,7 +208,17 @@ public class HouseController {
 	            System.out.println("No images received.");
 	        }
 	        
-
+	        //添加 HouseBookingTimeSlot 資訊
+	        HouseBookingTimeSlotBean booking = new HouseBookingTimeSlotBean();
+	        booking.setFromDate(fromDate);
+	        booking.setToDate(toDate);
+	        booking.setFromTime(fromTime);
+	        booking.setToTime(toTime);
+	        booking.setDuration(duration);
+	        booking.setWeekDay(weekDay);
+	        booking.setHouse(house);
+	        house.setBookingTimeSlots(booking);
+	        
 	        // 保存房屋資訊
 	        houseService.addHouse(house);
 
