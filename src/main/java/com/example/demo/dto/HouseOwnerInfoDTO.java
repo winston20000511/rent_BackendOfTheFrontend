@@ -5,13 +5,14 @@ import lombok.Data;
 @Data
 public class HouseOwnerInfoDTO {
     private String name;
+    private byte[] picture;
     private String phone;
-    private String base64Picture;
 
-    public HouseOwnerInfoDTO(String name, String phone, String base64Picture) {
+    // 构造函数
+    public HouseOwnerInfoDTO(String name, byte[] picture, String phone) {
         this.name = name;
+        this.picture = picture;
         this.phone = phone;
-        this.base64Picture = base64Picture;
     }
 
 	public HouseOwnerInfoDTO() {

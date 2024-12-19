@@ -19,20 +19,20 @@
 //@Aspect    // 標示這是一個切面類別，用於AOP（面向切面編程）
 //public class JwtAspect {
 //
-////    // 定義不需要 JWT 驗證的路徑集合
-////	private static final Set<String> EXCLUDED_URIS = new HashSet<>();
-////
-////	static {
-////	    EXCLUDED_URIS.add("/api/user/login");    // 登入頁面
-////	    EXCLUDED_URIS.add("/api/user/register"); // 註冊頁面
-////	    EXCLUDED_URIS.add("/"); // 首頁
-////	    EXCLUDED_URIS.add("/public/api");        // 未來新增的公共頁面
-////	}
-////
-////
-////    //  除了排除在外的controller，其餘controller都需要進到JWT驗證
-////    @Pointcut("execution(public * com.example.demo.controller..*(..))")
-////    public void controllerMethods() {}
+//    // 定義不需要 JWT 驗證的路徑集合
+//	private static final Set<String> EXCLUDED_URIS = new HashSet<>();
+//
+//	static {
+//	    EXCLUDED_URIS.add("/api/user/login");    // 登入頁面
+//	    EXCLUDED_URIS.add("/api/user/register"); // 註冊頁面
+//	    EXCLUDED_URIS.add("/"); // 首頁
+//	    EXCLUDED_URIS.add("/public/api");        // 未來新增的公共頁面
+//	}
+//
+//
+//    //  除了排除在外的controller，其餘controller都需要進到JWT驗證
+//    @Pointcut("execution(public * com.example.demo.controller..*(..))")
+//    public void controllerMethods() {}
 //
 //    /**
 //     * 環繞通知，對 Controller 方法進行攔截並添加 JWT 驗證邏輯
