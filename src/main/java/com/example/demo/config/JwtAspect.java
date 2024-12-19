@@ -23,12 +23,15 @@ public class JwtAspect {
     // 定義不需要 JWT 驗證的路徑集合
 	private static final Set<String> EXCLUDED_URIS = new HashSet<>();
 
-	static {
-	    EXCLUDED_URIS.add("/api/user/login");    // 登入頁面
-	    EXCLUDED_URIS.add("/api/user/register"); // 註冊頁面
-	    EXCLUDED_URIS.add("/"); // 首頁
-	    EXCLUDED_URIS.add("/public/api");        // 未來新增的公共頁面
-	}
+    static {
+        EXCLUDED_URIS.add("/api/user/login");    // 登入頁面
+        EXCLUDED_URIS.add("/api/user/register"); // 註冊頁面
+        EXCLUDED_URIS.add("/"); // 首頁
+        EXCLUDED_URIS.add("/public/api");        // 未來新增的公共頁面
+        EXCLUDED_URIS.add("/api/test"); //SearchController
+        EXCLUDED_URIS.add("/api/map"); //SearchController
+        EXCLUDED_URIS.add("/api/keyword"); //SearchController
+    }
 
 
     //  除了排除在外的controller，其餘controller都需要進到JWT驗證
