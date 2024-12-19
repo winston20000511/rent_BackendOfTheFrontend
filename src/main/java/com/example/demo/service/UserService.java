@@ -82,31 +82,4 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    /**
-     * 查詢屋主資訊，根據房屋 ID
-     * @param houseId 房屋的 ID
-     * @return 屋主資訊的 DTO，包括名稱、電話和圖片（Base64 格式）
-     */
-    public HouseOwnerInfoDTO getOwnerInfo(Long houseId) {
-        // 從 UserRepository 查詢屋主資料
-        Object[] ownerData = userRepository.getOwnerByHouseId(houseId);
-
-        if (ownerData == null || ownerData.length == 0) {
-            System.out.println("No owner data found for houseId: " + houseId);
-            return null;
-        }
-
-        // 轉換查詢結果
-        String name = (ownerData[0] != null) ? ownerData[0].toString() : "";
-        String phone = (ownerData[1] != null) ? ownerData[1].toString() : "";
-        byte[] picture = (ownerData[2] != null) ? (byte[]) ownerData[2] : null;
-
-        // 將圖片轉換成 Base64 格式
-        String base64Picture = null;
-        if (picture != null) {
-            base64Picture = Base64.getEncoder().encodeToString(picture);
-        }
-
-        return new HouseOwnerInfoDTO(name, phone, base64Picture);
-    }
 }

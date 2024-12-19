@@ -6,6 +6,7 @@ import java.sql.Time;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -255,13 +256,17 @@ public class HouseController {
 		return ResponseEntity.ok(houseDetails);
 	}
 	@GetMapping("/Description/{houseId}")
-	public ResponseEntity<String> getHouseDescription(@PathVariable Long houseId) {
+	public ResponseEntity<Map<String, String>> getHouseDescription(@PathVariable Long houseId) {
 	    // 查找 HouseTable 資料
 	    HouseTableBean house = houseRepository.findById(houseId)
 	        .orElseThrow(() -> new RuntimeException("House not found"));
 
-	    // 返回簡介部分
-	    return ResponseEntity.ok(house.getDescription());  // 只返回簡介資料
+	    // 创建一个 Map 来包装返回的 JSON 数据
+	    Map<String, String> response = new HashMap<>();
+	    response.put("description", house.getDescription());  // 将描述放入 Map
+
+	    // 返回 JSON 格式的响应
+	    return ResponseEntity.ok(response);
 	}
 
 	
@@ -275,24 +280,10 @@ public class HouseController {
 	    return ResponseEntity.ok(house.getTitle());  // 只返回簡介資料
 	}
 
-	 @GetMapping("/Owner/{houseId}")
-	    public ResponseEntity<HouseOwnerInfoDTO> getOwner(@PathVariable Long houseId) {
-		 System.out.println(houseId);
-	        try {
-	            // 获取屋主信息
-	            HouseOwnerInfoDTO houseOwnerInfo = userService.getOwnerInfo(houseId);
-	            System.out.println("houseOwnerInfo:"+ houseOwnerInfo);
-	            if (houseOwnerInfo == null) {
-	                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-	            }
-
-	            return ResponseEntity.ok(houseOwnerInfo);
-	        } catch (Exception e) {
-	        	e.printStackTrace();
-	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-	        }
+	 @GetMapping("/owner/{houseId}")
+	    public HouseOwnerInfoDTO getHouseOwnerInfo(@PathVariable Long houseId) {
+	        return houseService.getHouseOwnerInfoByHouseId(houseId);
 	    }
-
 	@DeleteMapping("/collect/delete/{userId}/{houseId}")
 	public ResponseEntity<String> deleteCollectByUserIdAndHouseId(@PathVariable Long userId, @PathVariable Long houseId) {
 	    try {

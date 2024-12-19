@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.HouseDetailsDTO;
 import com.example.demo.dto.HouseListByUserIdDTO;
+import com.example.demo.dto.HouseOwnerInfoDTO;
 import com.example.demo.model.ConditionTableBean;
 import com.example.demo.model.FurnitureTableBean;
 import com.example.demo.model.HouseTableBean;
@@ -160,6 +161,8 @@ public String updateHouse(Long houseId, HouseDetailsDTO detail) {
         return "房屋資訊已成功更新";
     }
 
-
+public HouseOwnerInfoDTO getHouseOwnerInfoByHouseId(Long houseId) {
+    return houseRepository.findHouseOwnerInfoByHouseId(houseId);
+}
 	
 }

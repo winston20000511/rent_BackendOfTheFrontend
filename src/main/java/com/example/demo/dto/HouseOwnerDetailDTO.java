@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class HouseOwnerDetailDTO {
-	private Long houseId;
-	private String mail;
-	
+private String name;
+private String phone;
 }
