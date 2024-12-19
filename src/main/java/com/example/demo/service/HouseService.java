@@ -42,6 +42,7 @@ public class HouseService {
 		// 組裝 DTO
 		HouseDetailsDTO dto = new HouseDetailsDTO();
 		dto.setHouseId(house.getHouseId());
+		dto.setTitle(house.getTitle());
 		dto.setPrice(house.getPrice());
 		dto.setSize(house.getSize());
 		dto.setAddress(house.getAddress());

@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import java.io.IOException;
+import java.security.SignatureException;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Collections;
@@ -11,6 +12,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -31,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.demo.dto.HouseDetailsDTO;
 import com.example.demo.dto.HouseListByUserIdDTO;
 import com.example.demo.dto.HouseOwnerInfoDTO;
+import com.example.demo.helper.JwtUtil;
 import com.example.demo.helper.SearchHelper;
 import com.example.demo.model.CollectTableBean;
 import com.example.demo.model.ConditionTableBean;
@@ -43,6 +47,8 @@ import com.example.demo.repository.HouseRepository;
 import com.example.demo.service.CollectService;
 import com.example.demo.service.HouseService;
 import com.example.demo.service.UserService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/houses")
@@ -265,20 +271,30 @@ public class HouseController {
 	    public HouseOwnerInfoDTO getHouseOwnerInfo(@PathVariable Long houseId) {
 	        return houseService.getHouseOwnerInfoByHouseId(houseId);
 	    }
-	@DeleteMapping("/collect/delete/{userId}/{houseId}")
-	public ResponseEntity<String> deleteCollectByUserIdAndHouseId(@PathVariable Long userId, @PathVariable Long houseId) {
-	    try {
+	 @DeleteMapping("/delete/{houseId}")
+	    public ResponseEntity<String> deleteCollect(HttpServletRequest request, @PathVariable Long houseId) {
+	        Long userId = JwtUtil.verify(request); // 從 Token 解析出 userId
+	        // 執行刪除邏輯
 	        collectService.deleteByUserIdAndHouseId(userId, houseId);
-	        return ResponseEntity.ok("Collect data deleted successfully for userId: " + userId + " and houseId: " + houseId);
-	    } catch (Exception e) {
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Failed to delete collect data: " + e.getMessage());
+
+	        return ResponseEntity.ok("成功刪除收藏資料，userId: " + userId + " houseId: " + houseId);
 	    }
-	}
-	@GetMapping("/collect/{userId}")
-	public List<Long> getHouseIds(@PathVariable Long userId) {
-		return collectService.getHouseIdsByUserId(userId);
-	}
+
+	    @GetMapping
+	    public ResponseEntity<List<Long>> getHouseIds(HttpServletRequest request) {
+	        Long userId = JwtUtil.verify(request); // 從 Token 解析出 userId
+	        List<Long> houseIds = collectService.getHouseIdsByUserId(userId);
+
+	        return ResponseEntity.ok(houseIds);
+	    }
+
+	    @GetMapping("/houses")
+	    public ResponseEntity<List<HouseListByUserIdDTO>> getHouses(HttpServletRequest request) {
+	        Long userId = JwtUtil.verify(request); // 從 Token 解析出 userId
+	        List<HouseListByUserIdDTO> houses = houseService.getHousesByUserId(userId);
+
+	        return ResponseEntity.ok(houses);
+	    }
 	 @PostMapping("/collect/add")
 	    public ResponseEntity<CollectTableBean> addToCollection(@RequestBody CollectTableBean collect) {
 	        // 設置收藏時間
@@ -287,9 +303,5 @@ public class HouseController {
 	        return ResponseEntity.ok(collectedItem);
 	    }
 
-	@GetMapping("/user/{userId}")
-	public List<HouseListByUserIdDTO> getHousesByUserId(@PathVariable Long userId) {
-		return houseService.getHousesByUserId(userId);
-	}
 
 }
