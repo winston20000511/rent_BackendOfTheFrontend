@@ -66,6 +66,8 @@ public class HouseTableBean {
     private Byte status;
     @Column(name = "clickCount")
     private Integer clickCount;
+    @Column(name="house_type")
+    private String houseType;
 
     @OneToOne(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JsonIgnore
