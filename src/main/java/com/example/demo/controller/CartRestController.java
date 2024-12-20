@@ -32,14 +32,14 @@ public class CartRestController {
 	
 	@GetMapping("/ads")
 	public ResponseEntity<List<Long>> getCartItemIds(Long userId){
-		userId = 2599L; //測試資料
+		userId = 4492L; //測試資料
 		List<Long> addedAdIds = cartService.getCartItems(userId);
 		return ResponseEntity.ok(addedAdIds);
 	}
 	
 	@PostMapping("/list")
 	public List<CartItemBean> getCartItems(){
-		Long userId = 2599L; //測試資料
+		Long userId = 4492L; //測試資料
 		List<CartItemBean> cartItems = cartService.findCartItemsByUserId(userId);
 		if(cartItems == null) return null;
 		
@@ -53,7 +53,7 @@ public class CartRestController {
 	@PostMapping("/additem")
 	public boolean addToCart(@RequestBody Long adId) {
 		// ad id(直接取當前資料庫儲存的資料), cart id, user id(HTTP)
-		Long userId = 2599L; // 測試資料
+		Long userId = 4492L; // 測試資料
 		System.out.println("ad id: " + adId + " user id: " + userId);
 		System.out.println("獲得的商品: " + cartService.addToCart(adId, userId));
 		return cartService.addToCart(adId, userId);
@@ -75,7 +75,7 @@ public class CartRestController {
 	// 刪除購物車內容物
 	@DeleteMapping("/deleteitem")
 	public boolean deleteCartItem(@RequestBody Long adId) {
-		Long userId = 2599L; //測試資料
+		Long userId = 4492L; //測試資料
 		return cartService.deleteCartItem(adId, userId);
 	}
 	
@@ -89,7 +89,7 @@ public class CartRestController {
 	
 	@GetMapping("/coupon")
 	public Byte getUserCouponNumber() {
-		Long userId = 2599L; //測試資料
+		Long userId = 4299L; //測試資料
 		return cartService.getUserCouponNumber(userId);
 	}
 	
