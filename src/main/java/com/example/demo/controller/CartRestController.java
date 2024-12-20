@@ -55,6 +55,7 @@ public class CartRestController {
 		// ad id(直接取當前資料庫儲存的資料), cart id, user id(HTTP)
 		Long userId = 2599L; // 測試資料
 		System.out.println("ad id: " + adId + " user id: " + userId);
+		System.out.println("獲得的商品: " + cartService.addToCart(adId, userId));
 		return cartService.addToCart(adId, userId);
 	}
 	

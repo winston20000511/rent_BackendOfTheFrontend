@@ -178,9 +178,6 @@ public class OrderService {
 		newOrder.setTradeDesc("宣傳廣告");
 		newOrder.setChoosePayment(choosePayment);
 		
-		// 我們自己生成checkMacValue
-		newOrder.setCheckMacValue("test");
-
 		newOrder.setAds(ads);
 
 		OrderBean savedOrder = orderRepository.save(newOrder);

@@ -48,14 +48,14 @@ public class OrderBean {
 	@Column(name = "order_status", columnDefinition = "TINYINT")
 	private Short orderStatus;
 	
-	@Column(name = "returnUrl")
-	private String returnUrl;
-	
 	@Column(name = "choosePayment")
 	private String choosePayment;
+
+	@Column(name = "third_party")
+	private String thirdParty;
 	
-	@Column(name = "checkMacValue")
-	private String checkMacValue;
+	@Column(name = "returnValue")
+	private String returnValue;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="user_id", insertable=false, updatable=false)

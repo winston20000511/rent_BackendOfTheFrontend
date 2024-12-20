@@ -1,5 +1,7 @@
 package com.example.demo.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,6 +20,10 @@ public interface UserRepository extends JpaRepository<UserTableBean, Long> {
                    "WHERE h.house_id = :houseId", nativeQuery = true)
     Object[] getOwnerByHouseId(@Param("houseId") Long houseId);
     
+    @Query("SELECT u.userId FROM UserTableBean u WHERE u.email = :email")
+    Optional<Long> findUserIdByEmail(String email);
+    
     @Query("SELECT u.coupon FROM UserTableBean u WHERE u.userId =:userId")
 	public Byte getCouponNumber(Long userId);
+    
 }
