@@ -45,4 +45,5 @@ public interface HouseRepository extends JpaRepository<HouseTableBean, Long> {
 					+ "END, CAST(a.paid_date AS DATE)) < CAST(GETDATE() AS DATE))", nativeQuery = true)
 	public Page<Map<String, Object>> findHousesWithoutAds(Pageable pageable);
 
+	
 }

@@ -36,6 +36,8 @@ import com.example.demo.dto.HouseListByUserIdDTO;
 import com.example.demo.dto.HouseOwnerInfoDTO;
 import com.example.demo.helper.JwtUtil;
 import com.example.demo.helper.SearchHelper;
+import com.example.demo.helper.UnTokenException;
+import com.example.demo.helper.UserUtil;
 import com.example.demo.model.CollectTableBean;
 import com.example.demo.model.ConditionTableBean;
 import com.example.demo.model.FurnitureTableBean;
@@ -271,30 +273,82 @@ public class HouseController {
 	    public HouseOwnerInfoDTO getHouseOwnerInfo(@PathVariable Long houseId) {
 	        return houseService.getHouseOwnerInfoByHouseId(houseId);
 	    }
-	 @DeleteMapping("/delete/{houseId}")
-	    public ResponseEntity<String> deleteCollect(HttpServletRequest request, @PathVariable Long houseId) {
-	        Long userId = JwtUtil.verify(request); // 從 Token 解析出 userId
-	        // 執行刪除邏輯
-	        collectService.deleteByUserIdAndHouseId(userId, houseId);
+	 
+//	 COLLECT FUNCTION
+	 @DeleteMapping("collect/delete/{houseId}")
+	 public ResponseEntity<String> deleteCollect(HttpServletRequest request, @PathVariable Long houseId) {
+	     try {
+	         // 從 Token 解析出 email
+	         String email = JwtUtil.verify(request.getHeader("Authorization"));
+	         
+	         if (email == null || email.isEmpty()) {
+	             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token 無效或未提供 email");
+	         }
 
-	        return ResponseEntity.ok("成功刪除收藏資料，userId: " + userId + " houseId: " + houseId);
-	    }
+	         // 使用工具類根據 email 查找 userId
+	         Long userId = UserUtil.getUserIdByEmail(email);
 
-	    @GetMapping
-	    public ResponseEntity<List<Long>> getHouseIds(HttpServletRequest request) {
-	        Long userId = JwtUtil.verify(request); // 從 Token 解析出 userId
-	        List<Long> houseIds = collectService.getHouseIdsByUserId(userId);
+	         // 執行刪除邏輯
+	         collectService.deleteByUserIdAndHouseId(userId, houseId);
 
-	        return ResponseEntity.ok(houseIds);
-	    }
+	         return ResponseEntity.ok("成功刪除收藏資料，userId: " + userId + " houseId: " + houseId);
+	     } catch (UnTokenException e) {
+	         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+	     } catch (Exception e) {
+	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("刪除失敗，發生未知錯誤");
+	     }
+	 }
 
-	    @GetMapping("/houses")
-	    public ResponseEntity<List<HouseListByUserIdDTO>> getHouses(HttpServletRequest request) {
-	        Long userId = JwtUtil.verify(request); // 從 Token 解析出 userId
-	        List<HouseListByUserIdDTO> houses = houseService.getHousesByUserId(userId);
+	 @GetMapping("/collect")
+	 public ResponseEntity<?> getHouseIds(HttpServletRequest request) {
+	     try {
+	         // 從 Token 解析出 email
+	         String email = JwtUtil.verify(request.getHeader("Authorization"));
 
-	        return ResponseEntity.ok(houses);
-	    }
+	         if (email == null || email.isEmpty()) {
+	             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token 無效或未提供 email");
+	         }
+
+	         // 使用工具類根據 email 查找 userId
+	         Long userId = UserUtil.getUserIdByEmail(email);
+
+	         // 調用服務層獲取房屋 ID 列表
+	         List<Long> houseIds = collectService.getHouseIdsByUserId(userId);
+	         if (houseIds == null) {
+	             houseIds = Collections.emptyList();
+	         }
+	         return ResponseEntity.ok(houseIds);
+	     } catch (UnTokenException e) {
+	         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+	     } catch (Exception e) {
+	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("獲取房屋 ID 失敗，發生未知錯誤");
+	     }
+	 }
+
+	 @GetMapping("/houses")
+	 public ResponseEntity<?> getHouses(HttpServletRequest request) {
+	     try {
+	         // 從 Token 解析出 email
+	         String email = JwtUtil.verify(request.getHeader("Authorization"));
+
+	         if (email == null || email.isEmpty()) {
+	             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token 無效或未提供 email");
+	         }
+
+	         // 使用工具類根據 email 查找 userId
+	         Long userId = UserUtil.getUserIdByEmail(email);
+
+	         // 調用服務層邏輯，獲取房屋列表
+	         List<HouseListByUserIdDTO> houses = houseService.getHousesByUserId(userId);
+
+	         return ResponseEntity.ok(houses);
+	     } catch (UnTokenException e) {
+	         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+	     } catch (Exception e) {
+	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("獲取房屋列表失敗，發生未知錯誤");
+	     }
+	 }
+
 	 @PostMapping("/collect/add")
 	    public ResponseEntity<CollectTableBean> addToCollection(@RequestBody CollectTableBean collect) {
 	        // 設置收藏時間

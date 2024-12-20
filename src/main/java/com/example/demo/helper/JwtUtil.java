@@ -37,15 +37,15 @@ public class JwtUtil {
             // 驗證token並解碼
             DecodedJWT jwt = verifier.verify(token);
             
-            // 返回主題（用戶名），如果jwt為null則返回null
-            return jwt != null ? jwt.getSubject() : null;
+            String subject = jwt.getSubject();
+            if (subject == null || subject.isEmpty()) {
+                throw new UnTokenException("Token 無 subject");
+            }
+            return subject;
         } catch (TokenExpiredException e) {
-            // 捕獲token過期異常，並拋出自定義異常
-            throw new UnTokenException("Token expired.");
+            throw new UnTokenException("Token 已過期");
         } catch (Exception e) {
-            // 捕獲其他異常，並拋出自定義異常
-            log.error(e.getMessage());
-            throw new UnTokenException("Token error.");
+            throw new UnTokenException("Token 錯誤: " + e.getMessage());
         }
     }
 

@@ -8,7 +8,7 @@ import lombok.Data;
 public class HouseDetailsDTO {
 
     private Long houseId;
-    private Long userId;
+    private String useremail;
     private String title;
     private Integer price;
     private String description;
@@ -52,7 +52,7 @@ public class HouseDetailsDTO {
 
 
 
-	public HouseDetailsDTO(Long houseId, Long userId, String title, Integer price, String description, Integer size,
+	public HouseDetailsDTO(Long houseId, String useremail, String title, Integer price, String description, Integer size,
 			String address, Byte room, Byte bathroom, Byte livingroom, Byte kitchen, Byte floor, String houseType,
 			Boolean atticAddition, Boolean pet, Boolean parkingSpace, Boolean elevator, Boolean balcony,
 			Boolean shortTerm, Boolean cooking, Boolean waterDispenser, Boolean managementFee, Byte genderRestrictions,
@@ -61,7 +61,7 @@ public class HouseDetailsDTO {
 			Boolean sofa, Boolean tables, List<byte[]> images) {
 		super();
 		this.houseId = houseId;
-		this.userId = userId;
+		this.useremail = useremail;
 		this.title = title;
 		this.price = price;
 		this.description = description;
