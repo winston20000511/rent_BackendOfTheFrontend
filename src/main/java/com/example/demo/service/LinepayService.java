@@ -100,12 +100,11 @@ public class LinepayService {
 
 		// 找 Order
 		OrderBean order = orderRepository.findByMerchantTradNo(orderId);
-
+		
 		CheckoutPaymentRequestForm form = new CheckoutPaymentRequestForm();
-
+		form.setOrderId(orderId);
 		form.setAmount(new BigDecimal(order.getTotalAmount().toString())); // amount = price * quantity
 		form.setCurrency("TWD");
-		form.setOrderId(order.getMerchantId()); // 測試用，order id 不能重複
 
 		ProductPackageForm productPackageForm = new ProductPackageForm();
 		productPackageForm.setId(UUID.randomUUID().toString());
@@ -130,7 +129,7 @@ public class LinepayService {
 		form.setPackages(Arrays.asList(productPackageForm));
 
 		RedirectUrls redirectUrls = new RedirectUrls();
-		redirectUrls.setConfirmUrl("http://localhost:80/orders/mylist");
+		redirectUrls.setConfirmUrl("http://localhost:5173/order-complete");
 		redirectUrls.setCancelUrl("");
 		form.setRedirectUrls(redirectUrls);
 
@@ -212,6 +211,8 @@ public class LinepayService {
 
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode jsonResponse;
+		
+		System.out.println("linepay回應: " + response);
 
 		try {
 

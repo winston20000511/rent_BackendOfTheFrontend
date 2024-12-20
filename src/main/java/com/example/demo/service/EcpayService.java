@@ -40,11 +40,12 @@ public class EcpayService {
 	 * @return form 綠界的付款回傳表單
 	 */
 	public String ecpayCheckout(String merchantTradNo) {
-
+		logger.severe("訂單資料送給綠界");
 		OrderBean order = orderRepository.findByMerchantTradNo(merchantTradNo);
 		AllInOne all = new AllInOne("");
 		Object obj = getEcpayOrderObj(order);
 		String form = all.aioCheckOut(obj, null);
+		System.out.println("表單: " + form);
 		return form;
 	}
 
@@ -89,7 +90,7 @@ public class EcpayService {
 		obj.setMerchantTradeNo(order.getMerchantTradNo());
 
 		// 寫時間格式轉換工具
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 		String dateTimeStr = order.getMerchantTradDate().format(formatter);
 		obj.setMerchantTradeDate(dateTimeStr);
 
@@ -105,8 +106,8 @@ public class EcpayService {
 		
 		obj.setNeedExtraPaidInfo("N");
 		
-		// 返回商店後呈現給客戶看的葉面
-		obj.setClientBackURL("http://localhost:8080/orders/complete");
+		// 返回商店後呈現給客戶看的頁面
+		obj.setClientBackURL("http://localhost:5173/order-complete");
 		
 		return obj;
 	}

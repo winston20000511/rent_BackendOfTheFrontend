@@ -32,7 +32,7 @@ public class SerialOrderNoService {
     public SerialOrderNoService(OrderRepository orderRepository) {
     	this.serialNoUtil = new SerialOrderNoUtil();
     	this.orderRepository = orderRepository;
-		loadLatestCounterFromDatabase();
+//		loadLatestCounterFromDatabase(); // load拆字邏輯有問題，要修
     	scheduler.initialize();
     	scheduleMidnightReset();
     }
@@ -49,12 +49,14 @@ public class SerialOrderNoService {
     	String todayStr = serialNoUtil.getCurrentDateStr();
     	String latestPredixAndDate = SerialOrderNoUtil.PREFIX + todayStr;
     	Optional<String> merchantTradNoList = orderRepository.findLatestMerchantTradNoByDate(startOfDay, endOfDay);
+    	logger.severe("最新的訂單號碼LIST: " + merchantTradNoList);
     	
     	String latestMerchantTradNo;
     	if(merchantTradNoList.isEmpty()) {
     		latestMerchantTradNo = null;
     	}else {
     		latestMerchantTradNo = merchantTradNoList.get();
+    		logger.severe("最新的訂單號碼: " + latestMerchantTradNo);
     	}
     	
     	if(latestMerchantTradNo != null && latestMerchantTradNo.startsWith(latestPredixAndDate)) {

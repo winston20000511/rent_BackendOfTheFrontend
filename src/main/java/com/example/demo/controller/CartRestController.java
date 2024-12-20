@@ -3,11 +3,11 @@ package com.example.demo.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +23,7 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/api/cart")
 public class CartRestController {
 
+	private Logger logger = Logger.getLogger(CartRestController.class.getName());
 	private CartService cartService;
 	
 	public CartRestController(CartService cartService) {
@@ -37,9 +38,15 @@ public class CartRestController {
 	}
 	
 	@PostMapping("/list")
-	public List<CartItemBean> getCartItems(Long userId){
-		userId = 2599L; //測試資料
-		return cartService.findCartItemsByUserId(userId);
+	public List<CartItemBean> getCartItems(){
+		Long userId = 2599L; //測試資料
+		List<CartItemBean> cartItems = cartService.findCartItemsByUserId(userId);
+		if(cartItems == null) return null;
+		
+		for(CartItemBean cartItem : cartItems) {
+			logger.severe("購物車編號: " + cartItem.getCartId().toString());
+		}
+		return cartItems;
 	}
 	
 	// 新增購物車內容

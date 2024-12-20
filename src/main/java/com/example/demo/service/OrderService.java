@@ -125,9 +125,9 @@ public class OrderService {
 	 * @param paymentMethod
 	 * @return OrderResponseDTO 訂單詳細資料
 	 */
-	public OrderResponseDTO createOrder(Integer cartId, String paymentMethod) {
+	public OrderResponseDTO createOrder(Integer cartId, String choosePayment, String thirdParty) {
 
-		logger.severe("cartId: " + cartId + " payment method: " + paymentMethod);
+		logger.severe("cartId: " + cartId + " payment method: " + choosePayment);
 
 		// 關聯: user, ads
 		OrderBean newOrder = new OrderBean();
@@ -169,13 +169,14 @@ public class OrderService {
 			ad.setIsPaid(true);
 			ad.setOrderId(merchantTradNo);
 			ad.setPaidDate(date);
+			newOrder.setItemName(ad.getAdtype().getAdName());
 		}
 		adRepository.saveAll(ads);
 
 		// 應該要先0，有取得金流的確認回傳值才改成1
 		newOrder.setOrderStatus((short) 0);
 		newOrder.setTradeDesc("宣傳廣告");
-		newOrder.setChoosePayment(paymentMethod);
+		newOrder.setChoosePayment(choosePayment);
 		
 		// 我們自己生成checkMacValue
 		newOrder.setCheckMacValue("test");
@@ -185,13 +186,13 @@ public class OrderService {
 		OrderBean savedOrder = orderRepository.save(newOrder);
 
 		// 之後要修正：金流確認沒問題後才刪除購物車資料，否則保留
-		for (CartItemBean cartItem : cartItems) {
-			logger.severe("cart item cart id: " + cartItem.getCartId());
-			Long adId = cartItem.getAdId();
-			cartItemRepository.deleteByAdId(adId);
-			cartItemRepository.findById(adId).orElse(null);
-		}
-		cartRepository.deleteById(cartId);
+//		for (CartItemBean cartItem : cartItems) {
+//			logger.severe("cart item cart id: " + cartItem.getCartId());
+//			Long adId = cartItem.getAdId();
+//			cartItemRepository.deleteByAdId(adId);
+//			cartItemRepository.findById(adId).orElse(null);
+//		}
+//		cartRepository.deleteById(cartId);
 
 		OrderResponseDTO responseDTO = setOrderDetailsResponseDTO(savedOrder);
 		return responseDTO;

@@ -1,17 +1,11 @@
 package com.example.demo.controller;
 
-import java.util.Map;
-
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.helper.EcpayApiConfig;
-import com.example.demo.model.OrderBean;
 import com.example.demo.service.EcpayService;
 
 @RestController
@@ -34,6 +28,7 @@ public class EcpayRestController {
 	
 	@PostMapping("/ecpayCheckout")
 	public String ecpayCheckout(@RequestBody String merchantTradNo) {
+		System.out.println("訂單號碼: " + merchantTradNo);
 		String aioCheckOutALLForm = ecpayService.ecpayCheckout(merchantTradNo);	
 		return aioCheckOutALLForm;
 	}
@@ -47,7 +42,7 @@ public class EcpayRestController {
 //		String response = 驗證
 //		驗證後將資料庫order status 改為 1
 //		if(response是true) return OK; // 回傳OK給綠界
-		return null;
+		return "1|OK";
 	}
 	
 	

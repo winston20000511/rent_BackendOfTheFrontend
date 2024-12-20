@@ -23,13 +23,11 @@ import com.example.demo.service.SerialOrderNoService;
 public class OrderRestController {
 
 	private OrderService orderService;
-	private SerialOrderNoService serialNoService;
 	
 	
 	@Autowired
-	public OrderRestController(OrderService orderService, SerialOrderNoService serialNoService) {
+	public OrderRestController(OrderService orderService) {
 		this.orderService = orderService;
-		this.serialNoService = serialNoService;
 	}
 	
 //	// get orders by userId and pageNumber 測OK
@@ -82,12 +80,14 @@ public class OrderRestController {
 	@Transactional
 	public OrderResponseDTO createOrder(@RequestBody Map<String, String> param) {
 		Integer cartId = Integer.parseInt(param.get("cartId"));
-		String paymentMethod = param.get("paymentMethod");
-		return orderService.createOrder(cartId, paymentMethod);
+		String choosePayment = param.get("choosePayment");
+		String thirdParty = param.get("thirdParty");
+		return orderService.createOrder(cartId, choosePayment, thirdParty);
 	}
 	
 	@PostMapping("/merchantTradNo")
 	public OrderResponseDTO findOrderByMerchantTradNo(@RequestBody String merchantTradNo) {
+		System.out.println("要找的merchantTradNo: " +  merchantTradNo);
 		return orderService.findOrdersByMerchantTradNo(merchantTradNo);
 	}
 	
@@ -107,10 +107,6 @@ public class OrderRestController {
 		System.out.println("confirm page cart id: " + cartId);
 		return orderService.getOrderConfirmationResponseDTOsByCartId(cartId);
 	}
-	
-	@GetMapping("/generate")
-    public String generateSerialNumber() {
-        return "流水號: " + serialNoService.generateSerialNumber();
-    }
+
 	
 }

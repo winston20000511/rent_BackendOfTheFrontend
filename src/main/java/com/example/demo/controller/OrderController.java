@@ -41,9 +41,4 @@ public class OrderController {
 	    return response;
 	}
 	
-	@PostMapping("/complete")
-	public String complete() {
-		return "orderConfirmationCompletePage";
-	}
-	
 }

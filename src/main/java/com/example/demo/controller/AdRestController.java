@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,6 +26,7 @@ import com.example.demo.service.AdService;
 @RequestMapping("/advertisements")
 public class AdRestController {
 
+	private Logger logger = Logger.getLogger(AdRestController.class.getName());
 	private AdService adService;
 
 	@Autowired
@@ -39,8 +42,12 @@ public class AdRestController {
 
 	// 依條件篩選：用戶id + 付款狀態 + 上架時間
 	@PostMapping("/filter")
-	public Page<AdDetailsResponseDTO> filter(@RequestBody Map<String, String> conditions) {
+	public Page<AdDetailsResponseDTO> filter(
+			@RequestBody Map<String, String> conditions, @RequestHeader("authorization") String authorizationHeader) {
 		// {page=1, daterange=week, paymentstatus=paid}
+		
+		logger.severe("authorization header: " + authorizationHeader);
+		
 		System.out.println("conditions: " + conditions.toString());
 		Page<AdDetailsResponseDTO> pages= adService.findAdsByConditions(conditions);
 		
@@ -59,6 +66,7 @@ public class AdRestController {
 	// 取得廣告種類
 	@GetMapping("/adtypes")
 	public List<AdtypeBean> findAllAdtypes(){
+		System.out.println("有呼叫到adtypes");
 		return adService.findAllAdType();
 	}
 	
