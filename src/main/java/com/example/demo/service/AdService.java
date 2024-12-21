@@ -210,8 +210,20 @@ public class AdService {
 
 			LocalDateTime now = LocalDateTime.now();
 			LocalDateTime paidDate = ad.getPaidDate();
+			String adName = ad.getAdtype().getAdName();
+			String numericPart  = adName.replaceAll("\\D+","");
+			
+			int days = 0;
+			if(!numericPart.isEmpty()) {
+				days = Integer.parseInt(numericPart);
+				logger.info("天數: " + days);
+			}else {
+				logger.info("無法解析出數字");
+			}
+			
+			LocalDateTime expiryDate = paidDate.plusDays(days);
 			if (ad.getPaidDate() != null) {
-				Duration duration = Duration.between(now, paidDate);
+				Duration duration = Duration.between(now, expiryDate);
 				responseDTO.setRemainingDays(duration.toDays());
 			}
 
