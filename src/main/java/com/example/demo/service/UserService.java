@@ -1,8 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.HouseOwnerInfoDTO;
-import com.example.demo.dto.UserCenterDTO;
-import com.example.demo.dto.UserRegisterDTO;
+import com.example.demo.dto.*;
 import com.example.demo.helper.JwtUtil;
 import com.example.demo.model.UserTableBean;
 import com.example.demo.repository.UserRepository;
@@ -226,4 +224,99 @@ public class UserService {
 
         return userCenterDTO;
     }
+
+    /**
+     * 從 Token 中解析使用者資料並返回會員簡歷
+     *
+     * @param token JWT Token
+     * @return 包含會員名稱、郵件、電話與圖片的 DTO
+     */
+    @Transactional
+    public UserSimpleInfoDTO getUserSimpleInfo(String token) {
+        // 驗證並解析 JWT Token，取得 email
+        String email = JwtUtil.verify(token)[0];
+        if (email == null) {
+            throw new RuntimeException("無效的 Token"); // Token 無效則拋出例外
+        }
+
+        log.info("解析 Token 成功，email: {}", email);
+
+        // 根據 email 查詢使用者資料
+        Optional<UserTableBean> userOptional = Optional.ofNullable(userRepository.findByEmail(email));
+        if (userOptional.isEmpty()) {
+            log.warn("未找到對應的使用者資料，email: {}", email);
+            throw new RuntimeException("會員資料未找到");
+        }
+
+        UserTableBean user = userOptional.get();
+
+        // 將會員資料轉換為 DTO
+        UserSimpleInfoDTO userSimpleInfoDTO = new UserSimpleInfoDTO();
+        userSimpleInfoDTO.setName(user.getName());
+        userSimpleInfoDTO.setEmail(user.getEmail());
+        userSimpleInfoDTO.setPhone(user.getPhone());
+        userSimpleInfoDTO.setPicture(user.getPicture());
+
+        return userSimpleInfoDTO;
+    }
+
+    @Transactional
+    public UserCenterDTO updateUserProfile(String token, UserUpdateDTO updateRequest) {
+        // 驗證 JWT 並解析 Email
+        String email = JwtUtil.verify(token)[0];
+        if (email == null) {
+            throw new RuntimeException("無效的 Token");
+        }
+
+        log.info("解析 Token 成功，email: {}", email);
+
+        // 根據 Email 查詢使用者
+        UserTableBean user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("會員資料未找到");
+        }
+
+        // 驗證並更新資料
+        if (updateRequest.getName() != null) {
+            user.setName(updateRequest.getName());
+        }
+        if (updateRequest.getPhone() != null && !updateRequest.getPhone().equals(user.getPhone())) {
+            if (!isValidPhone(updateRequest.getPhone())) {
+                throw new RuntimeException("手機號碼格式不正確，應為 10 位數字");
+            }
+            if (userRepository.existsByPhone(updateRequest.getPhone())) {
+                throw new RuntimeException("手機號碼已被使用");
+            }
+            user.setPhone(updateRequest.getPhone());
+        }
+        if (updateRequest.getPassword() != null) {
+            user.setPassword(updateRequest.getPassword()); // 密碼可進一步加密處理
+        }
+        if (updateRequest.getGender() != null) {
+            user.setGender(updateRequest.getGender());
+        }
+        if (updateRequest.getPicture() != null) {
+            user.setPicture(updateRequest.getPicture());
+        }
+
+        // 儲存更新後的使用者
+        userRepository.save(user);
+
+        // 將更新後的資料轉換為 DTO 返回
+        UserCenterDTO userCenterDTO = new UserCenterDTO();
+        userCenterDTO.setUserId(user.getUserId());
+        userCenterDTO.setName(user.getName());
+        userCenterDTO.setEmail(user.getEmail());
+        userCenterDTO.setPhone(user.getPhone());
+        userCenterDTO.setPicture(user.getPicture());
+        userCenterDTO.setGender(user.getGender());
+        userCenterDTO.setCoupon(user.getCoupon());
+        userCenterDTO.setStatus(user.getStatus());
+        userCenterDTO.setCreateTime(user.getCreateTime());
+
+        log.info("會員資料更新成功，Email：{}", email);
+
+        return userCenterDTO;
+    }
+
 }
