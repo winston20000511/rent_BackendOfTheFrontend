@@ -1,12 +1,17 @@
 package com.example.demo.service;
 
 import java.util.Optional;
+import com.example.demo.dto.HouseOwnerInfoDTO;
+import com.example.demo.model.UserTableBean;
+import com.example.demo.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.model.UserTableBean;
 import com.example.demo.repository.UserRepository;
+import java.util.Base64;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -79,6 +84,5 @@ public class UserService {
     public UserTableBean getUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
-    
 
 }

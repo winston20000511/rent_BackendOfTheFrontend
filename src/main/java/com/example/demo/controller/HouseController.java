@@ -35,10 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.demo.dto.HouseDetailsDTO;
 import com.example.demo.dto.HouseListByUserIdDTO;
 import com.example.demo.dto.HouseOwnerInfoDTO;
-import com.example.demo.helper.JwtUtil;
 import com.example.demo.helper.SearchHelper;
-import com.example.demo.helper.UnTokenException;
-import com.example.demo.helper.UserUtil;
 import com.example.demo.model.CollectTableBean;
 import com.example.demo.model.ConditionTableBean;
 import com.example.demo.model.FurnitureTableBean;
@@ -51,8 +48,6 @@ import com.example.demo.repository.HouseRepository;
 import com.example.demo.service.CollectService;
 import com.example.demo.service.HouseService;
 import com.example.demo.service.UserService;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/houses")

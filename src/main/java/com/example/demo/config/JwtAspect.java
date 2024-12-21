@@ -82,7 +82,7 @@ public class JwtAspect {
             }
             // 檢查 Token 是否需要更新
             if (JwtUtil.isNeedUpdate(token)) {
-                String newToken = JwtUtil.sign(verify[0], Long.parseLong(verify[1]) );
+                String newToken = JwtUtil.sign(verify[0], Long.parseLong(verify[1]),verify[2] );//modify {,verify[2]} 
                 attributes.getResponse().setHeader(JwtUtil.TOKEN, newToken);
             }
         } else {

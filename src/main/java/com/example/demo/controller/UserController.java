@@ -28,8 +28,15 @@ public class UserController {
         UserTableBean user = userService.getUserByEmail(email);
         if (user != null && user.getPassword().equals(password)) {
             // 驗證成功，生成 JWT
-            String token = JwtUtil.sign(user.getEmail(),user.getUserId());
-            
+
+            /*
+             * add name
+             * String token = JwtUtil.sign(user.getEmail(),user.getUserId(), user.getName())
+             * response.put("name", user.getName());
+             */
+
+            String token = JwtUtil.sign(user.getEmail(), user.getUserId(), user.getName());
+
             // 返回 Token 和用戶基本資料
             Map<String, Object> response = new HashMap<>();
             response.put("token", token);
