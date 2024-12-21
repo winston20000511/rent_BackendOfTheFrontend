@@ -1,5 +1,7 @@
 package com.example.demo.repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -46,4 +48,6 @@ public interface UserRepository extends JpaRepository<UserTableBean, Long> {
     @Query("UPDATE UserTableBean u SET u.coupon = u.coupon - 1 WHERE u.userId = :userId AND u.coupon > 0")
     public int removeOneCoupon(Long userId);
     
+    @Query("FROM UserTableBean u WHERE u.createTime BETWEEN :currentDateStart AND :currentDateEnd")
+    public List<UserTableBean> findUsersByCreateTime(LocalDateTime currentDateStart, LocalDateTime currentDateEnd);
 }
