@@ -172,16 +172,15 @@ public class SearchService {
 		return houseList;
 	}
 	
-	public List<AddressDTO> getDurationAndDistance(List<AddressDTO> addressDtoList , AddressDTO origin) {
-		
-		//String encodedOrigin;
+	public List<AddressDTO> getDurationAndDistance(List<AddressDTO> addressDtoList , AddressDTO origin , int spec) {
+
 		List<AddressDTO> newAddressDtoList = new ArrayList<>();
 		
-		for(int i = 1 ; i < addressDtoList.size() ; i++) {
+		for(int i = 0 ; i < addressDtoList.size() ; i++) {
 			
 			Double distance = searchHelp.getDistance(origin, addressDtoList.get(i));
 			BigDecimal roundedValue = new BigDecimal(distance).setScale(5, RoundingMode.HALF_UP);
-			if (roundedValue.compareTo(BigDecimal.valueOf(2.0))< 0 && origin.getAddress() != addressDtoList.get(i).getAddress()) {
+			if (roundedValue.compareTo(BigDecimal.valueOf(spec))< 0 && origin.getAddress() != addressDtoList.get(i).getAddress()) {
 				newAddressDtoList.add(addressDtoList.get(i));
 			}
 		}
@@ -189,26 +188,89 @@ public class SearchService {
 		return newAddressDtoList;
 
 	}
-	
-	public void getPlaceGoogleAPI(List<DrawLatLngDTO> drawDtoList) {
+
+//	public List<AddressDTO> getDrawDistance(List<AddressDTO> addressDtoList , AddressDTO origin , int[] spec) {
+//
+//		List<AddressDTO> newAddressDtoList = new ArrayList<>();
+//
+//		for(int i = 0 ; i < addressDtoList.size() ; i++) {
+//
+//			if (searchHelp.getOvalRotationAngle(origin,addressDtoList.get(i),spec[0],spec[1],45) &&
+//					!origin.getAddress().equals(addressDtoList.get(i).getAddress())){
+//				newAddressDtoList.add(addressDtoList.get(i));
+//
+//			}
+//		}
+//
+//		return newAddressDtoList;
+//
+//	}
+
+	public List<AddressDTO> getDrawDistance(List<AddressDTO> addressDtoList , AddressDTO origin , List<DrawLatLngDTO> drawDtoList) {
+
+		List<AddressDTO> newAddressDtoList = new ArrayList<>();
+
+		for(int i = 0 ; i < addressDtoList.size() ; i++) {
+
+			if (searchHelp.isPointInPolygon(addressDtoList.get(i).getLat()
+					,addressDtoList.get(i).getLng(), drawDtoList) &&
+					!origin.getAddress().equals(addressDtoList.get(i).getAddress())){
+				newAddressDtoList.add(addressDtoList.get(i));
+
+			}
+		}
+
+		return newAddressDtoList;
+
+	}
+
+//	public int[] getMinAndMaxRadius(List<DrawLatLngDTO> drawDtoList , AddressDTO origin){
+//		BigDecimal distanceMax = BigDecimal.ZERO;
+//		BigDecimal distanceMin = new BigDecimal(Double.MAX_VALUE);
+//		for(int i = 1 ; i < drawDtoList.size() ; i++) {
+//			Double distance = searchHelp.getDistance(
+//					new DrawLatLngDTO(origin.getLat(),origin.getLng())
+//					, drawDtoList.get(i)
+//			);
+//
+//			if (BigDecimal.valueOf(distance).compareTo(distanceMax) > 0){
+//				distanceMax = BigDecimal.valueOf(distance);
+//			}
+//			if (BigDecimal.valueOf(distance).compareTo(distanceMin) < 0){
+//				distanceMin = BigDecimal.valueOf(distance);
+//			}
+//
+//		}
+//
+//		return new int[]{distanceMax.intValue(),distanceMin.intValue()};
+//	}
+
+
+	public ResponseMapPOJO getPlaceGoogleAPI(List<DrawLatLngDTO> drawDtoList) throws JSONException, IOException {
 		
 		String address="";
-		try {
-			DrawLatLngDTO drawDTO = searchHelp.getAvgLatLng(drawDtoList);
-			JSONObject json =  searchHelp.fetchReverseGeocodingFromAPI(drawDTO);
-			Optional<String> optionAddress = searchHelp.parseAddress(json);
-			if (optionAddress.isPresent()) {
-				address = optionAddress.get();
-			}
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		AddressDTO origin = new AddressDTO();
+
+		DrawLatLngDTO drawDTO = searchHelp.getAvgLatLng(drawDtoList);
+		JSONObject json =  searchHelp.fetchReverseGeocodingFromAPI(drawDTO);
+		Optional<String> optionAddress = searchHelp.parseAddress(json);
+		if (optionAddress.isPresent()) {
+			address = optionAddress.get();
+
 		}
-		
+		origin.setAddress(address);
+		origin.setLat(drawDTO.getLat());
+		origin.setLng(drawDTO.getLng());
+
+		String[] Parts = searchHelp.splitCityTown(address);
+		HashSet<AddressDTO> setAddressDTO = searchRepo.findByCityAndTownship(Parts[0]);
+		Integer placeAvgPrice = searchHelp.getPlaceAvgPrice(setAddressDTO);
+
+		origin.setPrice(placeAvgPrice);
+		setAddressDTO.add(origin);
+		List<AddressDTO> listAddressDTO = new ArrayList<>(setAddressDTO);
+		return new ResponseMapPOJO(listAddressDTO,origin,placeAvgPrice);
+
 	}
 	
 	
