@@ -7,17 +7,22 @@ import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.AddressDTO;
+import com.example.demo.dto.DrawLatLngDTO;
 import com.example.demo.helper.GoogleApiConfig;
 import com.example.demo.helper.SearchHelper;
 import com.example.demo.model.HouseTableBean;
+import com.example.demo.pojo.ResponseMapPOJO;
 import com.example.demo.repository.SearchRepository;
 
 
@@ -29,16 +34,19 @@ public class SearchService {
 	private SearchRepository searchRepo;
 	
 	@Autowired
-	private GoogleApiConfig googleApiConfig;
+	private SearchHelper searchHelp;
 	
 	public List<HouseTableBean> findAll() {
 		return searchRepo.findAll();
 	}
 
-	public List<AddressDTO> findByCityAndTownship(String address){
-		
-		String[] Parts = SearchHelper.splitCityTown(address);
-		return searchRepo.findByCityAndTownship(Parts[0]);
+	public ResponseMapPOJO findByCityAndTownship(AddressDTO origin){
+		String[] Parts = searchHelp.splitCityTown(origin.getAddress());
+		HashSet<AddressDTO> setAddressDTO = searchRepo.findByCityAndTownship(Parts[0]);
+		Integer placeAvgPrice = searchHelp.getPlaceAvgPrice(setAddressDTO);
+		setAddressDTO.add(origin);
+		List<AddressDTO> listAddressDTO = new ArrayList<>(setAddressDTO);
+		return new ResponseMapPOJO(listAddressDTO,origin,placeAvgPrice);
 	}
 	
 	public List<AddressDTO> findByKeyWord(String name){
@@ -54,7 +62,7 @@ public class SearchService {
 	
 	public List<HouseTableBean> updateFakeAddress(String filePath,List<HouseTableBean> houseList){
 		
-		List<String> lists = SearchHelper.openfileRead(filePath);
+		List<String> lists = searchHelp.openfileRead(filePath);
 		
 		for (int i = 0; i < houseList.size(); i++) {
 			
@@ -64,40 +72,15 @@ public class SearchService {
 		return houseList;
 	}
 	
-	public AddressDTO placeConvertToAdress(String origin) {
+	public double[] placeToLagLngForRegister(String registerAddress) {
+		double[] location = new double[2];
 		
-		String encodedAddress;
-		AddressDTO adress = new AddressDTO();
 		try {
-			encodedAddress = java.net.URLEncoder.encode(origin,"UTF-8");
-			String urlString = "https://maps.googleapis.com/maps/api/geocode/json?address=" 
-	                + encodedAddress + "&components=country:TW&bounds=21.5,119.5|25.5,122.5&language=zh-TW&key=" + googleApiConfig.getGoogleMapKey();
-			StringBuilder content = SearchHelper.urlConnection(urlString);
-			
-			JSONObject json = new JSONObject(content.toString());
-			if("OK".equals(json.getString("status"))) {
-				JSONObject location = json.getJSONArray("results")
-										.getJSONObject(0);
-										
-				String address = location.getString("formatted_address");
-				if (address.length()<=2 ) {
-					address = "";
-				}
-				else if (address.indexOf("台灣") > -1 && address.indexOf("台灣大道") == -1) {
-					address = address.split("台灣")[1];
-				}
-				
-				adress.setAddress(address);
-				
-				location = json.getJSONArray("results")
-						.getJSONObject(0)
-						.getJSONObject("geometry")
-						.getJSONObject("location");
-				
-				adress.setLat(location.getDouble("lat"));
-				adress.setLng(location.getDouble("lng"));
-				
-			}
+			JSONObject json = searchHelp.fetchGeocodeFromAPI(registerAddress);
+			searchHelp.parseLatLng(json).ifPresent(latlng ->{
+				location[0] = latlng[0];
+				location[1] = latlng[1];
+			});
 			
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
@@ -109,7 +92,46 @@ public class SearchService {
 			e.printStackTrace();
 		}
 		
-		return adress;
+		return location;
+		
+	}
+	
+	public AddressDTO placeConvertToAdress(String origin) {
+		
+		String address="";
+		AddressDTO addressDTO = new AddressDTO();
+		try {
+
+			JSONObject json = searchHelp.fetchGeocodeFromAPI(origin);
+			Optional<String> optionAddress = searchHelp.parseAddress(json);
+			if (optionAddress.isPresent()) {
+				address = optionAddress.get();
+			}
+
+			if (address.length()<=2 ) {
+				address = "";
+			}
+			else if (address.indexOf("台灣") > -1 && address.indexOf("台灣大道") == -1) {
+				address = address.split("台灣")[1];
+			}
+			addressDTO.setAddress(address);
+			
+			searchHelp.parseLatLng(json).ifPresent(latlng ->{
+				addressDTO.setLat(latlng[0]);
+				addressDTO.setLng(latlng[1]);
+			});
+			
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return addressDTO;
 		
 	}
 	
@@ -119,26 +141,12 @@ public class SearchService {
 			if (p.getLat() == null) {
 				
 				try {
-					String encodedAddress = java.net.URLEncoder.encode(p.getAddress(),"UTF-8");
-					String urlString = "https://maps.googleapis.com/maps/api/geocode/json?address=" 
-	                        + encodedAddress + "&key=" + googleApiConfig.getGoogleMapKey();
-
-					StringBuilder content = SearchHelper.urlConnection(urlString);
-					
-					JSONObject json = new JSONObject(content.toString());
-					if("OK".equals(json.getString("status"))) {
-						JSONObject location = json.getJSONArray("results")
-												.getJSONObject(0)
-												.getJSONObject("geometry")
-												.getJSONObject("location");
-						
-						p.setLat(location.getDouble("lat"));
-						p.setLng(location.getDouble("lng"));
-					}else {
-						System.out.println("無法獲取經緯度資料，狀態：" + json.getString("status"));
-					}
-					
-					
+					JSONObject json = searchHelp.fetchGeocodeFromAPI(p.getAddress());
+                    searchHelp.parseLatLng(json).ifPresent(latlng -> {
+                        p.setLat(latlng[0]);
+                        p.setLng(latlng[1]);
+                    });
+					Thread.sleep(100);
 				} catch (UnsupportedEncodingException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -151,6 +159,9 @@ public class SearchService {
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}	
 				
 			}
@@ -161,22 +172,43 @@ public class SearchService {
 		return houseList;
 	}
 	
-	public List<AddressDTO> GetDurationAndDistance(List<AddressDTO> addressDtoList) {
+	public List<AddressDTO> getDurationAndDistance(List<AddressDTO> addressDtoList , AddressDTO origin) {
 		
 		//String encodedOrigin;
 		List<AddressDTO> newAddressDtoList = new ArrayList<>();
 		
 		for(int i = 1 ; i < addressDtoList.size() ; i++) {
 			
-			Double distance = SearchHelper.getDistance(addressDtoList.get(0), addressDtoList.get(i));
+			Double distance = searchHelp.getDistance(origin, addressDtoList.get(i));
 			BigDecimal roundedValue = new BigDecimal(distance).setScale(5, RoundingMode.HALF_UP);
-			if (roundedValue.compareTo(BigDecimal.valueOf(2.0))< 0) {
+			if (roundedValue.compareTo(BigDecimal.valueOf(2.0))< 0 && origin.getAddress() != addressDtoList.get(i).getAddress()) {
 				newAddressDtoList.add(addressDtoList.get(i));
 			}
 		}
 		
 		return newAddressDtoList;
 
+	}
+	
+	public void getPlaceGoogleAPI(List<DrawLatLngDTO> drawDtoList) {
+		
+		String address="";
+		try {
+			DrawLatLngDTO drawDTO = searchHelp.getAvgLatLng(drawDtoList);
+			JSONObject json =  searchHelp.fetchReverseGeocodingFromAPI(drawDTO);
+			Optional<String> optionAddress = searchHelp.parseAddress(json);
+			if (optionAddress.isPresent()) {
+				address = optionAddress.get();
+			}
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	

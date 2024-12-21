@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.model.AdBean;
 import com.example.demo.model.CartBean;
@@ -15,13 +16,15 @@ import com.example.demo.repository.CartRepository;
 
 @Service
 public class CartService {
-	@Autowired
+	
 	private CartRepository cartRepository;
-	@Autowired
 	private CartItemRepository cartItemRepository;
-	@Autowired
 	private AdRepository adRepository;
 	
+	public CartService() {
+    }
+	
+	@Autowired
 	private CartService(CartRepository cartRepository, CartItemRepository cartItemRepository, AdRepository adRepository) {
 		this.cartRepository = cartRepository;
 		this.cartItemRepository = cartItemRepository;
@@ -42,6 +45,8 @@ public class CartService {
 	// 取得購物車內容
 	public List<CartItemBean> findCartItemsByUserId(Long userId){
 		CartBean cart = cartRepository.findCartByUserId(userId);
+		if(cart == null) return null;
+		
 		return cart.getCartItems();
 	}
 	
@@ -106,20 +111,26 @@ public class CartService {
 		}
 	}
 	
-	
+	@Transactional
 	public boolean deleteCartItem(Long adId, Long userId) {
 		
 		// 查詢該用戶的購物車
+		System.out.println("userId: " + userId);
 		CartBean cart = cartRepository.findCartByUserId(userId);
-	    if (cart == null) return false;
+		if (cart == null) return false;
+		System.out.println("user id: " + userId + " get cart id: " + cart.getCartId());
 	    
 		// 查詢購物車中的項目
 	    Optional<CartItemBean> optional = cartItemRepository.findByAdIdAndCartId(adId, cart.getCartId());
 		if(optional.isEmpty()) {
 			return false;
 		}
+		
+		System.out.println(optional.get().getAdId());
 	    
-		cartItemRepository.delete(optional.get());
+		if (optional.isPresent()) {
+	        cartItemRepository.deleteByAdId(adId);
+	    }
 		
 		Optional<CartItemBean> deletedCartItem = cartItemRepository.findByAdIdAndCartId(adId, cart.getCartId());
 	    if (deletedCartItem.isEmpty()) {

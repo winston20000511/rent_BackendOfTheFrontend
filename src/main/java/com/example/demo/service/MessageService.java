@@ -105,10 +105,12 @@ public class MessageService {
 	        .collect(Collectors.toList());
 	}
 
-	
+	//save??
     // query MSG from last time check
-    public List<MessageDTO> getNewMessagesBetweenUsers(Long currentUserId, Long targetUserId, LocalDateTime lastChecked) {
-        List<MessageBean> messages = messageRepository.findMessagesBetweenUsersAfter(currentUserId, targetUserId, lastChecked);
+    public List<MessageDTO> getNewMessagesBetweenUsers(
+    		Long currentUserId, Long targetUserId, LocalDateTime lastChecked) {
+        List<MessageBean> messages = messageRepository.findMessagesBetweenUsersAfter
+        		(currentUserId, targetUserId, lastChecked);
         return messages.stream()
             .map(msg -> new MessageDTO(
                 msg.getSender().getName(),
@@ -135,10 +137,11 @@ public class MessageService {
 //	}
 	
 	
-	//save
+	//save check
 	//get currentuser List param 
-	public List<Object[]> findChatUsers(Long currentUserId2) {
-		Long currentUserId = (long) 51;
+	public List<Object[]> findChatUsers(Long currentUserId) {
+//		Long currentUserId = (long) 51;
+		System.out.println("currentUserId" + currentUserId);
 		List<Object[]> messages = messageRepository.findChatUserDetails(currentUserId);
 		return messages;
 	}

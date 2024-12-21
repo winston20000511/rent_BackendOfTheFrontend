@@ -13,7 +13,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -46,44 +45,27 @@ public class UserTableBean {
     private Byte coupon;
     @Column(name = "status")
     private Byte status;
-    
-    
-    @PrePersist
-    protected void onCreate() {
-        if (this.createTime == null) {
-            this.createTime = LocalDateTime.now(); 
-        }
-        if (this.coupon == null) {
-            this.coupon = 3; 
-        }
-        if (this.status == null) {
-            this.status = 1; 
-        }
-    }
-    
-    
-//    house
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JsonIgnore
     private List<HouseTableBean> houses;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<HouseImageTableBean> images;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<CollectTableBean> collect;
     
-//    bookings
     @OneToMany(mappedBy = "rentUser", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JsonIgnore
     private List<BookingBean> bookings;
     
-//    ad
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<HouseImageTableBean> images;
+    
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<CollectTableBean> collect;
+    
+
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     @JsonIgnore 
     private List<AdBean> ads;
-    
-//    order
+     
      @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
      @JsonIgnore
      private List<OrderBean> orders;
