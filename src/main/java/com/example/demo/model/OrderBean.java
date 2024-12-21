@@ -16,18 +16,17 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 @NoArgsConstructor
 @Getter
 @Setter
 @Entity
+@ToString
 @Table(name = "orders_table")
 public class OrderBean {
 	
 	@Column(name = "user_id")
 	private Long userId;
-	
-	@Column(name = "merchant_id")
-	private String merchantId;
 	
 	@Id
 	@Column(name = "merchantTradNo")

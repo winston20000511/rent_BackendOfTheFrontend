@@ -5,15 +5,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.helper.JwtUtil;
 import com.example.demo.model.CartItemBean;
 import com.example.demo.service.CartService;
 
@@ -30,68 +32,75 @@ public class CartRestController {
 		this.cartService = cartService;
 	}
 	
-	@GetMapping("/ads")
-	public ResponseEntity<List<Long>> getCartItemIds(Long userId){
-		userId = 4492L; //測試資料
-		List<Long> addedAdIds = cartService.getCartItems(userId);
-		return ResponseEntity.ok(addedAdIds);
-	}
-	
 	@PostMapping("/list")
-	public List<CartItemBean> getCartItems(){
-		Long userId = 4492L; //測試資料
+	public List<CartItemBean> getCartItems(@RequestHeader("authorization") String authorizationHeader){
+		
+		String[] userInfo = JwtUtil.verify(authorizationHeader);
+		Long userId = Long.parseLong(userInfo[1]);
+
 		List<CartItemBean> cartItems = cartService.findCartItemsByUserId(userId);
+		logger.severe("購物車內容: " + cartItems);
 		if(cartItems == null) return null;
 		
 		for(CartItemBean cartItem : cartItems) {
 			logger.severe("購物車編號: " + cartItem.getCartId().toString());
 		}
+		
 		return cartItems;
 	}
 	
-	// 新增購物車內容
-	@PostMapping("/additem")
-	public boolean addToCart(@RequestBody Long adId) {
-		// ad id(直接取當前資料庫儲存的資料), cart id, user id(HTTP)
-		Long userId = 4492L; // 測試資料
-		System.out.println("ad id: " + adId + " user id: " + userId);
-		System.out.println("獲得的商品: " + cartService.addToCart(adId, userId));
-		return cartService.addToCart(adId, userId);
-	}
-	
-	// 接收客戶點選付款後，帶入的購物車內容
-	@GetMapping("/getcartcontent")
-	@ResponseBody
-	public Map<String, String> getCartParamForOrder(HttpSession session){
-		String paymentMethod = (String) session.getAttribute("paymentMethod");
-		String cartId = (String) session.getAttribute("cartId");
-		Map<String, String> response = new HashMap<>();
-		response.put("paymentMethod", paymentMethod != null? paymentMethod : "no method selected");
-		response.put("cartId", cartId != null? cartId : "no cartId");
+	@PostMapping("/add/item")
+	public boolean addToCart(
+			@RequestBody Long adId, @RequestHeader("authorization") String authorizationHeader) {
 		
-		return response;
+		String[] userInfo = JwtUtil.verify(authorizationHeader);
+		Long userId = Long.parseLong(userInfo[1]);
+		
+		return cartService.addToCart(userId, adId);
 	}
 	
-	// 刪除購物車內容物
-	@DeleteMapping("/deleteitem")
-	public boolean deleteCartItem(@RequestBody Long adId) {
-		Long userId = 4492L; //測試資料
-		return cartService.deleteCartItem(adId, userId);
+	@Transactional
+	@DeleteMapping("/delete/item")
+	public boolean deleteCartItem(
+			@RequestBody Long adId, @RequestHeader("authorization") String authorizationHeader) {
+		
+		String[] userInfo = JwtUtil.verify(authorizationHeader);
+		Long userId = Long.parseLong(userInfo[1]);
+		
+		return cartService.deleteCartItem(userId, adId);
 	}
 	
-	// 刪除購物車
-	// 1. 使用者自行清空  2. 使用者送出訂單 3. 時間到清空
+	// 1. 金流驗證沒問題 2. 時間到清空
+	@Transactional
 	@DeleteMapping()
-	public boolean deleteCart(@RequestBody Integer cartId) {
-		return cartService.deleteCart(cartId);
+	public boolean deleteCart(
+			@RequestBody Integer cartId, @RequestHeader("authorization") String authorizationHeader) {
+		
+		String[] userInfo = JwtUtil.verify(authorizationHeader);
+		Long userId = Long.parseLong(userInfo[1]);
+		
+		return cartService.deleteCart(userId, cartId);
 	}
 
 	
 	@GetMapping("/coupon")
-	public Byte getUserCouponNumber() {
-		Long userId = 4299L; //測試資料
+	public Byte getUserCouponNumber(@RequestHeader("authorization") String authorizationHeader) {
+		
+		String[] userInfo = JwtUtil.verify(authorizationHeader);
+		Long userId = Long.parseLong(userInfo[1]);
+		
 		return cartService.getUserCouponNumber(userId);
 	}
+	
+//	@DeleteMapping("/coupon/remove")
+//	public boolean removeOneCoupon(@RequestHeader("authorization") String authorizationHeader) {
+//		
+//		String[] userInfo = JwtUtil.verify(authorizationHeader);
+//		Long userId = Long.parseLong(userInfo[1]);
+//		
+//		return cartService.removeOneCoupon(userId);
+//		
+//	}
 	
 
 }

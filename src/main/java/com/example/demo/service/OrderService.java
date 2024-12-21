@@ -1,11 +1,16 @@
 package com.example.demo.service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +23,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.OrderConfirmationResponseDTO;
+import com.example.demo.dto.OrderCreationRequestDTO;
 import com.example.demo.dto.OrderResponseDTO;
 import com.example.demo.model.AdBean;
 import com.example.demo.model.CartBean;
@@ -59,13 +65,12 @@ public class OrderService {
 	/**
 	 * 以前端送入的篩選條件搜尋訂單資料
 	 * 
-	 * @param conditions: daterange, status, inputcondition, userInput
-	 * @return Page<OrderResponseDTO> 訂單資料
+	 * @return Page<OrderResponseDTO>
 	 */
-	public Page<OrderResponseDTO> findOrdersByConditions(Map<String, String> conditions) {
-		Integer pageNumber = Integer.parseInt(conditions.get("page"));
+	public Page<OrderResponseDTO> findOrdersByConditions(
+			Long userId, Integer pageNumber, String orderStatus, String dateRange, String inputCondition, String userInput) {
 
-		Specification<OrderBean> spec = OrderSpecification.filter(conditions);
+		Specification<OrderBean> spec = OrderSpecification.filter(userId, pageNumber, orderStatus, dateRange, inputCondition, userInput);
 
 		Pageable pageable = PageRequest.of(pageNumber - 1, 10, Sort.Direction.DESC, "merchantTradNo");
 		Page<OrderBean> page = orderRepository.findAll(spec, pageable);
@@ -125,74 +130,81 @@ public class OrderService {
 	 * @param paymentMethod
 	 * @return OrderResponseDTO 訂單詳細資料
 	 */
-	public OrderResponseDTO createOrder(Integer cartId, String choosePayment, String thirdParty) {
+	public OrderResponseDTO createOrder(Long userId, OrderCreationRequestDTO requestDTO) {
+	    logger.info(requestDTO.toString());
 
-		logger.severe("cartId: " + cartId + " payment method: " + choosePayment);
+	    // 檢驗該cart是該user的
+	    CartBean cart = cartRepository.findById(requestDTO.getCartId()).orElse(null);
+	    if (cart == null || !Objects.equals(cart.getUserId(), userId)) {
+	        return null;
+	    }
 
-		// 關聯: user, ads
-		OrderBean newOrder = new OrderBean();
+	    OrderBean newOrder = new OrderBean();
 
-		// 得到cart的內容
-		List<CartItemBean> cartItems = cartItemRepository.findByCartId(cartId);
-		List<Long> adIds = new ArrayList<>();
-		Long totalAmount = 0L;
-		for (CartItemBean cartItem : cartItems) {
-			adIds.add(cartItem.getAdId());
-			totalAmount += cartItem.getAdPrice();
-		}
-		logger.severe("adIds: " + adIds);
-		logger.severe("totalAmount: " + totalAmount);
-		newOrder.setTotalAmount(totalAmount);
+	    List<CartItemBean> cartItems = cartItemRepository.findByCartId(requestDTO.getCartId());
+	    Set<Long> appliedAdIds = new HashSet<>(requestDTO.getCouponApplied());
 
-		// user id: 確定http的參數名稱
-		CartBean cart = cartRepository.findById(cartId).get();
-		// newOrder.setUserId(Long.parseInt(httpSession.getAttribute("userId")));
-		Long userId = cart.getUserId();
-		newOrder.setUserId(userId);
+	    // 計算總金額並更新商品價格
+	    Long totalAmount = 0L;
+	    List<Long> adIds = new ArrayList<>();
+	    for (CartItemBean cartItem : cartItems) {
+	        adIds.add(cartItem.getAdId());
+	    }
+	    
+	    List<AdBean> ads = adRepository.findAllById(adIds);
 
-		// user: 用id找到user 加入
-		UserTableBean user = userRepository.findById(userId).get();
-		newOrder.setUser(user);
+	    // 更新商品價格並計算總金額
+	    for (AdBean ad : ads) {
+	        boolean isCouponApplied = appliedAdIds.contains(ad.getAdId());
+	        int discount = isCouponApplied ? calculateDiscount(ad.getAdPrice()) : 0;
+	        totalAmount += ad.getAdPrice() - discount;
 
-		// merchantTradNo: 生成訂單號碼
-		String merchantTradNo = serialNoService.generateSerialNumber();
-		newOrder.setMerchantTradNo(merchantTradNo);
+	        ad.setAdPrice(ad.getAdPrice() - discount);
+	        ad.setIsCouponUsed(isCouponApplied ? 1 : 0);
+	        ad.setIsPaid(true);
+	        ad.setOrderId(newOrder.getMerchantTradNo());
+	        ad.setPaidDate(newOrder.getMerchantTradDate());
 
-		// merchantTradDate
-		LocalDateTime date = LocalDateTime.now();
-		newOrder.setMerchantTradDate(date);
+	        if (isCouponApplied) {
+	            ad.setAdPrice(ad.getAdPrice() - discount);
+	        }
 
-		// totalAmount
-		List<AdBean> ads = adRepository.findAllById(adIds);
-		for (AdBean ad : ads) {
-			logger.severe("ad price: " + ad.getAdPrice());
-			ad.setIsPaid(true);
-			ad.setOrderId(merchantTradNo);
-			ad.setPaidDate(date);
-			newOrder.setItemName(ad.getAdtype().getAdName());
-		}
-		adRepository.saveAll(ads);
+	        newOrder.setItemName(ad.getAdtype().getAdName());
+	    }
 
-		// 應該要先0，有取得金流的確認回傳值才改成1
-		newOrder.setOrderStatus((short) 0);
-		newOrder.setTradeDesc("宣傳廣告");
-		newOrder.setChoosePayment(choosePayment);
-		
-		newOrder.setAds(ads);
+	    adRepository.saveAll(ads);
 
-		OrderBean savedOrder = orderRepository.save(newOrder);
+	    newOrder.setTotalAmount(totalAmount);
+	    newOrder.setUserId(userId);
+	    UserTableBean user = userRepository.findById(userId).orElse(null);
+	    if (user == null) return null;
+	    
+	    newOrder.setUser(user);
 
-		// 之後要修正：金流確認沒問題後才刪除購物車資料，否則保留
-//		for (CartItemBean cartItem : cartItems) {
-//			logger.severe("cart item cart id: " + cartItem.getCartId());
-//			Long adId = cartItem.getAdId();
-//			cartItemRepository.deleteByAdId(adId);
-//			cartItemRepository.findById(adId).orElse(null);
-//		}
-//		cartRepository.deleteById(cartId);
+	    String merchantTradNo = serialNoService.generateSerialNumber();
+	    LocalDateTime date = LocalDateTime.now();
+	    newOrder.setMerchantTradNo(merchantTradNo);
+	    newOrder.setMerchantTradDate(date);
 
-		OrderResponseDTO responseDTO = setOrderDetailsResponseDTO(savedOrder);
-		return responseDTO;
+	    newOrder.setOrderStatus((short) 0);
+	    newOrder.setTradeDesc("宣傳廣告");
+	    newOrder.setChoosePayment(requestDTO.getChoosePayment());
+	    newOrder.setThirdParty(requestDTO.getThirdParty());
+	    newOrder.setAds(ads);
+
+	    OrderBean savedOrder = orderRepository.save(newOrder);
+	    
+	    // 檢驗有沒有去掉
+	    userRepository.removeOneCoupon(userId);
+
+	    OrderResponseDTO responseDTO = setOrderDetailsResponseDTO(savedOrder);
+	    return responseDTO;
+	}
+	
+	private int calculateDiscount(int adPrice) {
+	    BigDecimal discount = new BigDecimal(adPrice * 0.1);
+	    BigDecimal discountInt = discount.setScale(0, RoundingMode.DOWN);  // 無條件捨去
+	    return discountInt.intValue();
 	}
 
 	/**

@@ -88,7 +88,7 @@ public class SerialOrderNoService {
     	
     	scheduledFuture = scheduler.scheduleAtFixedRate(() -> {
     		serialNoUtil.resetCounter(counter);  // 重置計數器
-            System.out.println("計數器已重置，當前值: " + counter);
+    		logger.info("計數器已重置，當前值: " + counter);
         }, initialDelay, Duration.ofDays(1));  // 每 24 小時確保重置一次，從零點開始
     }
     
@@ -96,11 +96,11 @@ public class SerialOrderNoService {
      * Spring Annotation 的實現方法，效果同手動設置的 scheduleMidnightReset()
      * 需要在 main 方法的類別上加上 @EnableScheduling 以啟用定時任務
      */
-    @Scheduled(cron="0 0 0 * * *")
-    public void resetCounter() {
-    	serialNoUtil.resetCounter(counter);
-    	logger.severe("計數器已重置，當前值: " + counter);
-    }
+//    @Scheduled(cron="0 0 0 * * *")
+//    public void resetCounter() {
+//    	serialNoUtil.resetCounter(counter);
+//    	logger.info("計數器已重置，當前值: " + counter);
+//    }
     
     
     /**

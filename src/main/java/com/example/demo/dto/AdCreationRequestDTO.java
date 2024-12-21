@@ -1,9 +1,10 @@
 package com.example.demo.dto;
 
+import lombok.Data;
+
+@Data
 public class AdCreationRequestDTO {
 
-	private Long userId;
-	
 	private Long houseId;
 	
 	private Integer adtypeId;
@@ -12,34 +13,8 @@ public class AdCreationRequestDTO {
 
 	}
 	
-	public AdCreationRequestDTO(Long userId, Long houseId, Integer adtypeId) {
-
-		this.userId = userId;
+	public AdCreationRequestDTO(Long houseId, Integer adtypeId) {
 		this.houseId = houseId;
-		this.adtypeId = adtypeId;
-	}
-
-	public Long getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
-
-	public Long getHouseId() {
-		return houseId;
-	}
-
-	public void setHouseId(Long houseId) {
-		this.houseId = houseId;
-	}
-
-	public Integer getAdtypeId() {
-		return adtypeId;
-	}
-
-	public void setAdtypeId(Integer adtypeId) {
 		this.adtypeId = adtypeId;
 	}
 

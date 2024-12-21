@@ -21,7 +21,7 @@ import java.util.*;
 public class JwtAspect {
 
     // 定義不需要 JWT 驗證的路徑集合
-	private static final Set<String> EXCLUDED_URIS = new HashSet<>();
+    private static final Set<String> EXCLUDED_URIS = new HashSet<>();
 
     static {
         EXCLUDED_URIS.add("/api/user/login");    // 登入頁面
@@ -70,13 +70,16 @@ public class JwtAspect {
 
         // 驗證 Token 是否存在
         if (token != null) {
-            String userName = JwtUtil.verify(token);
-            if (userName == null) {
+            String[] jwt = JwtUtil.verify(token);
+            String userEmail = jwt[0];
+            Long userId = Long.parseLong(jwt[1]);
+
+            if (userEmail == null) {
                 throw new UnTokenException("無效的 Token，請重新登入。");
             }
             // 檢查 Token 是否需要更新
             if (JwtUtil.isNeedUpdate(token)) {
-                String newToken = JwtUtil.sign(userName);
+                String newToken = JwtUtil.sign(userEmail,userId);
                 attributes.getResponse().setHeader(JwtUtil.TOKEN, newToken);
             }
         } else {
