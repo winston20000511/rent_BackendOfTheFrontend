@@ -44,6 +44,6 @@ public interface UserRepository extends JpaRepository<UserTableBean, Long> {
     
     @Modifying
     @Query("UPDATE UserTableBean u SET u.coupon = u.coupon - 1 WHERE u.userId = :userId AND u.coupon > 0")
-    public boolean removeOneCoupon(Long userId);
+    public int removeOneCoupon(Long userId);
     
 }

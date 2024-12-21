@@ -25,6 +25,4 @@ public interface AdRepository extends JpaRepository<AdBean, Long>{
 
 	public Page<AdBean> findAll(Specification<AdBean> spec, Pageable pageable);
 	
-	
-
 }

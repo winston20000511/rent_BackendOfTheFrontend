@@ -7,13 +7,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -50,7 +48,6 @@ public class OrderService {
 
 	private SerialOrderNoService serialNoService;
 
-	@Autowired
 	public OrderService(OrderRepository orderRepository, AdRepository adRepository, CartRepository cartRepository,
 			CartItemRepository cartItemRepository, UserRepository userRepository,
 			SerialOrderNoService serialNoService) {
@@ -140,6 +137,16 @@ public class OrderService {
 	    }
 
 	    OrderBean newOrder = new OrderBean();
+	    
+	    String merchantTradNo = serialNoService.generateSerialNumber();
+	    LocalDateTime date = LocalDateTime.now();
+	    newOrder.setMerchantTradNo(merchantTradNo);
+	    newOrder.setMerchantTradDate(date);
+
+	    newOrder.setOrderStatus((short) 0);
+	    newOrder.setTradeDesc("宣傳廣告");
+	    newOrder.setChoosePayment(requestDTO.getChoosePayment());
+	    newOrder.setThirdParty(requestDTO.getThirdParty());
 
 	    List<CartItemBean> cartItems = cartItemRepository.findByCartId(requestDTO.getCartId());
 	    Set<Long> appliedAdIds = new HashSet<>(requestDTO.getCouponApplied());
@@ -161,9 +168,7 @@ public class OrderService {
 
 	        ad.setAdPrice(ad.getAdPrice() - discount);
 	        ad.setIsCouponUsed(isCouponApplied ? 1 : 0);
-	        ad.setIsPaid(true);
 	        ad.setOrderId(newOrder.getMerchantTradNo());
-	        ad.setPaidDate(newOrder.getMerchantTradDate());
 
 	        if (isCouponApplied) {
 	            ad.setAdPrice(ad.getAdPrice() - discount);
@@ -171,31 +176,21 @@ public class OrderService {
 
 	        newOrder.setItemName(ad.getAdtype().getAdName());
 	    }
-
+	    
 	    adRepository.saveAll(ads);
-
+	    
 	    newOrder.setTotalAmount(totalAmount);
 	    newOrder.setUserId(userId);
-	    UserTableBean user = userRepository.findById(userId).orElse(null);
-	    if (user == null) return null;
+	    Optional<UserTableBean> optional = userRepository.findById(userId);
+	    if (optional.isEmpty()) return null;
 	    
+	    UserTableBean user = optional.get();
 	    newOrder.setUser(user);
-
-	    String merchantTradNo = serialNoService.generateSerialNumber();
-	    LocalDateTime date = LocalDateTime.now();
-	    newOrder.setMerchantTradNo(merchantTradNo);
-	    newOrder.setMerchantTradDate(date);
-
-	    newOrder.setOrderStatus((short) 0);
-	    newOrder.setTradeDesc("宣傳廣告");
-	    newOrder.setChoosePayment(requestDTO.getChoosePayment());
-	    newOrder.setThirdParty(requestDTO.getThirdParty());
 	    newOrder.setAds(ads);
 
 	    OrderBean savedOrder = orderRepository.save(newOrder);
 	    
-	    // 檢驗有沒有去掉
-	    userRepository.removeOneCoupon(userId);
+	    int result = userRepository.removeOneCoupon(userId);
 
 	    OrderResponseDTO responseDTO = setOrderDetailsResponseDTO(savedOrder);
 	    return responseDTO;

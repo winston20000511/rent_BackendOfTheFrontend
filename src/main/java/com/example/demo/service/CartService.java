@@ -178,7 +178,7 @@ public class CartService {
 	}
 	
 	
-	public boolean removeOneCoupon(Long userId) {
+	public int removeOneCoupon(Long userId) {
 		return userRepository.removeOneCoupon(userId);
 	}
 }

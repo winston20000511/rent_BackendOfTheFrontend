@@ -51,7 +51,7 @@ public class OrderBean {
 	private String choosePayment;
 
 	@Column(name = "third_party")
-	private String thirdParty;
+	private Short thirdParty;
 	
 	@Column(name = "returnValue")
 	private String returnValue;

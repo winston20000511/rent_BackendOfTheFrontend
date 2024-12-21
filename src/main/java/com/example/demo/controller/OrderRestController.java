@@ -58,15 +58,19 @@ public class OrderRestController {
 		return orderService.findOrdersByConditions(userId, pageNumber, orderStatus, dateRange, inputCondition, userInput);
 	}
 	
-	@PostMapping("/create")
 	@Transactional
+	@PostMapping("/create")
 	public OrderResponseDTO createOrder(
 			@RequestBody OrderCreationRequestDTO requestDTO, @RequestHeader("authorization") String authorizationHeader) {
 		
 		String[] userInfo = JwtUtil.verify(authorizationHeader);
 		Long userId = Long.parseLong(userInfo[1]);
 		
-		return orderService.createOrder(userId, requestDTO);
+		OrderResponseDTO newOrder = orderService.createOrder(userId, requestDTO);
+		
+		logger.info("新訂單資料: " + newOrder.toString());
+		
+		return newOrder;
 	}
 	
 	@PostMapping("/merchantTradNo")

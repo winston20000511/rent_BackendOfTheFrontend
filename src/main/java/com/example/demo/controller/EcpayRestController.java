@@ -1,6 +1,5 @@
 package com.example.demo.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,7 +13,6 @@ public class EcpayRestController {
 
 	private EcpayService ecpayService;
 	
-	@Autowired
 	public EcpayRestController(EcpayService ecpayService) {
 		this.ecpayService = ecpayService;
 	}

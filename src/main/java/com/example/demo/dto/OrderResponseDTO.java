@@ -3,6 +3,9 @@ package com.example.demo.dto;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import lombok.ToString;
+
+@ToString
 public class OrderResponseDTO {
 
 	// table 用
