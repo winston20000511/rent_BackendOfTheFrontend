@@ -19,16 +19,13 @@ import jakarta.persistence.criteria.Predicate;
 
 public class OrderSpecification {
 	
-	public static Specification<OrderBean> filter(Map<String, String> conditions){
+	public static Specification<OrderBean> filter(
+			Long userId, Integer page, String orderStatus, String dateRange, String inputCondition, String userInput){
 		return (root, query, builder) ->{
 			
 			List<Predicate> predicates = new ArrayList<>();
 			
-			String dateRange = conditions.get("daterange");
-	        String status = conditions.get("status");
-	        String inputCondition = conditions.get("inputcondition");
-	        String userInput = conditions.get("userInput");
-
+			predicates.add(builder.equal(root.get("userId"), userId));
 			
 	        if (dateRange != null && !dateRange.equals("all")) {
 	            LocalDateTime endDate = LocalDateTime.now();
@@ -55,14 +52,14 @@ public class OrderSpecification {
 	            predicates.add(builder.between(root.get("merchantTradDate"), startDate, endDate));
 	        }
 			
-	        if (status != null && !status.equals("all")) {
-	        	Short orderStatus = (short) 0;
-	            switch(status) {
-	            	case "cancelling": orderStatus = 2; break;
-	                case "active": orderStatus = 1; break;
-	                case "cancelled": orderStatus = 0; break;
+	        if (orderStatus != null && !orderStatus.equals("all")) {
+	        	Short status = (short) 0;
+	            switch(orderStatus) {
+	            	case "cancelling": status = 2; break;
+	                case "active": status = 1; break;
+	                case "cancelled": status = 0; break;
 	            }
-	            predicates.add(builder.equal(root.get("orderStatus"), orderStatus));
+	            predicates.add(builder.equal(root.get("orderStatus"), status));
 	        }
 			
 	        

@@ -3,6 +3,9 @@ package com.example.demo.dto;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import lombok.ToString;
+
+@ToString
 public class OrderResponseDTO {
 
 	// table 用
@@ -13,6 +16,7 @@ public class OrderResponseDTO {
 	
 	// 詳細內容用
 	private List<Long> adIds;
+	private List<Integer> coupons;
  	private List<String> adtypes;
  	private List<Integer> prices;
 	private Long totalAmount;
@@ -23,12 +27,13 @@ public class OrderResponseDTO {
 	
 
 	public OrderResponseDTO(String merchantTradNo, List<String> houseTitles, String merchantTradDate,
-			String orderStatus, List<Long> adIds, List<String> adtypes, Long totalAmount, String choosePayment) {
+			String orderStatus, List<Long> adIds, List<Integer> coupons, List<String> adtypes, Long totalAmount, String choosePayment) {
 		this.merchantTradNo = merchantTradNo;
 		this.houseTitles = houseTitles;
 		this.merchantTradDate = merchantTradDate;
 		this.orderStatus = orderStatus;
 		this.adIds = adIds;
+		this.coupons = coupons;
 		this.adtypes = adtypes;
 		this.totalAmount = totalAmount;
 		this.choosePayment = choosePayment;
@@ -128,6 +133,16 @@ public class OrderResponseDTO {
 		if(choosePayment.equals("Credit")) {
 			this.choosePayment = "信用卡";
 		}
+	}
+
+
+	public List<Integer> getCoupons() {
+		return coupons;
+	}
+
+
+	public void setCoupons(List<Integer> coupons) {
+		this.coupons = coupons;
 	}
 	
 }

@@ -5,17 +5,18 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.logging.Logger;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.example.demo.helper.HMACUtil;
 import com.example.demo.helper.LinepayApiConfig;
+import com.example.demo.helper.PaymentUtil;
 import com.example.demo.model.AdBean;
 import com.example.demo.model.OrderBean;
 import com.example.demo.model.linepay.CheckoutPaymentRequestForm;
@@ -26,23 +27,27 @@ import com.example.demo.repository.OrderRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
-import ch.qos.logback.core.net.ObjectWriter;
 
 @Service
 public class LinepayService {
 
+	private Logger logger = Logger.getLogger(LinepayService.class.getName());
 	private OrderRepository orderRepository;
 	private LinepayApiConfig linpayApiConfig;
+	private AdService adService;
 
-	@Autowired
-	public LinepayService(OrderRepository orderRepository, LinepayApiConfig linpayApiConfig) {
+	public LinepayService(
+			OrderRepository orderRepository, LinepayApiConfig linpayApiConfig, AdService adService) {
 		this.orderRepository = orderRepository;
 		this.linpayApiConfig = linpayApiConfig;
+		this.adService = adService;
 	}
 
-	// 執行送出請求
+	/**
+	 * 執行送出請求
+	 * @param orderId
+	 * @return
+	 */
 	public String processPaymentRequest(String orderId) {
 
 		CheckoutPaymentRequestForm paymentForm = generatePaymentForm(orderId);
@@ -53,70 +58,32 @@ public class LinepayService {
 		String signature = requestInfo.get("signature");
 
 		HttpHeaders headers = generateHttpHeader(nonce, signature);
-
 		String response = sendRequest(headers, requestBody);
-
-		String paymentURL = processResponse(response); // 取得付款連結
-
+		String paymentURL = processResponse(response, orderId);
+		
 		return paymentURL;
 	}
 
-	// 取得使用者買新order的資料
-	// 之後再補寫傳入orderCreationRequestDTO object
-	private Map<String, String> getInfoOfNewOrder(String orderId) {
-
-		OrderBean order = orderRepository.findByMerchantTradNo(orderId);
-
-		if (order != null) {
-			Map<String, String> orderInfo = new HashMap<>();
-			// 總金額
-			orderInfo.put("totalAmount", order.getTotalAmount().toString());
-			// 產品敘述 = product package
-			orderInfo.put("itemDescription", order.getTradeDesc());
-			// 產品名稱
-			orderInfo.put("productPackage", order.getItemName());
-
-			// 方案名稱 + 金額 + 數量 = ProductForm
-			List<AdBean> ads = order.getAds();
-			StringBuilder productNames = new StringBuilder();
-			for (AdBean ad : ads) {
-				// adtype.adName-1xadPrice;
-				productNames.append("adId").append(ad.getAdtypeId()).append(".").append(ad.getAdtype().getAdName())
-						.append("-").append("1").append("x").append(ad.getAdPrice().toString()).append(";");
-				System.out.println("productNames: " + productNames);
-			}
-
-			orderInfo.put("productNames", productNames.toString());
-
-			return orderInfo;
-		}
-
-		return null;
-	}
-
-	// 製作請求付款的 request body
-	// 之後改傳整份訂單資料進來
+	/**
+	 * 製作請求付款的 CheckoutPaymentRequestForm
+	 * @param orderId
+	 * @return
+	 */
 	private CheckoutPaymentRequestForm generatePaymentForm(String orderId) {
 
-		// 找 Order
 		OrderBean order = orderRepository.findByMerchantTradNo(orderId);
-
+		
 		CheckoutPaymentRequestForm form = new CheckoutPaymentRequestForm();
-
+		form.setOrderId(orderId);
 		form.setAmount(new BigDecimal(order.getTotalAmount().toString())); // amount = price * quantity
 		form.setCurrency("TWD");
-		form.setOrderId(order.getMerchantId()); // 測試用，order id 不能重複
 
 		ProductPackageForm productPackageForm = new ProductPackageForm();
 		productPackageForm.setId(UUID.randomUUID().toString());
 		productPackageForm.setName("advertisements");
 		productPackageForm.setAmount(new BigDecimal(order.getTotalAmount().toString()));
 
-		// ADID_adtype.adName:1xadPrice;
-		/*
-		 * List<ProductForm> productForms = orderInfo.entrySet().stream()
-		 */
-
+		// 有時間改用stream寫寫看
 		ProductForm productForm = new ProductForm();
 		List<AdBean> ads = order.getAds();
 		for (AdBean ad : ads) {
@@ -130,13 +97,18 @@ public class LinepayService {
 		form.setPackages(Arrays.asList(productPackageForm));
 
 		RedirectUrls redirectUrls = new RedirectUrls();
-		redirectUrls.setConfirmUrl("http://localhost:80/orders/mylist");
+		redirectUrls.setConfirmUrl("http://localhost:5173/order-complete");
 		redirectUrls.setCancelUrl("");
 		form.setRedirectUrls(redirectUrls);
 
 		return form;
 	}
 
+	/**
+	 * 製作LINEPAY需要的 requestInfo
+	 * @param form
+	 * @return
+	 */
 	private Map<String, String> generateRequestInfo(CheckoutPaymentRequestForm form) {
 
 		Map<String, String> requestInfo = new HashMap<>();
@@ -151,12 +123,12 @@ public class LinepayService {
 		try {
 
 			requestBody = mapper.writeValueAsString(form);
-			String signature = HMACUtil.encrypt(ChannelSecret, requestUri, requestBody, nonce);
+			String signature = PaymentUtil.encryptLinepayRequest(ChannelSecret, requestUri, requestBody, nonce);
 
-			// 看資料是否正確
-			System.out.println("requestBody" + requestBody);
-			System.out.println("nonce: " + nonce);
-			System.out.println("signature: " + signature);
+			// 檢查資料是否正確
+			logger.info("requestBody" + requestBody);
+			logger.info("nonce: " + nonce);
+			logger.info("signature: " + signature);
 
 			// 可以封裝成DTO，較好看懂（有時間再寫）
 			requestInfo.put("requestBody", requestBody);
@@ -173,7 +145,12 @@ public class LinepayService {
 		return null;
 	}
 
-	// 設定 HttpHeaders
+	/**
+	 * 設定HTTPS Headsers
+	 * @param nonce
+	 * @param signature
+	 * @return
+	 */
 	private HttpHeaders generateHttpHeader(String nonce, String signature) {
 
 		String ChannelId = linpayApiConfig.getLinepayChannelIdKey();
@@ -187,7 +164,12 @@ public class LinepayService {
 		return headers;
 	}
 
-	// 送出
+	/**
+	 * 執行送出包含所需Headers資訊的HTTPS請求
+	 * @param headers
+	 * @param requestBody
+	 * @return
+	 */
 	private String sendRequest(HttpHeaders headers, String requestBody) {
 
 		String linepayApiUrl = "https://sandbox-api-pay.line.me/v3/payments/request"; // 固定的
@@ -196,41 +178,80 @@ public class LinepayService {
 		RestTemplate restemplate = new RestTemplate();
 		String response = restemplate.postForObject(linepayApiUrl, requestEntity, String.class);
 
-		// 檢視資料
-		System.out.println("send request and get response: " + response);
-
 		return response;
 	}
 
-	// 處理回應
-	private String processResponse(String response) {
+	/**
+	 * 處理Linepay的回傳值
+	 * @param response
+	 * @param orderId
+	 * @return
+	 */
+	private String processResponse(String response, String orderId) {
 
 		if (response == null || response.isEmpty()) {
-			System.out.println("沒有回應");
+			logger.info("沒有回應");
 			return null;
 		}
 
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode jsonResponse;
+		
+		logger.info("linepay回應: " + response);
 
 		try {
 
 			jsonResponse = mapper.readTree(response);
-			String paymentURL = jsonResponse.get("info").get("paymentUrl").get("web").asText();
-
-			// transactionId 之後要要存到資料庫裡 => 做接收linepay回應的DTO
-			String transactionId = jsonResponse.get("info").get("transactionId").asText();
-
-			// 檢查結果
-			System.out.println("payment URL: " + paymentURL);
-			System.out.println("transaction ID: " + transactionId);
-
-			return paymentURL;
+			String returnCode = jsonResponse.get("returnCode").asText();
+			
+			// 0000 成功
+			if(returnCode.equals("0000")) {
+				String paymentURL = jsonResponse.get("info").get("paymentUrl").get("web").asText();
+				
+				// 可以做接收linepay回應的DTO
+				String transactionId = jsonResponse.get("info").get("transactionId").asText();
+				
+				// 檢查結果
+				logger.info("payment URL: " + paymentURL);
+				logger.info("transaction ID: " + transactionId);
+				
+				updateOrderInfo(orderId, response);
+				
+				return paymentURL;
+			}
 
 		} catch (JsonProcessingException e) {
+			logger.info("LINEPAY付款失敗");
 			e.printStackTrace();
 		}
 
 		return null;
+	}
+	
+	/**
+	 * 更新資料庫中的orderr及ad資料
+	 * @param orderId
+	 * @param returnValue
+	 * @return
+	 */
+	private boolean updateOrderInfo(String orderId, String returnValue) {
+	
+		Optional<OrderBean> optional = orderRepository.findById(orderId);
+		if(optional.isPresent()) {
+			
+			// 更新檢驗碼及訂單狀態
+			OrderBean order = orderRepository.findByMerchantTradNo(orderId);
+			order.setReturnValue(returnValue);
+			order.setOrderStatus((short)1);
+			
+			List<AdBean> ads = adService.updateAdBeansAfterPaymentVerified(order.getAds(), order);
+			order.setAds(ads);
+			
+			orderRepository.save(order);
+			
+		}else {
+			logger.info("沒有該筆訂單資料: " + orderId);
+		}
+		return false;
 	}
 }

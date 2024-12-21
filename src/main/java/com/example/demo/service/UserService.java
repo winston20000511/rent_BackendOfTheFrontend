@@ -3,6 +3,8 @@ package com.example.demo.service;
 import java.util.Optional;
 import com.example.demo.dto.HouseOwnerInfoDTO;
 import com.example.demo.dto.*;
+import com.example.demo.dto.UserCenterDTO;
+import com.example.demo.dto.UserRegisterDTO;
 import com.example.demo.helper.JwtUtil;
 import com.example.demo.model.UserTableBean;
 import com.example.demo.repository.UserRepository;

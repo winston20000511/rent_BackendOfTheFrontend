@@ -37,17 +37,13 @@ public class UserController {
         UserTableBean user = userService.getUserByEmail(email);
         if (user != null && user.getPassword().equals(password)) {
             // 驗證成功，生成 JWT
-
             /*
-             * add name
              * String token = JwtUtil.sign(user.getEmail(),user.getUserId(), user.getName())
              * response.put("name", user.getName());
              */
 
             String token = JwtUtil.sign(user.getEmail(), user.getUserId(), user.getName());
 
-            // 返回 Token 和用戶基本資料
-            Map<String, Object> response = new HashMap<>();
             response.put("token", token);
             response.put("userId", user.getUserId());
             response.put("email", user.getEmail());
@@ -59,8 +55,7 @@ public class UserController {
         return ResponseEntity.status(401).body("帳號或密碼錯誤");
     }
 
-
-    /**
+/*
      * 使用者註冊 API
      *
      * @param userRegisterDTO 註冊資料
