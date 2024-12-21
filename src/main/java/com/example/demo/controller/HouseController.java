@@ -12,8 +12,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -35,7 +35,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.demo.dto.HouseDetailsDTO;
 import com.example.demo.dto.HouseListByUserIdDTO;
 import com.example.demo.dto.HouseOwnerInfoDTO;
+import com.example.demo.helper.JwtUtil;
 import com.example.demo.helper.SearchHelper;
+import com.example.demo.helper.UnTokenException;
 import com.example.demo.model.CollectTableBean;
 import com.example.demo.model.ConditionTableBean;
 import com.example.demo.model.FurnitureTableBean;
@@ -48,6 +50,8 @@ import com.example.demo.repository.HouseRepository;
 import com.example.demo.service.CollectService;
 import com.example.demo.service.HouseService;
 import com.example.demo.service.UserService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/houses")
@@ -289,17 +293,15 @@ public class HouseController {
 	 
 //	 COLLECT FUNCTION
 	 @DeleteMapping("collect/delete/{houseId}")
-	 public ResponseEntity<String> deleteCollect(HttpServletRequest request, @PathVariable Long houseId) {
+	 public ResponseEntity<String> deleteCollect(@RequestHeader("authorization") String authorizationHeader, @PathVariable Long houseId) {
 	     try {
 	         // 從 Token 解析出 email
-	         String email = JwtUtil.verify(request.getHeader("Authorization"));
-	         
-	         if (email == null || email.isEmpty()) {
-	             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token 無效或未提供 email");
-	         }
+	    	 String[] userInfo = JwtUtil.verify(authorizationHeader);
+	 		Long userId = Long.parseLong(userInfo[1]);
 
+	        
 	         // 使用工具類根據 email 查找 userId
-	         Long userId = UserUtil.getUserIdByEmail(email);
+	       
 
 	         // 執行刪除邏輯
 	         collectService.deleteByUserIdAndHouseId(userId, houseId);
@@ -313,18 +315,11 @@ public class HouseController {
 	 }
 
 	 @GetMapping("/collect")
-	 public ResponseEntity<?> getHouseIds(HttpServletRequest request) {
+	 public ResponseEntity<?> getHouseIds(@RequestHeader("authorization") String authorizationHeader) {
 	     try {
 	         // 從 Token 解析出 email
-	         String email = JwtUtil.verify(request.getHeader("Authorization"));
-
-	         if (email == null || email.isEmpty()) {
-	             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token 無效或未提供 email");
-	         }
-
-	         // 使用工具類根據 email 查找 userId
-	         Long userId = UserUtil.getUserIdByEmail(email);
-
+	    	 String[] userInfo = JwtUtil.verify(authorizationHeader);
+	 		Long userId = Long.parseLong(userInfo[1]);
 	         // 調用服務層獲取房屋 ID 列表
 	         List<Long> houseIds = collectService.getHouseIdsByUserId(userId);
 	         if (houseIds == null) {
@@ -339,18 +334,13 @@ public class HouseController {
 	 }
 
 	 @GetMapping("/houses")
-	 public ResponseEntity<?> getHouses(HttpServletRequest request) {
+	 public ResponseEntity<?> getHouses(@RequestHeader("authorization") String authorizationHeader) {
 	     try {
 	         // 從 Token 解析出 email
-	         String email = JwtUtil.verify(request.getHeader("Authorization"));
+	    	 String[] userInfo = JwtUtil.verify(authorizationHeader);
+		 		Long userId = Long.parseLong(userInfo[1]);
 
-	         if (email == null || email.isEmpty()) {
-	             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token 無效或未提供 email");
-	         }
-
-	         // 使用工具類根據 email 查找 userId
-	         Long userId = UserUtil.getUserIdByEmail(email);
-
+	      
 	         // 調用服務層邏輯，獲取房屋列表
 	         List<HouseListByUserIdDTO> houses = houseService.getHousesByUserId(userId);
 

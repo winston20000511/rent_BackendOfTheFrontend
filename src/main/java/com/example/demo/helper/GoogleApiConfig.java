@@ -8,7 +8,7 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("googleapikey.properties")
 public class GoogleApiConfig {
 	
-	@Value("${googleApiKey}")
+	@Value("${googleapikey}")
 	private String googleMapKey;
 
 	public String getGoogleMapKey() {

@@ -41,7 +41,7 @@ public class UserController {
              * String token = JwtUtil.sign(user.getEmail(),user.getUserId(), user.getName())
              * response.put("name", user.getName());
              */
-
+        	Map<String, Object> response = new HashMap<>();
             String token = JwtUtil.sign(user.getEmail(), user.getUserId(), user.getName());
 
             response.put("token", token);

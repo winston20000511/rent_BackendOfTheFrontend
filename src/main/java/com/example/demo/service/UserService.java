@@ -187,7 +187,7 @@ public class UserService {
             base64Picture = Base64.getEncoder().encodeToString(picture);
         }
 
-        return new HouseOwnerInfoDTO(name, phone, base64Picture);
+        return new HouseOwnerInfoDTO(name,base64Picture, phone );
     }
 
     /**

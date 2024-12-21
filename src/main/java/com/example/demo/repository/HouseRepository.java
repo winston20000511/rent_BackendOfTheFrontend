@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.example.demo.dto.HouseDetailsDTO;
 import com.example.demo.dto.HouseListByUserIdDTO;
+import com.example.demo.dto.HouseOwnerDetailDTO;
 import com.example.demo.dto.HouseOwnerInfoDTO;
 import com.example.demo.model.HouseImageTableBean;
 import com.example.demo.model.HouseTableBean;
