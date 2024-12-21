@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtAspect {
 
     // 定義不需要 JWT 驗證的路徑集合
-	private static final Set<String> EXCLUDED_URIS = new HashSet<>();
+    private static final Set<String> EXCLUDED_URIS = new HashSet<>();
 
     static {
         EXCLUDED_URIS.add("/api/user/login");    // 登入頁面

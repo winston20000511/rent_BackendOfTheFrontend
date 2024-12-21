@@ -29,13 +29,14 @@ public class JwtUtil {
      * */
     
     // 簽名生成，根據用戶名生成JWT
-    public static String sign(String userName , Long userId ,String name) {
+    public static String sign(String userEmail , Long userId ,String name) {
         return JWT.create()
                 // 設置主題，即用戶名
-                .withSubject(userName)
+                .withSubject(userEmail)
                 // 設置過期時間
                 .withClaim("userId", userId)
                 .withClaim("name", name) 
+
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRE_TIME))
                 // 使用HMAC256算法和密鑰進行簽名
                 .sign(Algorithm.HMAC256(TOKEN_SECRET));
