@@ -1,24 +1,23 @@
 package com.example.demo.service;
 
 import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 import java.util.logging.Logger;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.helper.EcpayApiConfig;
+import com.example.demo.helper.PaymentUtil;
+import com.example.demo.model.AdBean;
 import com.example.demo.model.OrderBean;
 import com.example.demo.repository.OrderRepository;
 
 import ecpay.payment.integration.AllInOne;
 import ecpay.payment.integration.domain.AioCheckOutALL;
-import org.springframework.web.bind.annotation.*;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.Map;
+import java.util.List;
 
 @Service
 public class EcpayService {
@@ -27,25 +26,26 @@ public class EcpayService {
 	
 	private OrderRepository orderRepository;
 	private EcpayApiConfig ecpayApiConfig;
+	private AdService adService;
 	
-	@Autowired
-	public EcpayService(OrderRepository orderRepository, EcpayApiConfig ecpayApiConfig) {
+	public EcpayService(
+			OrderRepository orderRepository, EcpayApiConfig ecpayApiConfig, AdService adService) {
 		this.orderRepository = orderRepository;
 		this.ecpayApiConfig = ecpayApiConfig;
+		this.adService = adService;
 	}
 
 	/**
-	 * 將訂單資料送給綠界
+	 * 製作綠界所需的訂單資料，提交並取要提交給綠界的表單格式
 	 * @param merchantTradNo
-	 * @return form 綠界的付款回傳表單
+	 * @return form
 	 */
 	public String ecpayCheckout(String merchantTradNo) {
-		logger.severe("訂單資料送給綠界");
 		OrderBean order = orderRepository.findByMerchantTradNo(merchantTradNo);
 		AllInOne all = new AllInOne("");
 		Object obj = getEcpayOrderObj(order);
 		String form = all.aioCheckOut(obj, null);
-		System.out.println("表單: " + form);
+		logger.info("要給綠界的表單: " + form);
 		return form;
 	}
 
@@ -54,28 +54,38 @@ public class EcpayService {
 	 * @param response
 	 * @return 1/OK 通知綠界有收到驗證資料
 	 */
-	public String verifyEcpayCheckValue(String response) {
-		logger.severe("response: " + response);
-		System.out.println(response);
-		// 抓出綠界回傳值中的checkMacValue 及 MerchantTradeNo 
+	public boolean verifyEcpayCheckValue(String returnValue) {
 		String hashKey = ecpayApiConfig.getHashKey(); 
 		String hashIV = ecpayApiConfig.getHashIV();
 		
+		// 抓出綠界回傳值中的 checkMacValue 及 MerchantTradeNo
+		JSONObject queryStringToJson = queryStringToJson(returnValue);
+		String merchantTradNo = (String) queryStringToJson.get("MerchantTradeNo");
+		String returnedCheckMacValue = (String) queryStringToJson.get("CheckMacValue");
 		
-		JSONObject queryStringToJson = queryStringToJson(response);
-		queryStringToJson.toString(); // 存入資料庫
-		
-		/*
+		// 取出資料庫資料進行比對
 		OrderBean order = orderRepository.findByMerchantTradNo(merchantTradNo);
 		Object ecpayOrderObj = getEcpayOrderObj(order);
+		String genMceckMacValue = PaymentUtil.getEcpayCheckMacValue(hashKey, hashIV, ecpayOrderObj);
 		
-		String genMheckMacValue = EcpayEncrpytUtil.getCheckMacValue(hashKey, hashIV, ecpayOrderObj);
-		logger.severe("自己生成的checkMacValue: " + genMheckMacValue);
+		if (genMceckMacValue.equals(returnedCheckMacValue)) {
+			// order.setReturnValue(queryStringToJson.toString());
+			order.setReturnValue(returnValue);
+			order.setOrderStatus((short)1);
+			
+			List<AdBean> ads = adService.updateAdBeansAfterPaymentVerified(order.getAds(), order);
+			order.setAds(ads);
+			
+			orderRepository.save(order);
+			
+			return true;
+			
+		}else {
+			logger.info("驗證碼錯誤");
+			logger.info("genMceckMacValue: " + genMceckMacValue + " vs. " + "returnedCheckMacValue: " + returnedCheckMacValue);
+		}
 		
-//		if response 的 checkMacValue.equals(checkMacValue) 將order status改為1 ; else 不做動作
-		*/
-		
-		return "1|OK"; // 單純回報有收到確認碼
+		return false;
 	}
 	
 	/**
@@ -101,7 +111,7 @@ public class EcpayService {
 		obj.setTradeDesc(order.getTradeDesc());
 		obj.setItemName(order.getItemName());
 		
-		// 接收回傳驗證碼路徑
+		// 接收回傳驗證碼路徑: 要用https回傳
 		obj.setReturnURL("/api/ecpay/verify/checkvalue");
 		
 		obj.setNeedExtraPaidInfo("N");
@@ -136,24 +146,4 @@ public class EcpayService {
 		return jsonObject;
 	}
 	
-	/* ecpay */
-	// 測試用
-	public String testEcpayCheckout() {
-
-		String uuId = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 20);
-		AllInOne all = new AllInOne("");
-		AioCheckOutALL obj = new AioCheckOutALL();
-		obj.setMerchantTradeNo(uuId);
-		obj.setIgnorePayment("WebATM#ATM#BNPL#ApplePay#TWQR");
-		obj.setMerchantTradeDate("2024/12/10 08:05:23");
-		obj.setTotalAmount("50");
-		obj.setTradeDesc("test Description");
-		obj.setItemName("TestItem");
-//		obj.setOrderResultURL("/orders/complete");
-		obj.setReturnURL("https://4c2c-58-114-167-137.ngrok-free.app/api/ecpay/verify/checkvalue");
-		obj.setClientBackURL("/orders/complete");
-		obj.setNeedExtraPaidInfo("N");
-		String form = all.aioCheckOut(obj, null);
-		return form;
-	}
 }

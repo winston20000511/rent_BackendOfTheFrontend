@@ -15,8 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.example.demo.helper.HMACUtil;
 import com.example.demo.helper.LinepayApiConfig;
+import com.example.demo.helper.PaymentUtil;
 import com.example.demo.model.AdBean;
 import com.example.demo.model.OrderBean;
 import com.example.demo.model.linepay.CheckoutPaymentRequestForm;
@@ -34,10 +34,13 @@ public class LinepayService {
 	private Logger logger = Logger.getLogger(LinepayService.class.getName());
 	private OrderRepository orderRepository;
 	private LinepayApiConfig linpayApiConfig;
+	private AdService adService;
 
-	public LinepayService(OrderRepository orderRepository, LinepayApiConfig linpayApiConfig) {
+	public LinepayService(
+			OrderRepository orderRepository, LinepayApiConfig linpayApiConfig, AdService adService) {
 		this.orderRepository = orderRepository;
 		this.linpayApiConfig = linpayApiConfig;
+		this.adService = adService;
 	}
 
 	/**
@@ -120,7 +123,7 @@ public class LinepayService {
 		try {
 
 			requestBody = mapper.writeValueAsString(form);
-			String signature = HMACUtil.encrypt(ChannelSecret, requestUri, requestBody, nonce);
+			String signature = PaymentUtil.encryptLinepayRequest(ChannelSecret, requestUri, requestBody, nonce);
 
 			// 檢查資料是否正確
 			logger.info("requestBody" + requestBody);
@@ -241,11 +244,7 @@ public class LinepayService {
 			order.setReturnValue(returnValue);
 			order.setOrderStatus((short)1);
 			
-			List<AdBean> ads = order.getAds();
-			for(AdBean ad : ads) {
-				ad.setIsPaid(true);
-				ad.setOrder(order);
-			}
+			List<AdBean> ads = adService.updateAdBeansAfterPaymentVerified(order.getAds(), order);
 			order.setAds(ads);
 			
 			orderRepository.save(order);

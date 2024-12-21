@@ -9,8 +9,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +26,6 @@ public class SerialOrderNoService {
     private ScheduledFuture<?> scheduledFuture;
 	private static AtomicInteger counter = new AtomicInteger(0);  // 計數器
 
-	@Autowired
     public SerialOrderNoService(OrderRepository orderRepository) {
     	this.serialNoUtil = new SerialOrderNoUtil();
     	this.orderRepository = orderRepository;

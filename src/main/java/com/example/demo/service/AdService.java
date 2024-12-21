@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.logging.Logger;
 
 import org.springframework.data.domain.Page;
@@ -20,6 +19,7 @@ import com.example.demo.dto.AdCreationRequestDTO;
 import com.example.demo.dto.AdDetailsResponseDTO;
 import com.example.demo.model.AdBean;
 import com.example.demo.model.AdtypeBean;
+import com.example.demo.model.OrderBean;
 import com.example.demo.repository.AdRepository;
 import com.example.demo.repository.AdSpecification;
 import com.example.demo.repository.AdtypeRepository;
@@ -178,6 +178,15 @@ public class AdService {
 		Pageable pageable = PageRequest.of(pageNumber - 1, 10, Sort.Direction.DESC, "houseId");
 		Page<Map<String, Object>> housesInfo = houseRepository.findHousesWithoutAds(userId, pageable);
 		return housesInfo;
+	}
+	
+	public List<AdBean> updateAdBeansAfterPaymentVerified(List<AdBean> ads, OrderBean order){
+		for(AdBean ad : ads) {
+			ad.setPaidDate(LocalDateTime.now());
+			ad.setIsPaid(true);
+			ad.setOrder(order);
+		}
+		return ads;
 	}
 
 	/**

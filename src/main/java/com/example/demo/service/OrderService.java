@@ -191,6 +191,11 @@ public class OrderService {
 	    OrderBean savedOrder = orderRepository.save(newOrder);
 	    
 	    int result = userRepository.removeOneCoupon(userId);
+	    if(result > 0) {
+	    	logger.info("成功刪除優惠券");
+	    }else {
+	    	logger.info("沒有刪除優惠券");
+	    }
 
 	    OrderResponseDTO responseDTO = setOrderDetailsResponseDTO(savedOrder);
 	    return responseDTO;
@@ -217,6 +222,7 @@ public class OrderService {
 		OrderBean order = optional.get();
 		order.setOrderStatus((short) 2); // 確認後方可取消
 		orderRepository.save(order);
+		
 		return true;
 	}
 
