@@ -7,6 +7,7 @@ import com.example.demo.model.HouseImageTableBean;
 import com.example.demo.model.HouseTableBean;
 import com.example.demo.model.MessageBean;
 import com.example.demo.model.UserTableBean;
+import com.example.demo.repository.HouseImageRepository;
 import com.example.demo.repository.HouseRepository;
 import com.example.demo.repository.MessageRepository;
 import com.example.demo.repository.UserRepository;
@@ -25,6 +26,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+
 @Service
 public class FakeDataService {
 
@@ -37,6 +39,8 @@ public class FakeDataService {
     private HouseRepository houseRepo;
     @Autowired
     private MessageRepository messageRepo;
+    @Autowired
+    private HouseImageRepository houseImageRepo;
 
     private final MockNeat mock = MockNeat.threadLocal();
     private final Random random = new Random();
@@ -216,7 +220,7 @@ public class FakeDataService {
     }
 
     public void houseFakeData(){
-        for (int i = 0; i <= 7045; i++) {
+        for (int i = 0; i < 7046; i++) {
             HouseTableBean house = new HouseTableBean();
             UserTableBean user = getRandomUser(7046);
             List<String> lists = openfileRead("C:\\Users\\User\\Desktop\\Rent_index\\address.csv");
@@ -244,20 +248,24 @@ public class FakeDataService {
         }
     }
 
-    private void imageFakeData(){
+    public void imageFakeData() throws IOException {
 
-        HouseImageTableBean houseImage = new HouseImageTableBean();
-        HouseTableBean house = getRandomHouse(7046);
-        UserTableBean user = getRandomUser(7046);
+        int r = 0;
+        for(int i = 0 ; i < 7046; i++) {
+            HouseTableBean house = getRandomHouse(7046);
+            UserTableBean user = getRandomUser(7046);
+            r++;
+            for(int j = 1 ; j < 5 ; j++ ){
+                HouseImageTableBean houseImage = new HouseImageTableBean();
+                houseImage.setHouse(house);
+                houseImage.setUser(user);
+                houseImage.setImages(getHouseJpg(r,j));
+                houseImageRepo.save(houseImage);
+            }
 
-        for(int i = 0 ; i < 5 ; i++ ){
-            
+            if ( r == 4) {r=0;}
+
         }
-        houseImage.setHouse(house);
-        houseImage.setUser(user);
-
-
-
     }
 
 
@@ -301,7 +309,7 @@ public class FakeDataService {
     }
 
     private byte[] getMemberJpg() throws IOException {
-        String picPath = "src/main/resources/static/img/member.jpg";
+        String picPath = "src/main/resources/static/img/Member.jpeg";
         File file = new File(picPath);
 
         return Files.readAllBytes(file.toPath());
@@ -313,7 +321,6 @@ public class FakeDataService {
         Optional<UserTableBean> op = userRepo.findById((long)randomValue);
         if (op.isPresent()){
             user = op.get();
-
         }
         return user;
     }
@@ -349,6 +356,12 @@ public class FakeDataService {
             house = op.get();
         }
         return house;
+    }
+    private byte[] getHouseJpg(int r , int i) throws IOException {
+        String picPath = "src/main/resources/static/img/house" + r + i + ".jpeg";
+        File file = new File(picPath);
+
+        return Files.readAllBytes(file.toPath());
     }
 
     private List<String> openfileRead(String filePath){
