@@ -15,6 +15,7 @@ public class HouseDetailsDTO {
     private String description;
     private Integer size;
     private String address;
+    private Byte status;
     private Byte room;
     private Byte bathroom;
     private Byte livingroom;
@@ -54,7 +55,7 @@ public class HouseDetailsDTO {
 
 
 	public HouseDetailsDTO(Long houseId, Long userId, String useremail, String title, Integer price, String description, Integer size,
-			String address, Byte room, Byte bathroom, Byte livingroom, Byte kitchen, Byte floor, String houseType,
+			String address,Byte status, Byte room, Byte bathroom, Byte livingroom, Byte kitchen, Byte floor, String houseType,
 			Boolean atticAddition, Boolean pet, Boolean parkingSpace, Boolean elevator, Boolean balcony,
 			Boolean shortTerm, Boolean cooking, Boolean waterDispenser, Boolean managementFee, Byte genderRestrictions,
 			Boolean washingMachine, Boolean airConditioner, Boolean network, Boolean bedstead, Boolean mattress,
@@ -69,6 +70,7 @@ public class HouseDetailsDTO {
 		this.description = description;
 		this.size = size;
 		this.address = address;
+		this.status =status;
 		this.room = room;
 		this.bathroom = bathroom;
 		this.livingroom = livingroom;

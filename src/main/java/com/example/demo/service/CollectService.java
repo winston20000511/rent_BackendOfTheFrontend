@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,8 @@ import com.example.demo.repository.CollectRepository;
 import com.example.demo.repository.HouseRepository;
 import com.example.demo.repository.UserRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class CollectService {
 
@@ -23,36 +26,36 @@ public class CollectService {
 
 	@Autowired
 	private HouseRepository houseRepository;
-
+	@Transactional
 	public void deleteByUserIdAndHouseId(Long userId, Long houseId) {
         collectRepository.deleteByUserIdAndHouseId(userId, houseId);
     }
+	
 	public List<Long> getHouseIdsByUserId(Long userId) {
 		return collectRepository.findHouseIdsByUserId(userId);
 	}
+	
+	@Transactional
+    public void addFavorite(Long userId, Long houseId) {
+        Optional<UserTableBean> userOptional = userRepository.findById(userId);
+        Optional<HouseTableBean> houseOptional = houseRepository.findById(houseId);
 
-	public CollectTableBean addToCollection(CollectTableBean collect) {
-	    // 檢查 house 是否已存在
-	    if (collect.getHouse() == null || collect.getHouse().getHouseId() == null) {
-	        throw new RuntimeException("House ID cannot be null");
-	    }
-	    HouseTableBean existingHouse = houseRepository.findById(collect.getHouse().getHouseId())
-	            .orElseThrow(() -> new RuntimeException("House does not exist"));
-	    collect.setHouse(existingHouse); // 設置已存在的 house
+        if (userOptional.isPresent() && houseOptional.isPresent()) {
+            CollectTableBean collect = new CollectTableBean();
+            collect.setUser(userOptional.get());
+            collect.setHouse(houseOptional.get());
+            collect.setCollectTime(LocalDateTime.now());
 
-	    // 檢查 user 是否已存在
-	    if (collect.getUser() == null || collect.getUser().getUserId() == null) {
-	        throw new RuntimeException("User ID cannot be null");
-	    }
-	    UserTableBean existingUser = userRepository.findById(collect.getUser().getUserId())
-	            .orElseThrow(() -> new RuntimeException("User does not exist"));
-	    collect.setUser(existingUser); // 設置已存在的 user
+            collectRepository.save(collect);
+        } else {
+            throw new IllegalArgumentException("User or House not found.");
+        }
+    }
+	
+	public boolean isHouseFavorited(Long userId, Long houseId) {
+        return collectRepository.existsByUser_UserIdAndHouse_HouseId(userId, houseId);
+    }
 
-	    // 設置收藏時間
-	    collect.setCollectTime(LocalDateTime.now());
 
-	    // 保存 CollectTableBean
-	    return collectRepository.save(collect);
-	}
 }
 
