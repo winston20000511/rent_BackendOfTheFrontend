@@ -16,18 +16,17 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 @NoArgsConstructor
 @Getter
 @Setter
 @Entity
+@ToString
 @Table(name = "orders_table")
 public class OrderBean {
 	
 	@Column(name = "user_id")
 	private Long userId;
-	
-	@Column(name = "merchant_id")
-	private String merchantId;
 	
 	@Id
 	@Column(name = "merchantTradNo")
@@ -48,14 +47,14 @@ public class OrderBean {
 	@Column(name = "order_status", columnDefinition = "TINYINT")
 	private Short orderStatus;
 	
-	@Column(name = "returnUrl")
-	private String returnUrl;
-	
 	@Column(name = "choosePayment")
 	private String choosePayment;
+
+	@Column(name = "third_party")
+	private Short thirdParty;
 	
-	@Column(name = "checkMacValue")
-	private String checkMacValue;
+	@Column(name = "returnValue")
+	private String returnValue;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="user_id", insertable=false, updatable=false)

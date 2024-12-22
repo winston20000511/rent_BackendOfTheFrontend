@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtAspect {
 
     // 定義不需要 JWT 驗證的路徑集合
-	private static final Set<String> EXCLUDED_URIS = new HashSet<>();
+    private static final Set<String> EXCLUDED_URIS = new HashSet<>();
 
     static {
         EXCLUDED_URIS.add("/api/user/login");    // 登入頁面
@@ -35,6 +35,7 @@ public class JwtAspect {
         EXCLUDED_URIS.add("/public/api");        // 未來新增的公共頁面
         EXCLUDED_URIS.add("/api/test"); //SearchController
         EXCLUDED_URIS.add("/api/map"); //SearchController
+        EXCLUDED_URIS.add("/api/draw"); //SearchController
         EXCLUDED_URIS.add("/api/keyword"); //SearchController
     }
 
@@ -82,7 +83,7 @@ public class JwtAspect {
             }
             // 檢查 Token 是否需要更新
             if (JwtUtil.isNeedUpdate(token)) {
-                String newToken = JwtUtil.sign(verify[0], Long.parseLong(verify[1]) );
+                String newToken = JwtUtil.sign(verify[0], Long.parseLong(verify[1]),verify[2] );//modify {,verify[2]} 
                 attributes.getResponse().setHeader(JwtUtil.TOKEN, newToken);
             }
         } else {

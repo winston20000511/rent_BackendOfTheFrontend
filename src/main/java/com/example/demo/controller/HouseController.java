@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -35,7 +37,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.demo.dto.HouseDetailsDTO;
 import com.example.demo.dto.HouseListByUserIdDTO;
 import com.example.demo.dto.HouseOwnerInfoDTO;
+import com.example.demo.helper.JwtUtil;
 import com.example.demo.helper.SearchHelper;
+import com.example.demo.helper.UnTokenException;
 import com.example.demo.model.CollectTableBean;
 import com.example.demo.model.ConditionTableBean;
 import com.example.demo.model.FurnitureTableBean;
@@ -48,6 +52,8 @@ import com.example.demo.repository.HouseRepository;
 import com.example.demo.service.CollectService;
 import com.example.demo.service.HouseService;
 import com.example.demo.service.UserService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/houses")
@@ -286,20 +292,68 @@ public class HouseController {
 	    public HouseOwnerInfoDTO getHouseOwnerInfo(@PathVariable Long houseId) {
 	        return houseService.getHouseOwnerInfoByHouseId(houseId);
 	    }
-	@DeleteMapping("/collect/delete/{userId}/{houseId}")
-	public ResponseEntity<String> deleteCollectByUserIdAndHouseId(@PathVariable Long userId, @PathVariable Long houseId) {
-	    try {
-	        collectService.deleteByUserIdAndHouseId(userId, houseId);
-	        return ResponseEntity.ok("Collect data deleted successfully for userId: " + userId + " and houseId: " + houseId);
-	    } catch (Exception e) {
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Failed to delete collect data: " + e.getMessage());
-	    }
-	}
-	@GetMapping("/collect/{userId}")
-	public List<Long> getHouseIds(@PathVariable Long userId) {
-		return collectService.getHouseIdsByUserId(userId);
-	}
+	 
+//	 COLLECT FUNCTION
+	 @DeleteMapping("collect/delete/{houseId}")
+	 public ResponseEntity<String> deleteCollect(@RequestHeader("authorization") String authorizationHeader, @PathVariable Long houseId) {
+	     try {
+	         // 從 Token 解析出 email
+	    	 String[] userInfo = JwtUtil.verify(authorizationHeader);
+	 		Long userId = Long.parseLong(userInfo[1]);
+
+	        
+	         // 使用工具類根據 email 查找 userId
+	       
+
+	         // 執行刪除邏輯
+	         collectService.deleteByUserIdAndHouseId(userId, houseId);
+
+	         return ResponseEntity.ok("成功刪除收藏資料，userId: " + userId + " houseId: " + houseId);
+	     } catch (UnTokenException e) {
+	         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+	     } catch (Exception e) {
+	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("刪除失敗，發生未知錯誤");
+	     }
+	 }
+
+	 @GetMapping("/collect")
+	 public ResponseEntity<?> getHouseIds(@RequestHeader("authorization") String authorizationHeader) {
+	     try {
+	         // 從 Token 解析出 email
+	    	 String[] userInfo = JwtUtil.verify(authorizationHeader);
+	 		Long userId = Long.parseLong(userInfo[1]);
+	         // 調用服務層獲取房屋 ID 列表
+	         List<Long> houseIds = collectService.getHouseIdsByUserId(userId);
+	         if (houseIds == null) {
+	             houseIds = Collections.emptyList();
+	         }
+	         return ResponseEntity.ok(houseIds);
+	     } catch (UnTokenException e) {
+	         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+	     } catch (Exception e) {
+	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("獲取房屋 ID 失敗，發生未知錯誤");
+	     }
+	 }
+
+	 @GetMapping("/houses")
+	 public ResponseEntity<?> getHouses(@RequestHeader("authorization") String authorizationHeader) {
+	     try {
+	         // 從 Token 解析出 email
+	    	 String[] userInfo = JwtUtil.verify(authorizationHeader);
+		 		Long userId = Long.parseLong(userInfo[1]);
+
+	      
+	         // 調用服務層邏輯，獲取房屋列表
+	         List<HouseListByUserIdDTO> houses = houseService.getHousesByUserId(userId);
+
+	         return ResponseEntity.ok(houses);
+	     } catch (UnTokenException e) {
+	         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+	     } catch (Exception e) {
+	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("獲取房屋列表失敗，發生未知錯誤");
+	     }
+	 }
+
 	 @PostMapping("/collect/add")
 	    public ResponseEntity<CollectTableBean> addToCollection(@RequestBody CollectTableBean collect) {
 	        // 設置收藏時間
@@ -308,9 +362,5 @@ public class HouseController {
 	        return ResponseEntity.ok(collectedItem);
 	    }
 
-	@GetMapping("/user/{userId}")
-	public List<HouseListByUserIdDTO> getHousesByUserId(@PathVariable Long userId) {
-		return houseService.getHousesByUserId(userId);
-	}
 
 }
