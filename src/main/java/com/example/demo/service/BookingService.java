@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -7,6 +8,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.BookingDTO;
@@ -38,6 +40,19 @@ public class BookingService {
 
 	@Autowired
 	private JavaMailSender mailSender;
+	
+	// 更新 預約狀態
+	@Scheduled(cron = "0 1 0 * * ?")//每天 01:01 更新
+    public void updateHouseStatus() {
+		System.out.println("-------開始更新預約狀態---------");
+
+		LocalDate yesterday = LocalDate.now().plusDays(1);
+        bookingRepo.updateStatusOfOverdue(yesterday);
+        bookingRepo.updateStatusOfFinish(yesterday);
+        
+        System.out.println("-----------結束--------------");
+    }
+	
 
 	public List<String> findBookingedByHouseId(Long houseId){
 		List<String> bookingedList = bookingRepo.findBookingedByHouseId(houseId);

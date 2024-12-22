@@ -1,11 +1,13 @@
 package com.example.demo.repository;
 
-import java.sql.Date;
-import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.dto.BookingDetailDTO;
 import com.example.demo.dto.HouseOwnerDetailDTO;
@@ -30,12 +32,25 @@ public interface BookingRepository extends JpaRepository<BookingBean, Long> {
 	
 	@Query(value = "SELECT h.house_id, u.email FROM  house_table h JOIN user_table u ON h.user_id = u.user_id WHERE h.user_id = :houseId", nativeQuery = true)
 	HouseOwnerDetailDTO getOwnerDetailByHouseId(Long houseId);
-
+	
+	// 
 	@Query(value = "SELECT count(*) FROM booking_table WHERE house_id = :houseId "
 			+ "AND booking_date = :date "
 			+ "AND booking_time = CAST(:time AS time) "
 			+ "AND status <= 1", nativeQuery = true)
-	Integer isExistBooking(Long houseId, Date date, Time time);
-	/* status 0:待確認 1:房東接受 2:房東拒絕 3:預約取消 4:過期 */
+	Integer isExistBooking(Long houseId, LocalDate date, LocalTime time);
+	
+	@Transactional
+	@Modifying
+	@Query("UPDATE BookingBean SET status = 6 WHERE status = 1 AND bookingDate < :date")
+	void updateStatusOfOverdue(LocalDate date);
+	
+	
+	@Transactional
+	@Modifying
+	@Query("UPDATE BookingBean SET status = 5 WHERE status = 0 AND bookingDate < :date")
+	void updateStatusOfFinish(LocalDate date);
+	
+	/* status 0:待確認 1:屋主接受 2:屋主拒絕 3:屋主取消 4:租客取消 5:逾期 6:結束 */
 
 }

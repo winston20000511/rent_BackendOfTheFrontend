@@ -115,7 +115,7 @@ public class BookingController {
 	        bookingDTO.setUserId(Long.parseLong(jwtResult[1]));
 	        bookingDTO.setCreateDate(LocalDateTime.now());
 	        bookingDTO.setStatus((byte) 0);
-	        System.out.println(bookingDTO.getUserId());
+
 	        BookingResponseDTO response = bookingService.createBooking(bookingDTO);
 	        return ResponseEntity.ok().body(response);
 

@@ -3,7 +3,9 @@ package com.example.demo.controller;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
@@ -103,10 +105,10 @@ public class HouseController {
 	        @RequestParam String description,
 	        @RequestParam String houseType,
 	        @RequestParam("images") List<MultipartFile> images,
-	        @RequestParam Date fromDate,
-	        @RequestParam Date toDate,
-	        @RequestParam Time fromTime,
-	        @RequestParam Time toTime,
+	        @RequestParam LocalDate fromDate,
+	        @RequestParam LocalDate toDate,
+	        @RequestParam LocalTime fromTime,
+	        @RequestParam LocalTime toTime,
 	        @RequestParam Short duration,
 	        @RequestParam String weekDay
 	    ) {
