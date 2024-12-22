@@ -11,14 +11,14 @@ import org.springframework.data.repository.query.Param;
 
 import com.example.demo.model.UserTableBean;
 
+import java.util.Optional;
+
 /**
  * 資料訪問層，用於操作 user_table 表
  */
 public interface UserRepository extends JpaRepository<UserTableBean, Long> {
     
-    @Query("SELECT u.userId FROM UserTableBean u WHERE u.email = :email")
-    Optional<Long> findUserIdByEmail(String email);
-    
+   
     // 根據 email 查詢使用者，登入功能需要用到
     UserTableBean findByEmail(String email);
 

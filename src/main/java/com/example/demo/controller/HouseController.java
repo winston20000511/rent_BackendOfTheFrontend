@@ -1,13 +1,21 @@
 package com.example.demo.controller;
 
+import java.io.IOException;
+import java.sql.Date;
+import java.sql.Time;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -17,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -26,9 +35,13 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.demo.dto.HouseDetailsDTO;
 import com.example.demo.dto.HouseListByUserIdDTO;
 import com.example.demo.dto.HouseOwnerInfoDTO;
+import com.example.demo.helper.JwtUtil;
+import com.example.demo.helper.SearchHelper;
+import com.example.demo.helper.UnTokenException;
 import com.example.demo.model.CollectTableBean;
 import com.example.demo.model.ConditionTableBean;
 import com.example.demo.model.FurnitureTableBean;
+import com.example.demo.model.HouseBookingTimeSlotBean;
 import com.example.demo.model.HouseImageTableBean;
 import com.example.demo.model.HouseTableBean;
 import com.example.demo.model.UserTableBean;
@@ -37,6 +50,8 @@ import com.example.demo.repository.HouseRepository;
 import com.example.demo.service.CollectService;
 import com.example.demo.service.HouseService;
 import com.example.demo.service.UserService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/houses")
@@ -55,6 +70,8 @@ public class HouseController {
 	@Autowired
 	private UserService userService;
 	
+	 @Autowired
+	 private SearchHelper searchHelper;
 	    @PostMapping("/add")
 	    @ResponseBody
 	    public Map<String, String> addHouse(
@@ -91,7 +108,13 @@ public class HouseController {
 	        @RequestParam Byte genderRestrictions,
 	        @RequestParam String description,
 	        @RequestParam String houseType,
-	        @RequestParam("images") List<MultipartFile> images
+	        @RequestParam("images") List<MultipartFile> images,
+	        @RequestParam Date fromDate,
+	        @RequestParam Date toDate,
+	        @RequestParam Time fromTime,
+	        @RequestParam Time toTime,
+	        @RequestParam Short duration,
+	        @RequestParam String weekDay
 	    ) {
 
 	        System.out.println("Received house details: " + title + ", images count: " + (images != null ? images.size() : 0));
@@ -115,9 +138,30 @@ public class HouseController {
 	        house.setAtticAddition(atticAddition);
 	        house.setDescription(description);
 	        house.setHouseType(houseType);
-	        house.setStatus((byte) 0);
+	        house.setStatus((byte) 1);
 	        house.setClickCount(0);
-
+	              
+	        try {
+	            JSONObject geocodeJson = searchHelper.fetchGeocodeFromAPI(address); // 使用 searchHelper 調用方法
+	            Optional<double[]> latLng = searchHelper.parseLatLng(geocodeJson);
+	            
+	            if (latLng.isPresent()) {
+	                house.setLat(latLng.get()[0]); // 設置緯度
+	                house.setLng(latLng.get()[1]); // 設置經度
+	            } else {
+	                System.out.println("無法獲取經緯度，將 lat 和 lng 設置為 null");
+	                house.setLat(null);
+	                house.setLng(null);
+	            }
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	            house.setLat(null);
+	            house.setLng(null);
+	        } catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    	
 	        // 添加 Furniture 資訊
 	        FurnitureTableBean furniture = new FurnitureTableBean();
 	        furniture.setWashingMachine(washingMachine);
@@ -171,7 +215,17 @@ public class HouseController {
 	            System.out.println("No images received.");
 	        }
 	        
-
+	        //添加 HouseBookingTimeSlot 資訊
+	        HouseBookingTimeSlotBean booking = new HouseBookingTimeSlotBean();
+	        booking.setFromDate(fromDate);
+	        booking.setToDate(toDate);
+	        booking.setFromTime(fromTime);
+	        booking.setToTime(toTime);
+	        booking.setDuration(duration);
+	        booking.setWeekDay(weekDay);
+	        booking.setHouse(house);
+	        house.setBookingTimeSlots(booking);
+	        
 	        // 保存房屋資訊
 	        houseService.addHouse(house);
 
@@ -208,13 +262,17 @@ public class HouseController {
 		return ResponseEntity.ok(houseDetails);
 	}
 	@GetMapping("/Description/{houseId}")
-	public ResponseEntity<String> getHouseDescription(@PathVariable Long houseId) {
+	public ResponseEntity<Map<String, String>> getHouseDescription(@PathVariable Long houseId) {
 	    // 查找 HouseTable 資料
 	    HouseTableBean house = houseRepository.findById(houseId)
 	        .orElseThrow(() -> new RuntimeException("House not found"));
 
-	    // 返回簡介部分
-	    return ResponseEntity.ok(house.getDescription());  // 只返回簡介資料
+	    // 创建一个 Map 来包装返回的 JSON 数据
+	    Map<String, String> response = new HashMap<>();
+	    response.put("description", house.getDescription());  // 将描述放入 Map
+
+	    // 返回 JSON 格式的响应
+	    return ResponseEntity.ok(response);
 	}
 
 	
@@ -228,38 +286,72 @@ public class HouseController {
 	    return ResponseEntity.ok(house.getTitle());  // 只返回簡介資料
 	}
 
-	 @GetMapping("/Owner/{houseId}")
-	    public ResponseEntity<HouseOwnerInfoDTO> getOwner(@PathVariable Long houseId) {
-		 System.out.println(houseId);
-	        try {
-	            // 获取屋主信息
-	            HouseOwnerInfoDTO houseOwnerInfo = userService.getOwnerInfo(houseId);
-	            System.out.println("houseOwnerInfo:"+ houseOwnerInfo);
-	            if (houseOwnerInfo == null) {
-	                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-	            }
-
-	            return ResponseEntity.ok(houseOwnerInfo);
-	        } catch (Exception e) {
-	        	e.printStackTrace();
-	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-	        }
+	 @GetMapping("/owner/{houseId}")
+	    public HouseOwnerInfoDTO getHouseOwnerInfo(@PathVariable Long houseId) {
+	        return houseService.getHouseOwnerInfoByHouseId(houseId);
 	    }
+	 
+//	 COLLECT FUNCTION
+	 @DeleteMapping("collect/delete/{houseId}")
+	 public ResponseEntity<String> deleteCollect(@RequestHeader("authorization") String authorizationHeader, @PathVariable Long houseId) {
+	     try {
+	         // 從 Token 解析出 email
+	    	 String[] userInfo = JwtUtil.verify(authorizationHeader);
+	 		Long userId = Long.parseLong(userInfo[1]);
 
-	@DeleteMapping("/collect/delete/{userId}/{houseId}")
-	public ResponseEntity<String> deleteCollectByUserIdAndHouseId(@PathVariable Long userId, @PathVariable Long houseId) {
-	    try {
-	        collectService.deleteByUserIdAndHouseId(userId, houseId);
-	        return ResponseEntity.ok("Collect data deleted successfully for userId: " + userId + " and houseId: " + houseId);
-	    } catch (Exception e) {
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Failed to delete collect data: " + e.getMessage());
-	    }
-	}
-	@GetMapping("/collect/{userId}")
-	public List<Long> getHouseIds(@PathVariable Long userId) {
-		return collectService.getHouseIdsByUserId(userId);
-	}
+	        
+	         // 使用工具類根據 email 查找 userId
+	       
+
+	         // 執行刪除邏輯
+	         collectService.deleteByUserIdAndHouseId(userId, houseId);
+
+	         return ResponseEntity.ok("成功刪除收藏資料，userId: " + userId + " houseId: " + houseId);
+	     } catch (UnTokenException e) {
+	         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+	     } catch (Exception e) {
+	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("刪除失敗，發生未知錯誤");
+	     }
+	 }
+
+	 @GetMapping("/collect")
+	 public ResponseEntity<?> getHouseIds(@RequestHeader("authorization") String authorizationHeader) {
+	     try {
+	         // 從 Token 解析出 email
+	    	 String[] userInfo = JwtUtil.verify(authorizationHeader);
+	 		Long userId = Long.parseLong(userInfo[1]);
+	         // 調用服務層獲取房屋 ID 列表
+	         List<Long> houseIds = collectService.getHouseIdsByUserId(userId);
+	         if (houseIds == null) {
+	             houseIds = Collections.emptyList();
+	         }
+	         return ResponseEntity.ok(houseIds);
+	     } catch (UnTokenException e) {
+	         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+	     } catch (Exception e) {
+	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("獲取房屋 ID 失敗，發生未知錯誤");
+	     }
+	 }
+
+	 @GetMapping("/houses")
+	 public ResponseEntity<?> getHouses(@RequestHeader("authorization") String authorizationHeader) {
+	     try {
+	         // 從 Token 解析出 email
+	    	 String[] userInfo = JwtUtil.verify(authorizationHeader);
+		 		Long userId = Long.parseLong(userInfo[1]);
+
+	      
+	         // 調用服務層邏輯，獲取房屋列表
+	         List<HouseListByUserIdDTO> houses = houseService.getHousesByUserId(userId);
+
+	         return ResponseEntity.ok(houses);
+	     } catch (UnTokenException e) {
+	         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+	     } catch (Exception e) {
+	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("獲取房屋列表失敗，發生未知錯誤");
+	     }
+	 }
+
 	 @PostMapping("/collect/add")
 	    public ResponseEntity<CollectTableBean> addToCollection(@RequestBody CollectTableBean collect) {
 	        // 設置收藏時間
@@ -268,9 +360,5 @@ public class HouseController {
 	        return ResponseEntity.ok(collectedItem);
 	    }
 
-	@GetMapping("/user/{userId}")
-	public List<HouseListByUserIdDTO> getHousesByUserId(@PathVariable Long userId) {
-		return houseService.getHousesByUserId(userId);
-	}
 
 }

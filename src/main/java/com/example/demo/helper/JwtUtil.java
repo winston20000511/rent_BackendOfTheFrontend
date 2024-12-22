@@ -3,6 +3,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,13 +19,24 @@ public class JwtUtil {
     // Token字段名
     public static final String TOKEN = "authorization";
 
+    
+    /*modify 
+     * add name
+     * public static String sign add{(string name)}
+     * public static String[] verify
+     * add(String name = jwt.getClaim("name").asString();)
+     * modify  {return jwt != null ? new String[]{userEmail,userId.toString(),name} : null;}
+     * */
+    
     // 簽名生成，根據用戶名生成JWT
-    public static String sign(String userName , Long userId) {
+    public static String sign(String userEmail , Long userId ,String name) {
         return JWT.create()
                 // 設置主題，即用戶名
-                .withSubject(userName)
+                .withSubject(userEmail)
                 // 設置過期時間
                 .withClaim("userId", userId)
+                .withClaim("name", name) 
+
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRE_TIME))
                 // 使用HMAC256算法和密鑰進行簽名
                 .sign(Algorithm.HMAC256(TOKEN_SECRET));
@@ -39,8 +51,11 @@ public class JwtUtil {
             DecodedJWT jwt = verifier.verify(token);
             String userEmail = jwt.getSubject();
             Integer userId = jwt.getClaim("userId").asInt();
+            String name = jwt.getClaim("name").asString();
+            
             // 返回主題（用戶名），如果jwt為null則返回null
-            return jwt != null ? new String[]{userEmail,userId.toString()} : null;
+
+            return jwt != null ? new String[]{userEmail,userId.toString(),name} : null;
         } catch (TokenExpiredException e) {
             // 捕獲token過期異常，並拋出自定義異常
             throw new UnTokenException("Token expired.");

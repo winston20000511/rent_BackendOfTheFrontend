@@ -1,8 +1,10 @@
 package com.example.demo.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,7 +40,7 @@ public class SearchController {
 		AddressDTO origin = searchService.placeConvertToAdress(request.getOrigin());
 		ResponseMapPOJO mapPOJO = searchService.findByCityAndTownship(origin);
 		long startTime = System.currentTimeMillis();
-		mapPOJO.setSearchList(searchService.getDurationAndDistance(mapPOJO.getSearchList(), origin));
+		mapPOJO.setSearchList(searchService.getDurationAndDistance(mapPOJO.getSearchList(), origin,2));
 		long endTime = System.currentTimeMillis();
 		System.out.println("執行時間：" + (endTime - startTime) + " 毫秒");
 		return mapPOJO;
@@ -61,9 +63,20 @@ public class SearchController {
 	
 	@CrossOrigin(origins="*")
 	@PostMapping("/api/draw")
-	public void drawShowMap(@RequestBody List<DrawLatLngDTO> drawDtoList) {
-		searchService.getPlaceGoogleAPI(drawDtoList);
-		
+	public ResponseMapPOJO drawShowMap(@RequestBody List<DrawLatLngDTO> drawDtoList) {
+        ResponseMapPOJO mapPOJO = null;
+        try {
+            mapPOJO = searchService.getPlaceGoogleAPI(drawDtoList);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        long startTime = System.currentTimeMillis();
+//		int[] spec = searchService.getMinAndMaxRadius(drawDtoList,mapPOJO.getSearchOrigin());
+		mapPOJO.setSearchList(searchService.getDrawDistance(mapPOJO.getSearchList(), mapPOJO.getSearchOrigin(),drawDtoList));
+		long endTime = System.currentTimeMillis();
+		return mapPOJO;
 	}
 	
 }

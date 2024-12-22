@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import com.example.demo.dto.HouseDetailsDTO;
 import com.example.demo.dto.HouseListByUserIdDTO;
 import com.example.demo.dto.HouseOwnerDetailDTO;
+import com.example.demo.dto.HouseOwnerInfoDTO;
 import com.example.demo.model.HouseImageTableBean;
 import com.example.demo.model.HouseTableBean;
 
@@ -26,13 +27,18 @@ public interface HouseRepository extends JpaRepository<HouseTableBean, Long> {
 			+ "where h.user_id = :userId and a.ad_id is null", nativeQuery = true)
 	public List<Map<String, Object>> findNoAdHouses(Long userId);
 
+
+	@Query("SELECT new com.example.demo.dto.HouseOwnerInfoDTO(u.name, u.picture, u.phone) " + "FROM HouseTableBean h "
+			+ "JOIN h.user u " + "WHERE h.houseId = :houseId")
+	HouseOwnerInfoDTO findHouseOwnerInfoByHouseId(@Param("houseId") Long houseId);
+
+	@Query("SELECT new com.example.demo.dto.HouseListByUserIdDTO(h.houseId, h.user.userId) "
+			+ "FROM HouseTableBean h WHERE h.user.userId = :userId")
+	List<HouseListByUserIdDTO> findHousesByUserId(@Param("userId") Long userId);
+
 	@Query(value = "SELECT h.house_id, u.email FROM  house_table h JOIN user_table u ON h.user_id = u.user_id WHERE h.user_id = :houseId", nativeQuery = true)
 	HouseOwnerDetailDTO getOwnerDetailByHouseId(Long houseId);
-	
-	@Query("SELECT new com.example.demo.dto.HouseListByUserIdDTO(h.houseId, h.user.userId) " +
-		       "FROM HouseTableBean h WHERE h.user.userId = :userId")
-		List<HouseListByUserIdDTO> findHousesByUserId(@Param("userId") Long userId);
-	
+
 	
 	/**
 	 * 篩選使用者當前擁有的物件中，無申請或無使用推播服務者
@@ -60,7 +66,6 @@ public interface HouseRepository extends JpaRepository<HouseTableBean, Long> {
                  "AND (h.user_id = :userId)",
     nativeQuery = true)
 	public Page<Map<String, Object>> findHousesWithoutAds(Long userId, Pageable pageable);
-
 
 
 	
