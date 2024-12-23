@@ -15,6 +15,7 @@ import com.example.demo.dto.HouseOwnerDetailDTO;
 import com.example.demo.dto.HouseOwnerInfoDTO;
 import com.example.demo.model.HouseImageTableBean;
 import com.example.demo.model.HouseTableBean;
+import com.example.demo.model.UserTableBean;
 
 public interface HouseRepository extends JpaRepository<HouseTableBean, Long> {
 
@@ -26,11 +27,10 @@ public interface HouseRepository extends JpaRepository<HouseTableBean, Long> {
 			+ "left join ads_table a on a.house_id = h.house_id "
 			+ "where h.user_id = :userId and a.ad_id is null", nativeQuery = true)
 	public List<Map<String, Object>> findNoAdHouses(Long userId);
+	
+	@Query("SELECT h.user FROM HouseTableBean h WHERE h.houseId = :houseId")
+    UserTableBean findOwnerByHouseId(Long houseId);
 
-
-	@Query("SELECT new com.example.demo.dto.HouseOwnerInfoDTO(u.name, u.picture, u.phone) " + "FROM HouseTableBean h "
-			+ "JOIN h.user u " + "WHERE h.houseId = :houseId")
-	HouseOwnerInfoDTO findHouseOwnerInfoByHouseId(@Param("houseId") Long houseId);
 
 	@Query("SELECT new com.example.demo.dto.HouseListByUserIdDTO(h.houseId, h.user.userId) "
 		       + "FROM HouseTableBean h WHERE h.user.userId = :userId AND h.status <= 1")

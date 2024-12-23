@@ -34,17 +34,7 @@ public class CollectService {
         collectRepository.deleteByUserIdAndHouseId(userId, houseId);
     }
 	
-	public List<HouseOwnerInfoDTO> getHouseIdsByUserId(Long userId) {
-	    List<Object[]> results = collectRepository.findRawHouseOwnerInfoByUserId(userId);
-	    return results.stream().map(record -> {
-	        String name = (String) record[0];
-	        byte[] picture = (byte[]) record[1];
-	        String phone = (String) record[2];
-	        String base64Picture = picture != null ? Base64.getEncoder().encodeToString(picture) : null;
-
-	        return new HouseOwnerInfoDTO(name, base64Picture, phone);
-	    }).collect(Collectors.toList());
-	}
+	
 	@Transactional
     public void addFavorite(Long userId, Long houseId) {
         Optional<UserTableBean> userOptional = userRepository.findById(userId);
@@ -65,6 +55,12 @@ public class CollectService {
 	public boolean isHouseFavorited(Long userId, Long houseId) {
         return collectRepository.existsByUser_UserIdAndHouse_HouseId(userId, houseId);
     }
+
+
+	public List<HouseOwnerInfoDTO> getHouseIdsByUserId(Long userId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 
 }

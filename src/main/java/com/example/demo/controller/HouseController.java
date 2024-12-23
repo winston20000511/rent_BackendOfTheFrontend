@@ -290,11 +290,14 @@ public class HouseController {
 		return ResponseEntity.ok(house.getTitle()); // 只返回簡介資料
 	}
 
-	@GetMapping("/owner/{houseId}")
-	public HouseOwnerInfoDTO getHouseOwnerInfo(@PathVariable Long houseId) {
-		
-		return houseService.getHouseOwnerInfoByHouseId(houseId);
-	}
+	@GetMapping("/ownerInfo/{houseId}")
+    public ResponseEntity<HouseOwnerInfoDTO> getOwnerInfo(@PathVariable Long houseId) {
+        HouseOwnerInfoDTO ownerInfo = houseService.getOwnerInfoByHouseId(houseId);
+        if (ownerInfo != null) {
+            return ResponseEntity.ok(ownerInfo);
+        }
+        return ResponseEntity.notFound().build();
+    }
 
 //	 COLLECT FUNCTION
 	@DeleteMapping("collect/delete/{houseId}")
