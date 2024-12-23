@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.example.demo.dto.HouseOwnerInfoDTO;
 import com.example.demo.model.CollectTableBean;
 
 import jakarta.transaction.Transactional;
@@ -15,10 +16,10 @@ import jakarta.transaction.Transactional;
 @Repository
 public interface CollectRepository extends JpaRepository<CollectTableBean, Long> {
 	// 根據USERID列出USER收藏房屋的ID清單
-	@Query("SELECT c.house.houseId FROM CollectTableBean c WHERE c.user.userId = :userId")
-	List<Long> findHouseIdsByUserId(@Param("userId") Long userId);
+	@Query("SELECT o.name, o.picture, o.phone FROM HouseTableBean h JOIN h.user o WHERE o.userId = :userId")
+	List<Object[]> findRawHouseOwnerInfoByUserId(@Param("userId") Long userId);
 
-	@Modifying
+    @Modifying
 	@Transactional
 	@Query("DELETE FROM CollectTableBean c WHERE c.user.userId = :userId AND c.house.houseId = :houseId")
 	void deleteByUserIdAndHouseId(@Param("userId") Long userId, @Param("houseId") Long houseId);

@@ -292,6 +292,7 @@ public class HouseController {
 
 	@GetMapping("/owner/{houseId}")
 	public HouseOwnerInfoDTO getHouseOwnerInfo(@PathVariable Long houseId) {
+		
 		return houseService.getHouseOwnerInfoByHouseId(houseId);
 	}
 
@@ -315,20 +316,19 @@ public class HouseController {
 
 	@GetMapping("/collect")
 	public ResponseEntity<?> getHouseIds(@RequestHeader("authorization") String authorizationHeader) {
-		try {
-			// 從 Token 解析出 email
-			Long userId = extractUserIdFromToken(authorizationHeader);
-			// 調用服務層獲取房屋 ID 列表
-			List<Long> houseIds = collectService.getHouseIdsByUserId(userId);
-			if (houseIds == null) {
-				houseIds = Collections.emptyList();
-			}
-			return ResponseEntity.ok(houseIds);
-		} catch (UnTokenException e) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("獲取房屋 ID 失敗，發生未知錯誤");
-		}
+	    try {
+	        Long userId = extractUserIdFromToken(authorizationHeader);
+	        List<HouseOwnerInfoDTO> houseIds = collectService.getHouseIdsByUserId(userId);
+	        if (houseIds == null) {
+	            houseIds = Collections.emptyList();
+	        }
+	        return ResponseEntity.ok(houseIds);
+	    } catch (UnTokenException e) {
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+	    } catch (Exception e) {
+	        e.printStackTrace(); // 打印完整的堆棧日誌
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("獲取房屋 ID 失敗，發生未知錯誤");
+	    }
 	}
 
 	@GetMapping("/houses")

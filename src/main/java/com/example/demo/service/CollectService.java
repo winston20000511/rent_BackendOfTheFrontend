@@ -1,12 +1,15 @@
 package com.example.demo.service;
 
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.dto.HouseOwnerInfoDTO;
 import com.example.demo.model.CollectTableBean;
 import com.example.demo.model.HouseTableBean;
 import com.example.demo.model.UserTableBean;
@@ -31,10 +34,17 @@ public class CollectService {
         collectRepository.deleteByUserIdAndHouseId(userId, houseId);
     }
 	
-	public List<Long> getHouseIdsByUserId(Long userId) {
-		return collectRepository.findHouseIdsByUserId(userId);
+	public List<HouseOwnerInfoDTO> getHouseIdsByUserId(Long userId) {
+	    List<Object[]> results = collectRepository.findRawHouseOwnerInfoByUserId(userId);
+	    return results.stream().map(record -> {
+	        String name = (String) record[0];
+	        byte[] picture = (byte[]) record[1];
+	        String phone = (String) record[2];
+	        String base64Picture = picture != null ? Base64.getEncoder().encodeToString(picture) : null;
+
+	        return new HouseOwnerInfoDTO(name, base64Picture, phone);
+	    }).collect(Collectors.toList());
 	}
-	
 	@Transactional
     public void addFavorite(Long userId, Long houseId) {
         Optional<UserTableBean> userOptional = userRepository.findById(userId);
