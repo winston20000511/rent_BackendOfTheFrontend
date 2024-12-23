@@ -321,7 +321,7 @@ public class HouseController {
 	public ResponseEntity<?> getHouseIds(@RequestHeader("authorization") String authorizationHeader) {
 	    try {
 	        Long userId = extractUserIdFromToken(authorizationHeader);
-	        List<HouseOwnerInfoDTO> houseIds = collectService.getHouseIdsByUserId(userId);
+	        List<Long> houseIds = collectService.getHouseIdsByUserId(userId);
 	        if (houseIds == null) {
 	            houseIds = Collections.emptyList();
 	        }
@@ -333,6 +333,7 @@ public class HouseController {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("獲取房屋 ID 失敗，發生未知錯誤");
 	    }
 	}
+  
 
 	@GetMapping("/houses")
 	public ResponseEntity<?> getHouses(@RequestHeader("authorization") String authorizationHeader) {

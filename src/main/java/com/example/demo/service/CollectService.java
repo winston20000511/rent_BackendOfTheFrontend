@@ -57,11 +57,10 @@ public class CollectService {
     }
 
 
-	public List<HouseOwnerInfoDTO> getHouseIdsByUserId(Long userId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
+    public List<Long> getHouseIdsByUserId(Long userId) {
+        return collectRepository.findHouseIdsByUserId(userId);
+    }
 
 }
 

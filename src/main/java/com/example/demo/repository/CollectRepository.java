@@ -9,16 +9,16 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.demo.model.CollectTableBean;
+import com.example.demo.model.HouseTableBean;
 
 import jakarta.transaction.Transactional;
 
 @Repository
 public interface CollectRepository extends JpaRepository<CollectTableBean, Long> {
 	// 根據USERID列出USER收藏房屋的ID清單
-
-	@Query("SELECT c.house.houseId FROM CollectTableBean c WHERE c.user.userId = :userId")
-	List<Long> findHouseIdsByUserId(@Param("userId") Long userId);
-
+    @Query("SELECT c.house.houseId FROM CollectTableBean c WHERE c.user.userId = :userId")
+    List<Long> findHouseIdsByUserId(Long userId);
+  
 	@Query("SELECT o.name, o.picture, o.phone FROM HouseTableBean h JOIN h.user o WHERE o.userId = :userId")
 	List<Object[]> findRawHouseOwnerInfoByUserId(@Param("userId") Long userId);
     @Modifying
