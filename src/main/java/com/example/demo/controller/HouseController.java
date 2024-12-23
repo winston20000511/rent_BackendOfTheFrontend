@@ -296,10 +296,14 @@ public class HouseController {
 		return ResponseEntity.ok(house.getTitle()); // 只返回簡介資料
 	}
 
-	@GetMapping("/owner/{houseId}")
-	public HouseOwnerInfoDTO getHouseOwnerInfo(@PathVariable Long houseId) {
-		return houseService.getHouseOwnerInfoByHouseId(houseId);
-	}
+	@GetMapping("/ownerInfo/{houseId}")
+    public ResponseEntity<HouseOwnerInfoDTO> getOwnerInfo(@PathVariable Long houseId) {
+        HouseOwnerInfoDTO ownerInfo = houseService.getOwnerInfoByHouseId(houseId);
+        if (ownerInfo != null) {
+            return ResponseEntity.ok(ownerInfo);
+        }
+        return ResponseEntity.notFound().build();
+    }
 
 //	 COLLECT FUNCTION
 	@DeleteMapping("collect/delete/{houseId}")
@@ -321,21 +325,21 @@ public class HouseController {
 
 	@GetMapping("/collect")
 	public ResponseEntity<?> getHouseIds(@RequestHeader("authorization") String authorizationHeader) {
-		try {
-			// 從 Token 解析出 email
-			Long userId = extractUserIdFromToken(authorizationHeader);
-			// 調用服務層獲取房屋 ID 列表
-			List<Long> houseIds = collectService.getHouseIdsByUserId(userId);
-			if (houseIds == null) {
-				houseIds = Collections.emptyList();
-			}
-			return ResponseEntity.ok(houseIds);
-		} catch (UnTokenException e) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("獲取房屋 ID 失敗，發生未知錯誤");
-		}
+	    try {
+	        Long userId = extractUserIdFromToken(authorizationHeader);
+	        List<Long> houseIds = collectService.getHouseIdsByUserId(userId);
+	        if (houseIds == null) {
+	            houseIds = Collections.emptyList();
+	        }
+	        return ResponseEntity.ok(houseIds);
+	    } catch (UnTokenException e) {
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+	    } catch (Exception e) {
+	        e.printStackTrace(); // 打印完整的堆棧日誌
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("獲取房屋 ID 失敗，發生未知錯誤");
+	    }
 	}
+  
 
 	@GetMapping("/houses")
 	public ResponseEntity<?> getHouses(@RequestHeader("authorization") String authorizationHeader) {
@@ -354,24 +358,29 @@ public class HouseController {
 		}
 	}
 
-	@GetMapping("/collect/exists")
-	public boolean isFavorited(@RequestHeader("Authorization") String authorizationHeader, @RequestParam Long houseId) {
+	@GetMapping("/collect/exists/{houseId}")
+	public boolean isFavorited(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long houseId) {
 		Long userId = extractUserIdFromToken(authorizationHeader);
 		return collectService.isHouseFavorited(userId, houseId);
 	}
 
 	// 新增收藏
-	@PostMapping("/collect/add")
-	public void addCollect(@RequestHeader("Authorization") String authorizationHeader, @RequestParam Long houseId) {
-		Long userId = extractUserIdFromToken(authorizationHeader);
-		collectService.addFavorite(userId, houseId);
+	@PostMapping("/collect/add/{houseId}")
+	public ResponseEntity<String> addCollect(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long houseId) {
+	    Long userId = extractUserIdFromToken(authorizationHeader);
+	    collectService.addFavorite(userId, houseId);
+	    
+	    // 返回 OK
+	    return ResponseEntity.ok("OK");
 	}
 
 	// 移除收藏
 	@DeleteMapping("/collect/remove/{houseId}")
-	public void removeFavorite(@RequestHeader("Authorization") String authorizationHeader, @RequestParam Long houseId) {
+	public ResponseEntity<String> removeFavorite(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long houseId) {
 		Long userId = extractUserIdFromToken(authorizationHeader);
 		collectService.deleteByUserIdAndHouseId(userId, houseId);
+		
+		return ResponseEntity.ok("OK");
 	}
 
 //	    將TOKEN中的USERID取出

@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -207,8 +208,18 @@ public class HouseService {
 		return false; // 房屋不存在或當前狀態不是0或1
 	}
 
-	public HouseOwnerInfoDTO getHouseOwnerInfoByHouseId(Long houseId) {
-		return houseRepository.findHouseOwnerInfoByHouseId(houseId);
+	public HouseOwnerInfoDTO getOwnerInfoByHouseId(Long houseId) {
+//		HouseOwnerInfoDTO owner = new HouseOwnerInfoDTO();
+	    UserTableBean user = houseRepository.findOwnerByHouseId(houseId);
+//	    String base64Picture = null;
+//        if (owner.getPicture() != null) {
+//            base64Picture = Base64.getEncoder().encodeToString(base64Picture);
+//        }
+	    if (user != null) {
+	        return new HouseOwnerInfoDTO(user.getUserId(),user.getName(), user.getPicture(), user.getPhone());
+	    }
+	    return null; 
 	}
-
+	
+	
 }
