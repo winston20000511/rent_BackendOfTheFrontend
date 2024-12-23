@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import java.io.IOException;
 import java.util.List;
 
+import com.example.demo.dto.KeyWordDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -48,10 +49,10 @@ public class SearchController {
 	
 	@CrossOrigin(origins="*")
 	@PostMapping("/api/keyword")
-	public List<AddressDTO> searchShowkeyword(@RequestBody String srhReq){
-		List<AddressDTO> addressDtoList = searchService.findByKeyWord(srhReq);
+	public List<AddressDTO> searchShowkeyword(@RequestBody KeyWordDTO key){
+		List<AddressDTO> addressDtoList = searchService.findByKeyWord(key.getOrigin());
 		if (addressDtoList.size() == 0 ) {
-			AddressDTO house = searchService.placeConvertToAdress(srhReq);
+			AddressDTO house = searchService.placeConvertToAdress(key.getOrigin());
 			addressDtoList.add(house);
 			return addressDtoList;
 		}else if(addressDtoList.size() < 10) {
