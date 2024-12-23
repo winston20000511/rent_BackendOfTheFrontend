@@ -40,8 +40,8 @@ public class CommonController {
     @GetMapping("/fake")
     public void fake() {
         try {
-            fakeDataService.houseFakeData();
-        } catch (InterruptedException e) {
+            fakeDataService.imageFakeData();
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
         System.out.println("ok");

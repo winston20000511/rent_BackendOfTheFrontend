@@ -215,6 +215,8 @@ public class FakeDataService {
             message.setReceiverId(user.getUserId());
             message.setMessage(String.join("" ,
                     "歡迎光臨 ",user.getName()," 來到我們網站,有送3張折價卷到你的帳戶"));
+
+            //TODO 要塞照片
             messageRepo.save(message);
         }
     }
@@ -250,23 +252,27 @@ public class FakeDataService {
 
     public void imageFakeData() throws IOException {
 
-        int r = 0;
+        UserTableBean user = getRandomUser(7046);
         for(int i = 0 ; i < 7046; i++) {
+
             HouseTableBean house = getRandomHouse(7046);
-            UserTableBean user = getRandomUser(7046);
-            r++;
-            for(int j = 1 ; j < 5 ; j++ ){
+
+            if ( i % 3 == 0){
+                user = getRandomUser(7046);
+            }
+
+            int type = 1+random.nextInt(8);
+            for(int j = 1 ; j < 6 ; j++ ){
                 HouseImageTableBean houseImage = new HouseImageTableBean();
                 houseImage.setHouse(house);
                 houseImage.setUser(user);
-                houseImage.setImages(getHouseJpg(r,j));
+                houseImage.setImages(getRandomHouseJpg(type,j));
                 houseImageRepo.save(houseImage);
             }
-
-            if ( r == 4) {r=0;}
-
         }
     }
+
+    private void bookingTimeSlotFakeData() throws IOException {}
 
 
 
@@ -314,6 +320,15 @@ public class FakeDataService {
 
         return Files.readAllBytes(file.toPath());
     }
+    private UserTableBean getUser(long id){
+        UserTableBean user = new UserTableBean();
+        Optional<UserTableBean> op = userRepo.findById(id);
+        if (op.isPresent()){
+            user = op.get();
+        }
+        return user;
+    }
+
     private UserTableBean getRandomUser(int max){
 //        Random random = new Random();
         int randomValue = random.nextInt(max);
@@ -357,8 +372,9 @@ public class FakeDataService {
         }
         return house;
     }
-    private byte[] getHouseJpg(int r , int i) throws IOException {
-        String picPath = "src/main/resources/static/img/house" + r + i + ".jpeg";
+    private byte[] getRandomHouseJpg(int type , int j) throws IOException {
+
+        String picPath = "src/main/resources/static/img/house" + type + j + ".jpeg";
         File file = new File(picPath);
 
         return Files.readAllBytes(file.toPath());
