@@ -60,6 +60,7 @@ public class AdService {
 		}).orElse(adBean);
 
 		adBean.setIsPaid(false);
+		adBean.setIsCouponUsed(0);
 
 		AdBean savedBean = adRepository.save(adBean);
 		logger.info("新增的ad id: " + savedBean.getAdId().toString());
@@ -188,7 +189,7 @@ public class AdService {
 		}
 		return ads;
 	}
-
+	
 	/**
 	 * 建立多筆提供給使用者看的 AdDetailsResponseDTO 資料
 	 * 
@@ -221,8 +222,8 @@ public class AdService {
 				logger.info("無法解析出數字");
 			}
 			
-			LocalDateTime expiryDate = paidDate.plusDays(days);
 			if (ad.getPaidDate() != null) {
+				LocalDateTime expiryDate = paidDate.plusDays(days);
 				Duration duration = Duration.between(now, expiryDate);
 				responseDTO.setRemainingDays(duration.toDays());
 			}

@@ -18,11 +18,13 @@ import org.springframework.web.client.RestTemplate;
 import com.example.demo.helper.LinepayApiConfig;
 import com.example.demo.helper.PaymentUtil;
 import com.example.demo.model.AdBean;
+import com.example.demo.model.CartItemBean;
 import com.example.demo.model.OrderBean;
 import com.example.demo.model.linepay.CheckoutPaymentRequestForm;
 import com.example.demo.model.linepay.ProductForm;
 import com.example.demo.model.linepay.ProductPackageForm;
 import com.example.demo.model.linepay.RedirectUrls;
+import com.example.demo.repository.CartRepository;
 import com.example.demo.repository.OrderRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -33,14 +35,18 @@ public class LinepayService {
 
 	private Logger logger = Logger.getLogger(LinepayService.class.getName());
 	private OrderRepository orderRepository;
+	private CartRepository cartRepository;
 	private LinepayApiConfig linpayApiConfig;
 	private AdService adService;
+	private CartService cartService;
 
 	public LinepayService(
-			OrderRepository orderRepository, LinepayApiConfig linpayApiConfig, AdService adService) {
+			OrderRepository orderRepository, CartRepository cartRepository, LinepayApiConfig linpayApiConfig, AdService adService, CartService cartService) {
 		this.orderRepository = orderRepository;
+		this.cartRepository = cartRepository;
 		this.linpayApiConfig = linpayApiConfig;
 		this.adService = adService;
+		this.cartService = cartService;
 	}
 
 	/**
@@ -215,7 +221,7 @@ public class LinepayService {
 				logger.info("payment URL: " + paymentURL);
 				logger.info("transaction ID: " + transactionId);
 				
-				updateOrderInfo(orderId, response);
+				updateDatabase(response, orderId);
 				
 				return paymentURL;
 			}
@@ -229,12 +235,12 @@ public class LinepayService {
 	}
 	
 	/**
-	 * 更新資料庫中的orderr及ad資料
+	 * 更新資料庫中的cart、order及ad資料
 	 * @param orderId
 	 * @param returnValue
 	 * @return
 	 */
-	private boolean updateOrderInfo(String orderId, String returnValue) {
+	private boolean updateDatabase(String returnValue, String orderId) {
 	
 		Optional<OrderBean> optional = orderRepository.findById(orderId);
 		if(optional.isPresent()) {
@@ -245,13 +251,27 @@ public class LinepayService {
 			order.setOrderStatus((short)1);
 			
 			List<AdBean> ads = adService.updateAdBeansAfterPaymentVerified(order.getAds(), order);
+			
 			order.setAds(ads);
 			
 			orderRepository.save(order);
+			
+			cartService.deleteCartItems(order.getUserId());
+			cartService.deleteCart(order.getUserId());
+			
+			List<CartItemBean> cartItemResult = cartService.findCartItemsByUserId(order.getUserId());
+			boolean deletedCart = cartService.deleteCart(order.getUserId());
+			if(cartItemResult != null  && deletedCart) {
+				
+				return true;
+			}
+			
+			return false;
 			
 		}else {
 			logger.info("沒有該筆訂單資料: " + orderId);
 		}
 		return false;
 	}
+	
 }

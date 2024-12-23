@@ -65,19 +65,6 @@ public class CartRestController {
 		return cartService.deleteCartItem(userId, adId);
 	}
 	
-	// 1. 金流驗證沒問題 2. 時間到清空
-	@Transactional
-	@DeleteMapping()
-	public boolean deleteCart(
-			@RequestBody Integer cartId, @RequestHeader("authorization") String authorizationHeader) {
-		
-		String[] userInfo = JwtUtil.verify(authorizationHeader);
-		Long userId = Long.parseLong(userInfo[1]);
-		
-		return cartService.deleteCart(userId, cartId);
-	}
-
-	
 	@GetMapping("/coupon")
 	public Byte getUserCouponNumber(@RequestHeader("authorization") String authorizationHeader) {
 		
@@ -86,16 +73,5 @@ public class CartRestController {
 		
 		return cartService.getUserCouponNumber(userId);
 	}
-	
-//	@DeleteMapping("/coupon/remove")
-//	public boolean removeOneCoupon(@RequestHeader("authorization") String authorizationHeader) {
-//		
-//		String[] userInfo = JwtUtil.verify(authorizationHeader);
-//		Long userId = Long.parseLong(userInfo[1]);
-//		
-//		return cartService.removeOneCoupon(userId);
-//		
-//	}
-	
 
 }
