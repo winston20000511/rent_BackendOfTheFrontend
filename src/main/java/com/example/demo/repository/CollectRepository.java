@@ -23,4 +23,6 @@ public interface CollectRepository extends JpaRepository<CollectTableBean, Long>
 	@Query("DELETE FROM CollectTableBean c WHERE c.user.userId = :userId AND c.house.houseId = :houseId")
 	void deleteByUserIdAndHouseId(@Param("userId") Long userId, @Param("houseId") Long houseId);
 	
+	boolean existsByUser_UserIdAndHouse_HouseId(Long userId, Long houseId);
+  
 }

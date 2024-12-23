@@ -12,5 +12,6 @@ public interface HouseImageRepository extends JpaRepository<HouseImageTableBean,
 	@Query("SELECT h.images FROM HouseImageTableBean h WHERE h.house.id = :houseId")
 	List<byte[]> findImagesByHouseId(@Param("houseId") Long houseId);
 
-
+	 @Query("SELECT i FROM HouseImageTableBean i WHERE i.house.houseId = :houseId")
+	    List<HouseImageTableBean> findByHouseId(@Param("houseId") Long houseId);
 }

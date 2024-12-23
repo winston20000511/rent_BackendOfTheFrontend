@@ -33,8 +33,8 @@ public interface HouseRepository extends JpaRepository<HouseTableBean, Long> {
 	HouseOwnerInfoDTO findHouseOwnerInfoByHouseId(@Param("houseId") Long houseId);
 
 	@Query("SELECT new com.example.demo.dto.HouseListByUserIdDTO(h.houseId, h.user.userId) "
-			+ "FROM HouseTableBean h WHERE h.user.userId = :userId")
-	List<HouseListByUserIdDTO> findHousesByUserId(@Param("userId") Long userId);
+		       + "FROM HouseTableBean h WHERE h.user.userId = :userId AND h.status <= 1")
+		List<HouseListByUserIdDTO> findHousesByUserId(@Param("userId") Long userId);
 
 	@Query(value = "SELECT h.house_id, u.email FROM  house_table h JOIN user_table u ON h.user_id = u.user_id WHERE h.user_id = :houseId", nativeQuery = true)
 	HouseOwnerDetailDTO getOwnerDetailByHouseId(Long houseId);
