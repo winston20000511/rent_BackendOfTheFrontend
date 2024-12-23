@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,6 +47,8 @@ import com.example.demo.repository.HouseRepository;
 import com.example.demo.service.CollectService;
 import com.example.demo.service.HouseService;
 import com.example.demo.service.UserService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 @RequestMapping("/api/houses")
@@ -205,33 +208,57 @@ public class HouseController {
 		return response;
 	}
 
-	@PostMapping("/update/{houseId}")
-	public ResponseEntity<?> updateHouse(@PathVariable Long houseId, @RequestParam Map<String, String> houseData,
-			@RequestParam Map<String, Boolean> furnitureServices, @RequestParam Map<String, Boolean> houseRestrictions,
-			@RequestParam(value = "newImages", required = false) List<MultipartFile> newImages,
-			@RequestParam(value = "existingImageIds", required = false) List<Long> existingImageIds) {
-		try {
-			houseService.updateHouse(houseId, houseData, furnitureServices, houseRestrictions, newImages,
-					existingImageIds);
-			return ResponseEntity.ok("房屋更新成功！");
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("更新失敗：" + e.getMessage());
-		}
-	}
+	 @PostMapping("/update/{houseId}")
+	    public ResponseEntity<?> updateHouse(@RequestHeader("authorization") String authorizationHeader,
+	            @PathVariable Long houseId,
+	            @RequestParam("houseData") String houseDataJson, 
+	            @RequestParam("furnitureServices") String furnitureServicesJson,
+	            @RequestParam("houseRestrictions") String houseRestrictionsJson,
+	            @RequestParam(value = "existingImageIds", required = false) List<Long> existingImageIds,
+	            @RequestParam(value = "newImages", required = false) List<MultipartFile> newImages
+	    ) {
+	        try {
+	        	Long userId = extractUserIdFromToken(authorizationHeader);
+	            // 將前端傳來的 JSON字串 反序列化成 Map/物件
+	            ObjectMapper mapper = new ObjectMapper();
+	            Map<String, String> houseData = mapper.readValue(houseDataJson, new TypeReference<Map<String, String>>() {});
+	            Map<String, Boolean> furnitureServices = mapper.readValue(furnitureServicesJson, new TypeReference<Map<String, Boolean>>() {});
+	            Map<String, Boolean> houseRestrictions = mapper.readValue(houseRestrictionsJson, new TypeReference<Map<String, Boolean>>() {});
 
-	@GetMapping("/getPhotos/{houseId}")
-	public ResponseEntity<?> getHousePhotos(@PathVariable Long houseId) {
-		List<byte[]> images = houseImageRepository.findImagesByHouseId(houseId);
-		if (images == null || images.isEmpty()) {
-			return ResponseEntity.ok(Collections.emptyList()); // 返回空數組
-		}
+	            // 如果前端沒帶 existingImageIds，就給個空的 List
+	            if (existingImageIds == null) {
+	                existingImageIds = new ArrayList<>();
+	            }
 
-		// 將每個圖片轉換為 Base64 編碼字串
-		List<String> base64Images = images.stream().map(image -> Base64.getEncoder().encodeToString(image))
-				.collect(Collectors.toList());
+	            // 調用 Service
+	            houseService.updateHouse(houseId, houseData, furnitureServices, houseRestrictions, newImages, existingImageIds,userId);
+	            return ResponseEntity.ok("房屋更新成功！");
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("更新失敗：" + e.getMessage());
+	        }
+	    }
 
-		return ResponseEntity.ok(base64Images); // 返回 Base64 編碼的圖片數據
-	}
+	 @GetMapping("/getPhotos/{houseId}")
+	 public ResponseEntity<?> getHousePhotos(@PathVariable Long houseId) {
+	     List<HouseImageTableBean> images = houseImageRepository.findByHouseId(houseId);
+	     if (images.isEmpty()) {
+	         return ResponseEntity.ok(Collections.emptyList());
+	     }
+
+	     // 將每張圖片轉成 { "id": 123, "base64": "xxxx" }
+	     List<Map<String, String>> result = images.stream()
+	         .map(img -> {
+	             Map<String, String> map = new HashMap<>();
+	             map.put("id", String.valueOf(img.getImageId()));
+	             String base64 = Base64.getEncoder().encodeToString(img.getImages());
+	             map.put("base64", base64);
+	             return map;
+	         })
+	         .collect(Collectors.toList());
+
+	     return ResponseEntity.ok(result);
+	 }
 
 	@GetMapping("/details/{houseId}")
 	public ResponseEntity<HouseDetailsDTO> getHouseDetails(@PathVariable Long houseId) {
@@ -335,7 +362,7 @@ public class HouseController {
 	}
 
 	// 移除收藏
-	@DeleteMapping("/collect/remove")
+	@DeleteMapping("/collect/remove/{houseId}")
 	public void removeFavorite(@RequestHeader("Authorization") String authorizationHeader, @RequestParam Long houseId) {
 		Long userId = extractUserIdFromToken(authorizationHeader);
 		collectService.deleteByUserIdAndHouseId(userId, houseId);
