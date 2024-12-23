@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.BookingDTO;
 import com.example.demo.dto.BookingDetailDTO;
+import com.example.demo.dto.BookingListDTO;
 import com.example.demo.dto.BookingResponseDTO;
 import com.example.demo.dto.BookingSlotDTO;
 import com.example.demo.model.BookingBean;
@@ -69,20 +70,13 @@ public class BookingService {
 		BookingSlotDTO dto = convertToDTO(bean);
 		return dto;
 	}
-
-	public List<BookingDTO> getBookingByUser(Long userId) {
-		List<BookingBean> bs = bookingRepo.findByUserId(userId);
-		List<BookingDTO> dto = new ArrayList<>();
-
-		if (!bs.isEmpty()) {
-			for (BookingBean b : bs) {
-				BookingDTO d = convertToDTO(b);
-				dto.add(d);
-			}
-		}
-		return dto;
+	
+	// 使用者的預約清單
+	public List<BookingListDTO> getBookingByUser(Long userId) {
+		return bookingRepo.findBookingListByUserId(userId);
 	}
 
+	// 使用者的房屋預約清單
 	public List<BookingDTO> getBookingByHouse(Long houseId) {
 		List<BookingBean> bs = bookingRepo.findByHouseId(houseId);
 		List<BookingDTO> dto = new ArrayList<>();
@@ -129,7 +123,7 @@ public class BookingService {
 			             "<footer style='text-align: end; font-size: small; color: gray;'>感謝您的使用！</footer>" +
 			             "</div>";
 
-				sendSimpleEmail(b.getOwnerEmail(), "您有新的預約", msg);
+				sendSimpleEmail(b.getOwnerEmail(), "《通知》您有新的預約", msg);
 				return new BookingResponseDTO("success", "預約已送出!");
 			} else {
 

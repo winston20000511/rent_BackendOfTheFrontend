@@ -1,22 +1,23 @@
 package com.example.demo.dto;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
-public class BookingDTO {
+public class BookingListDTO {
 	private Long bookingId;
 	private Long houseId;
 	private Long userId;
 	private LocalDateTime createDate;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-	private LocalDate bookingDate;
-	private LocalTime bookingTime;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
+	private LocalDateTime bookingDate;
 	private Byte status;
-	private String message;
+
 }
