@@ -352,24 +352,29 @@ public class HouseController {
 		}
 	}
 
-	@GetMapping("/collect/exists")
-	public boolean isFavorited(@RequestHeader("Authorization") String authorizationHeader, @RequestParam Long houseId) {
+	@GetMapping("/collect/exists/{houseId}")
+	public boolean isFavorited(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long houseId) {
 		Long userId = extractUserIdFromToken(authorizationHeader);
 		return collectService.isHouseFavorited(userId, houseId);
 	}
 
 	// 新增收藏
-	@PostMapping("/collect/add")
-	public void addCollect(@RequestHeader("Authorization") String authorizationHeader, @RequestParam Long houseId) {
-		Long userId = extractUserIdFromToken(authorizationHeader);
-		collectService.addFavorite(userId, houseId);
+	@PostMapping("/collect/add/{houseId}")
+	public ResponseEntity<String> addCollect(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long houseId) {
+	    Long userId = extractUserIdFromToken(authorizationHeader);
+	    collectService.addFavorite(userId, houseId);
+	    
+	    // 返回 OK
+	    return ResponseEntity.ok("OK");
 	}
 
 	// 移除收藏
 	@DeleteMapping("/collect/remove/{houseId}")
-	public void removeFavorite(@RequestHeader("Authorization") String authorizationHeader, @RequestParam Long houseId) {
+	public ResponseEntity<String> removeFavorite(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long houseId) {
 		Long userId = extractUserIdFromToken(authorizationHeader);
 		collectService.deleteByUserIdAndHouseId(userId, houseId);
+		
+		return ResponseEntity.ok("OK");
 	}
 
 //	    將TOKEN中的USERID取出
