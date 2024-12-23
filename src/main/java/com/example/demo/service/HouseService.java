@@ -211,7 +211,7 @@ public class HouseService {
 	public HouseOwnerInfoDTO getOwnerInfoByHouseId(Long houseId) {
 	    UserTableBean user = houseRepository.findOwnerByHouseId(houseId);
 	    if (user != null) {
-	        return new HouseOwnerInfoDTO(user.getName(), user.getPicture(), user.getPhone());
+	        return new HouseOwnerInfoDTO(user.getUserId(),user.getName(), user.getPicture(), user.getPhone());
 	    }
 	    return null; 
 	}
