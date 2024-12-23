@@ -219,7 +219,7 @@ public class FakeDataService {
         }
     }
 
-    public void houseFakeData(){
+    public void houseFakeData() throws InterruptedException {
         for (int i = 0; i < 7046; i++) {
             HouseTableBean house = new HouseTableBean();
             UserTableBean user = getRandomUser(7046);
@@ -233,7 +233,7 @@ public class FakeDataService {
             house.setAddress(lists.get(i));
             house.setLat(latlng[0]);
             house.setLng(latlng[1]);
-            house.setPrice(getRandomHousePrice(house.getAddress().substring(0,4)));
+            house.setPrice(getRandomHousePrice(house.getAddress().substring(0,3)));
             house.setRoom((byte)(1+random.nextInt(3)));
             house.setBathroom((byte)(1+random.nextInt(3)));
             house.setLivingroom((byte)(1+random.nextInt(2)));
@@ -244,7 +244,7 @@ public class FakeDataService {
             house.setStatus((byte)random.nextInt(3));
             house.setClickCount(random.nextInt(2000));
             houseRepo.save(house);
-
+            Thread.sleep(100);
         }
     }
 
