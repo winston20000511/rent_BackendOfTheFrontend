@@ -14,6 +14,9 @@ import lombok.NoArgsConstructor;
 public class BookingListDTO {
 	private Long bookingId;
 	private Long houseId;
+	private String houseTitle;
+	private String houseAddress;
+	private Integer housePrice;
 	private Long userId;
 	private LocalDateTime createDate;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
