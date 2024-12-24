@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Base64;
 import java.util.Optional;
@@ -22,6 +23,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    // 注入 PasswordEncoder
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     /**
      * 根據 ID 查詢使用者
@@ -80,6 +84,10 @@ public class UserService {
         user.setPhone(userRegisterDTO.getPhone());
         user.setGender(userRegisterDTO.getGender());
         user.setStatus((byte) 1); // 預設啟用狀態
+        // 將密碼加密後存入資料庫
+        String encryptedPassword = passwordEncoder.encode(userRegisterDTO.getPassword());
+        user.setPassword(encryptedPassword);
+
         userRepository.save(user); // 儲存資料到資料庫
 
         log.info("註冊成功：{}", userRegisterDTO.getName());
@@ -104,7 +112,18 @@ public class UserService {
      */
     private boolean isValidPassword(String password) {
         String passwordPattern = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$";
-        return password != null && Pattern.matches(passwordPattern, password);
+        return password != null && password.matches(passwordPattern);
+    }
+
+    /**
+     * 驗證密碼是否匹配
+     *
+     * @param rawPassword 使用者輸入的明文密碼
+     * @param encodedPassword 資料庫中的加密密碼
+     * @return 是否匹配
+     */
+    public boolean verifyPassword(String rawPassword, String encodedPassword) {
+        return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 
 
@@ -317,6 +336,34 @@ public class UserService {
         log.info("會員資料更新成功，Email：{}", email);
 
         return userCenterDTO;
+    }
+
+    /**
+     * 停用會員帳號，設置 `status` 為 0
+     *
+     * @param token JWT Token
+     */
+    @Transactional
+    public void deactivateAccount(String token) {
+        String email = JwtUtil.verify(token)[0];
+        if (email == null) {
+            throw new RuntimeException("無效的 Token");
+        }
+
+        log.info("解析 Token 成功，email: {}", email);
+
+        UserTableBean user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("會員資料未找到");
+        }
+
+        if (user.getStatus() == 0) {
+            throw new RuntimeException("帳號已停權，無法重複停用");
+        }
+
+        user.setStatus((byte) 0); // 將狀態設為停權
+        userRepository.save(user);
+        log.info("會員帳號已自行停權，Email：{}", email);
     }
 
 }

@@ -28,30 +28,49 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // 登入邏輯
+    /**
+     * 登入邏輯，檢查會員是否已停權
+     *
+     * @param loginRequest 登入請求的 JSON 格式
+     * @return 登入成功的 Token 或錯誤訊息
+     */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest) {
         String email = loginRequest.get("email");
         String password = loginRequest.get("password");
 
-        UserTableBean user = userService.getUserByEmail(email);
-        if (user != null && user.getPassword().equals(password)) {
-            // 驗證成功，生成 JWT
-            String token = JwtUtil.sign(user.getEmail(), user.getUserId());
+        try {
+            UserTableBean user = userService.getUserByEmail(email);
+            if (user != null) {
+                // 驗證密碼是否匹配
+                boolean isPasswordValid = userService.verifyPassword(password, user.getPassword());
+                if (isPasswordValid) {
+                    // 檢查是否停權
+                    if (user.getStatus() != 1) {
+                        throw new RuntimeException("帳號已停用或停權，無法登入");
+                    }
 
-            // 返回 Token 和用戶基本資料
-            Map<String, Object> response = new HashMap<>();
-            response.put("token", token);
-            response.put("userId", user.getUserId());
-            response.put("email", user.getEmail());
-            response.put("name", user.getName());
+                    // 密碼匹配且狀態正常，生成 JWT
+                    String token = JwtUtil.sign(user.getEmail(), user.getUserId());
 
-            return ResponseEntity.ok(response);
+                    // 返回 Token 和用戶基本資料
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("token", token);
+                    response.put("userId", user.getUserId());
+                    response.put("email", user.getEmail());
+                    response.put("name", user.getName());
+
+                    return ResponseEntity.ok(response);
+                }
+            }
+
+            // 密碼錯誤或帳號不存在
+            return ResponseEntity.status(401).body("帳號或密碼錯誤");
+        } catch (RuntimeException e) {
+            log.error("登入失敗，原因：{}", e.getMessage());
+            return ResponseEntity.status(401).body(e.getMessage());
         }
-
-        return ResponseEntity.status(401).body("帳號或密碼錯誤");
     }
-
 
     /**
      * 使用者註冊 API
@@ -131,4 +150,25 @@ public class UserController {
             return ResponseEntity.badRequest().body(null);
         }
     }
+
+    /**
+     * 停用帳號（會員自行停權）的 API
+     *
+     * @param authorization JWT Token 用於驗證身份
+     * @return 停用結果
+     */
+    @PutMapping("/deactivate")
+    public ResponseEntity<String> deactivateAccount(@RequestHeader("Authorization") String authorization) {
+        log.info("收到停用帳號請求");
+
+        try {
+            // 停用帳號，並設置狀態為 0
+            userService.deactivateAccount(authorization);
+            return ResponseEntity.ok("帳號已成功停用，狀態設為 0");
+        } catch (RuntimeException e) {
+            log.error("停用帳號失敗，原因：{}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }
