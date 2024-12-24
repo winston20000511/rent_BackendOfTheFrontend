@@ -31,7 +31,8 @@ public class JwtAspect {
         EXCLUDED_URIS.add("/api/test"); //SearchController
         EXCLUDED_URIS.add("/api/map"); //SearchController
         EXCLUDED_URIS.add("/api/keyword"); //SearchController
-        EXCLUDED_URIS.add("/api//user/forgotPassword"); // 忘記密碼
+        EXCLUDED_URIS.add("/api/forgot/forgotPassword"); // 忘記密碼
+        EXCLUDED_URIS.add("/api/forgot/resetPassword"); // 重設密碼
     }
 
 

@@ -1,16 +1,20 @@
 package com.example.demo.service;
 
+import com.example.demo.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class ForgotPasswordService {
 
     // 模擬檢查電子郵件是否存在於資料庫
+    private final UserRepository userRepository;
     public boolean emailExists(String email) {
         // TODO: 使用 Repository 檢查資料庫
-        return "example@example.com".equals(email); // 範例邏輯
+        return processForgotPassword(email).equal(); // 範例邏輯
     }
 
     // 處理忘記密碼的請求
