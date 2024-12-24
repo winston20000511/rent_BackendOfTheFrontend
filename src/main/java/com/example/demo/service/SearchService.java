@@ -57,8 +57,6 @@ public class SearchService {
 			item.setMinPrice(item.getPrice());
 			item.setMaxPrice(item.getPrice());
 			item.setPriority(userKey.getPriority());
-			log.info(item.getHouseType());
-			log.info(item.getHouseid().toString());
 			if (userKey.equals(item)){
 				newListAddressDTO.add(item);
 			}
@@ -73,15 +71,29 @@ public class SearchService {
 //		setAddressDTO.add(origin);
 		List<AddressDTO> listAddressDTO = new ArrayList<>(setAddressDTO);
 		listAddressDTO = caseFilter(listAddressDTO,userKey);
+		listAddressDTO = caseSort(listAddressDTO,userKey.getPriority(),userKey.getSort());
 		return new ResponseMapPOJO(listAddressDTO,origin,placeAvgPrice);
 	}
 	
 	public List<AddressDTO> findByKeyWord(String name){
-		List<AddressDTO> listAddressDTO = searchRepo.findByKeyWord(name);
-		listAddressDTO.sort(Comparator.comparing(AddressDTO::getPaidDate).reversed());
-		return listAddressDTO;
+		return searchRepo.findByKeyWord(name);
 	}
 
+	public List<AddressDTO> caseSort(List<AddressDTO> listAddressDTO , String keyPriority ,String keySort){
+		if (keyPriority.equals("a") && keySort.equals("desc")){
+			listAddressDTO.sort(Comparator.comparing(AddressDTO::getPaidDate).reversed());
+		}
+		if (keyPriority.equals("a") && keySort.equals("asc")){
+			listAddressDTO.sort(Comparator.comparing(AddressDTO::getPaidDate));
+		}
+		if (keyPriority.equals("p") && keySort.equals("desc")){
+			listAddressDTO.sort(Comparator.comparing(AddressDTO::getPrice).reversed());
+		}
+		if (keyPriority.equals("p") && keySort.equals("asc")){
+			listAddressDTO.sort(Comparator.comparing(AddressDTO::getPrice));
+		}
+		return listAddressDTO;
+	}
 
 	public List<HouseTableBean> houseUpdateAll(List<HouseTableBean> houseList) {
 		return searchRepo.saveAll(houseList);

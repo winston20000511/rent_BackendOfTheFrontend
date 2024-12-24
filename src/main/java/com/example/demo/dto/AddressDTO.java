@@ -32,6 +32,7 @@ public class AddressDTO {
 	private int gender;
 	private String houseType;
 	private String priority;
+	private String sort;
 
 	public AddressDTO(Long houseid, String address, Double lat, Double lng, Integer price,
 					  String adName, LocalDateTime paidDate, boolean pet, boolean parkingSpace,
