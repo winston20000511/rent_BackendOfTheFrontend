@@ -57,8 +57,10 @@ public class BookingController {
 	
 	
 	@GetMapping("/api/booking/list")
-	public ResponseEntity<?> getTimeSlot(Long houseId) {
+	public ResponseEntity<?> getTimeSlot(@RequestParam Long houseId) {
+		List<String> list = bookingService.findBookingedByHouseId(houseId);
 		BookingSlotDTO house = bookingService.findTimeSlotByHouseId(houseId);
+		house.setExcludedTime(list);
 		return ResponseEntity.ok(house);
 	}
 	
@@ -72,18 +74,6 @@ public class BookingController {
 		bookingService.updataTimeSlot(bean);
 		
 		return ResponseEntity.ok("/"); 
-	}
-	
-	@ResponseBody
-	@GetMapping("/booking/editTimeSlot")
-	public ResponseEntity<?> editTimeSlot(@RequestParam Long houseId, HttpSession session) {
-		Long userId = (Long)session.getAttribute("loginUserId");
-		if(userId==null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-		}
-		
-		BookingSlotDTO bookingTimeSlot = bookingService.findTimeSlotByHouseId(houseId);
-		return ResponseEntity.ok().body(bookingTimeSlot);
 	}
 	
 	@ResponseBody
@@ -111,6 +101,18 @@ public class BookingController {
         return ResponseEntity.ok().body(bookingService.createBooking(bookingDTO));
     }
 	
+	@ResponseBody
+	@GetMapping("/booking/editTimeSlot")
+	public ResponseEntity<?> editTimeSlot(@RequestParam Long houseId, HttpSession session) {
+		Long userId = (Long)session.getAttribute("loginUserId");
+		if(userId==null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+		
+		BookingSlotDTO bookingTimeSlot = bookingService.findTimeSlotByHouseId(houseId);
+		return ResponseEntity.ok().body(bookingTimeSlot);
+	}
+
 	@ResponseBody
 	@PutMapping("/api/booking/guest")
     public ResponseEntity<?> putBookingByUser(@RequestBody BookingDTO bookingDTO) throws MessagingException {

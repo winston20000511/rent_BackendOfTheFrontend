@@ -71,7 +71,7 @@ public class JwtAspect {
 
         // 驗證 Token 是否存在
         if (token != null) {
-            String[] jwt = JwtUtil.verify (token);
+            String[] jwt = JwtUtil.verify(token);
             String userEmail = jwt[0];
             Long userId = Long.parseLong(jwt[1]);
 

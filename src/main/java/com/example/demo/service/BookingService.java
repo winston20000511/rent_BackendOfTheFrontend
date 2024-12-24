@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.BookingDTO;
 import com.example.demo.dto.BookingDetailDTO;
+import com.example.demo.dto.BookingResponseDTO;
 import com.example.demo.dto.BookingSlotDTO;
 import com.example.demo.model.BookingBean;
 import com.example.demo.model.HouseBookingTimeSlotBean;
@@ -38,6 +39,11 @@ public class BookingService {
 	@Autowired
 	private JavaMailSender mailSender;
 
+	public List<String> findBookingedByHouseId(Long houseId){
+		List<String> bookingedList = bookingRepo.findBookingedByHouseId(houseId);
+		return bookingedList;
+	}
+	
 	public BookingSlotDTO findTimeSlotByHouseId(Long houseId) {
 		Optional<HouseBookingTimeSlotBean> op = timeSlotRepo.findById(houseId);
 		return op.map(this::convertToDTO).orElse(null);
@@ -75,26 +81,41 @@ public class BookingService {
 		return dto;
 	}
 
-	public String createBooking(BookingDTO booking) throws MessagingException {
+	public BookingResponseDTO createBooking(BookingDTO booking) throws MessagingException {
 		Integer bool = bookingRepo.isExistBooking(booking.getHouseId(), booking.getBookingDate(),
 				booking.getBookingTime());
 		BookingBean newBean = null;
 
 		if (bool != null && bool > 0) {
-			return "預約失敗: 該時段已被預約!";
+			return new BookingResponseDTO("danger", "預約失敗: 該時段已被預約!");
 		} else {
 			newBean = bookingRepo.save(convertToBean(booking));
 			if (newBean != null) {
 				BookingDetailDTO b = bookingRepo.findBookingDetailsById(newBean.getBookingId());
-
-				String msg = "<h2>您在 <span style='color:red;'>" + b.getBookingDate() + " " + b.getBookingTime()
-						+ "</span> 有新的預約</h2>" + "<br/>http://localhost:8080/";
+				
+				String formattedMessage = booking.getMessage()
+		                .replace("\n", "<br>")
+		                .replace("<", "&lt;")
+		                .replace(">", "&gt;");
+				
+				String msg = "<div style='width:400px; border: 1px solid #007bff; border-radius: 10px; padding: 15px;'>" +
+			             "<h2 style='text-align: center;'>您在 <span style='color:red;'>" + 
+			             b.getBookingDate() + " " + b.getBookingTime() + "</span> 有新的預約</h2>" +
+			             "<p style='text-align: center;'>請使用以下連結以查看預約：</p>" +
+			             "<p style='text-align: center;'><a href='http://localhost:8080/' style='color: blue;'>查看預約</a></p>" +
+			             "<div style='border: 1px dashed #ccc; padding: 10px; margin-top: 15px;'>" +
+			             "<h3 style='text-align: start;'>給您的留言:</h3>" +
+			             "<p style='text-align: start;'>" + formattedMessage + "</p>" +
+			             "</div>" +
+			             "<hr style='border-top: 1px solid #ccc;'>" +
+			             "<footer style='text-align: center; font-size: small; color: gray;'>感謝您的使用！</footer>" +
+			             "</div>";
 
 				sendSimpleEmail(b.getOwnerEmail(), "您有新的預約", msg);
-				return "預約成功!";
+				return new BookingResponseDTO("success", "預約已送出!");
 			} else {
 
-				return "預約失敗";
+				return new BookingResponseDTO("danger", "預約失敗!");
 			}
 		}
 	}
