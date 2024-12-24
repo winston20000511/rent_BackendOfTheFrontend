@@ -5,12 +5,10 @@ import com.example.demo.dto.UserRegisterDTO;
 import com.example.demo.dto.UserSimpleInfoDTO;
 import com.example.demo.dto.UserUpdateDTO;
 import com.example.demo.helper.JwtUtil;
-import com.example.demo.helper.RecaptchaApiConfig;
 import com.example.demo.model.UserTableBean;
 import com.example.demo.service.RecaptchaService;
 import com.example.demo.service.UserService;
 
-import ecpay.payment.integration.verification.VerifyFundingReconDetail;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -44,11 +42,8 @@ public class UserController {
         String password = loginRequest.get("password");
         String recaptchaToken = loginRequest.get("recaptchaToken");
         
-        logger.info("登入中收到的 recaptcha token: " + recaptchaToken);
         // 驗證 reCAPTCHA token
         boolean isCaptchaValid = recaptchaService.verifyRecaptcha(recaptchaToken);
-        
-        logger.info("登入中收到的 is captcha valid: " + isCaptchaValid);
         
         if(!isCaptchaValid) {
         	return ResponseEntity.status(400).body("reCAPTCHA 驗證失敗");
