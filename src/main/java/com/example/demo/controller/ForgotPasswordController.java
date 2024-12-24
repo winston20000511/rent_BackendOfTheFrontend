@@ -7,6 +7,7 @@ import com.example.demo.service.ForgotPasswordService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -18,6 +19,8 @@ public class ForgotPasswordController {
     private ForgotPasswordService forgotPasswordService;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private JavaMailSender mailSender;
 
     // 忘記密碼請求處理
     @Public
