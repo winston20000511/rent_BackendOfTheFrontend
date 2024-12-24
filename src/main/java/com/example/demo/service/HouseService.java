@@ -209,14 +209,14 @@ public class HouseService {
 	}
 
 	public HouseOwnerInfoDTO getOwnerInfoByHouseId(Long houseId) {
-//		HouseOwnerInfoDTO owner = new HouseOwnerInfoDTO();
-	    UserTableBean user = houseRepository.findOwnerByHouseId(houseId);
-//	    String base64Picture = null;
-//        if (owner.getPicture() != null) {
-//            base64Picture = Base64.getEncoder().encodeToString(base64Picture);
-//        }
+		UserTableBean user = houseRepository.findOwnerByHouseId(houseId);
 	    if (user != null) {
-	        return new HouseOwnerInfoDTO(user.getUserId(),user.getName(), user.getPicture(), user.getPhone());
+	        return new HouseOwnerInfoDTO(
+	            user.getUserId(),
+	            user.getName(),
+	            user.getPicture(), // 保留為 byte[]
+	            user.getPhone()
+	        );
 	    }
 	    return null; 
 	}
