@@ -49,11 +49,11 @@ public class SearchController {
 	
 	@CrossOrigin(origins="*")
 	@PostMapping("/api/keyword")
-	public List<AddressDTO> searchShowkeyword(@RequestBody AddressDTO key){
-		List<AddressDTO> addressDtoList = searchService.findByKeyWord(key.getAddress());
-
+	public List<AddressDTO> searchShowkeyword(@RequestBody KeyWordDTO key){
+		List<AddressDTO> addressDtoList = searchService.findByKeyWord(key.getOrigin());
+		addressDtoList = searchService.caseFilter(addressDtoList,key);
 		if (addressDtoList.size() == 0 ) {
-			AddressDTO house = searchService.placeConvertToAdress(key.getAddress());
+			AddressDTO house = searchService.placeConvertToAdress(key.getOrigin());
 			addressDtoList.add(house);
 			return addressDtoList;
 		}else if(addressDtoList.size() < 10) {

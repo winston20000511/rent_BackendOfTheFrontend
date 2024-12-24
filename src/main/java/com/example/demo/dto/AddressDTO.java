@@ -1,6 +1,15 @@
 package com.example.demo.dto;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
+@Getter
 public class AddressDTO {
 	
 	private Long houseid;
@@ -11,70 +20,5 @@ public class AddressDTO {
 	private String adName;
 	private LocalDateTime paidDate;
 
-	public AddressDTO() {
-        
-	}
-
-
-	public AddressDTO(Long houseid, String address, Double lat, Double lng, Integer price, String adName,
-			LocalDateTime paidDate) {
-		this.houseid = houseid;
-		this.address = address;
-		this.lat = lat;
-		this.lng = lng;
-		this.price = price;
-		this.adName = adName;
-		this.paidDate = paidDate;
-	}
-
-
-	public Long getHouseid() {
-		return houseid;
-	}
-
-	public void setHouseid(Long houseid) {
-		this.houseid = houseid;
-	}
-
-	
-	public String getAddress() {
-		return address;
-	}
-	public void setAddress(String address) {
-		this.address = address;
-	}
-	public Double getLat() {
-		return lat;
-	}
-	public void setLat(Double lat) {
-		this.lat = lat;
-	}
-	public Double getLng() {
-		return lng;
-	}
-	public void setLng(Double lng) {
-		this.lng = lng;
-	}
-	public Integer getPrice() {
-		return price;
-	}
-	public void setPrice(Integer price) {
-		this.price = price;
-	}
-
-	public String getAdName() {
-		return adName;
-	}
-	public void setAdName(String adName) {
-		this.adName = adName;
-	}
-
-	public LocalDateTime getPaidDate() {
-		return paidDate;
-	}
-
-	public void setPaidDate(LocalDateTime paidDate) {
-		this.paidDate = paidDate;
-	}
 
 }

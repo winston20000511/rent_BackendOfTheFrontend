@@ -11,6 +11,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.demo.dto.KeyWordDTO;
+import com.example.demo.model.ConditionTableBean;
+import com.example.demo.model.FurnitureTableBean;
 import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
@@ -38,6 +41,56 @@ public class SearchService {
 	
 	public List<HouseTableBean> findAll() {
 		return searchRepo.findAll();
+	}
+
+	public List<AddressDTO> caseFilter(List<AddressDTO> listAddressDTO , KeyWordDTO key) {
+
+		if (key.getMaxPrice() == 0){
+			key.setMaxPrice(9999999);
+		}
+
+		boolean result;
+		List<AddressDTO> newListAddressDTO = new ArrayList<>();
+		for(AddressDTO item : listAddressDTO ){
+			Optional<HouseTableBean> op = searchRepo.findById(item.getHouseid());
+			if (op.isPresent()){
+				HouseTableBean house = op.get();
+				FurnitureTableBean houseFurniture = house.getFurniture();
+				ConditionTableBean houseCondition= house.getCondition();
+				KeyWordDTO houseKey = new KeyWordDTO(
+						item.getAddress(),
+						item.getPrice(),
+						item.getPrice(),
+						houseFurniture.getWashingMachine(),
+						houseFurniture.getAirConditioner(),
+						houseFurniture.getNetwork(),
+						houseFurniture.getBedstead(),
+						houseFurniture.getMattress(),
+						houseFurniture.getRefrigerator(),
+						houseFurniture.getEwaterHeater(),
+						houseFurniture.getGwaterHeater(),
+						houseFurniture.getTelevision(),
+						houseFurniture.getChannel4(),
+						houseFurniture.getSofa(),
+						houseFurniture.getTables(),
+						houseCondition.getPet(),
+						houseCondition.getParkingSpace(),
+						houseCondition.getElevator(),
+						houseCondition.getBalcony(),
+						houseCondition.getShortTerm(),
+						houseCondition.getCooking(),
+						houseCondition.getWaterDispenser(),
+						houseCondition.getManagementFee(),
+						houseCondition.getGenderRestrictions(),
+						house.getHouseType(),
+						key.getPriority()
+				);
+				if (key.equals(houseKey)){
+					newListAddressDTO.add(item);
+				}
+			}
+		};
+		return newListAddressDTO;
 	}
 
 	public ResponseMapPOJO findByCityAndTownship(AddressDTO origin){
@@ -189,23 +242,6 @@ public class SearchService {
 
 	}
 
-//	public List<AddressDTO> getDrawDistance(List<AddressDTO> addressDtoList , AddressDTO origin , int[] spec) {
-//
-//		List<AddressDTO> newAddressDtoList = new ArrayList<>();
-//
-//		for(int i = 0 ; i < addressDtoList.size() ; i++) {
-//
-//			if (searchHelp.getOvalRotationAngle(origin,addressDtoList.get(i),spec[0],spec[1],45) &&
-//					!origin.getAddress().equals(addressDtoList.get(i).getAddress())){
-//				newAddressDtoList.add(addressDtoList.get(i));
-//
-//			}
-//		}
-//
-//		return newAddressDtoList;
-//
-//	}
-
 	public List<AddressDTO> getDrawDistance(List<AddressDTO> addressDtoList , AddressDTO origin , List<DrawLatLngDTO> drawDtoList) {
 
 		List<AddressDTO> newAddressDtoList = new ArrayList<>();
@@ -223,28 +259,6 @@ public class SearchService {
 		return newAddressDtoList;
 
 	}
-
-//	public int[] getMinAndMaxRadius(List<DrawLatLngDTO> drawDtoList , AddressDTO origin){
-//		BigDecimal distanceMax = BigDecimal.ZERO;
-//		BigDecimal distanceMin = new BigDecimal(Double.MAX_VALUE);
-//		for(int i = 1 ; i < drawDtoList.size() ; i++) {
-//			Double distance = searchHelp.getDistance(
-//					new DrawLatLngDTO(origin.getLat(),origin.getLng())
-//					, drawDtoList.get(i)
-//			);
-//
-//			if (BigDecimal.valueOf(distance).compareTo(distanceMax) > 0){
-//				distanceMax = BigDecimal.valueOf(distance);
-//			}
-//			if (BigDecimal.valueOf(distance).compareTo(distanceMin) < 0){
-//				distanceMin = BigDecimal.valueOf(distance);
-//			}
-//
-//		}
-//
-//		return new int[]{distanceMax.intValue(),distanceMin.intValue()};
-//	}
-
 
 	public ResponseMapPOJO getPlaceGoogleAPI(List<DrawLatLngDTO> drawDtoList) throws JSONException, IOException {
 		
