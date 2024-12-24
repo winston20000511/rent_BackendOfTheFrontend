@@ -66,4 +66,33 @@ public class JwtUtil {
             return false;
         }
     }
+
+    // Email 驗證 Token 的過期時間為 6 小時
+    private static final long EMAIL_EXPIRE_TIME = 6 * 60 * 60 * 1000; // 6小時
+
+    // 生成 Email 驗證專用的 JWT
+    public static String generateEmailVerificationToken(String userEmail, Long userId) {
+        return JWT.create()
+                .withSubject(userEmail)
+                .withClaim("userId", userId)
+                .withExpiresAt(new Date(System.currentTimeMillis() + EMAIL_EXPIRE_TIME))
+                .sign(Algorithm.HMAC256(TOKEN_SECRET));
+    }
+
+    // 驗證 Email 驗證專用 Token
+    public static String[] verifyEmailToken(String token) {
+        try {
+            JWTVerifier verifier = JWT.require(Algorithm.HMAC256(TOKEN_SECRET)).build();
+            DecodedJWT jwt = verifier.verify(token);
+            String userEmail = jwt.getSubject();
+            Integer userId = jwt.getClaim("userId").asInt();
+            return jwt != null ? new String[]{userEmail, userId.toString()} : null;
+        } catch (TokenExpiredException e) {
+            throw new UnTokenException("Email 驗證 Token 已過期，請重新請求驗證信。");
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new UnTokenException("Email 驗證 Token 無效。");
+        }
+    }
+
 }

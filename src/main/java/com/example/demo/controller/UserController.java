@@ -6,6 +6,7 @@ import com.example.demo.dto.UserSimpleInfoDTO;
 import com.example.demo.dto.UserUpdateDTO;
 import com.example.demo.helper.JwtUtil;
 import com.example.demo.model.UserTableBean;
+import com.example.demo.service.EmailService;
 import com.example.demo.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,8 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private EmailService emailService;
 
     /**
      * 登入邏輯，檢查會員是否已停權
@@ -45,12 +48,20 @@ public class UserController {
                 // 驗證密碼是否匹配
                 boolean isPasswordValid = userService.verifyPassword(password, user.getPassword());
                 if (isPasswordValid) {
-                    // 檢查是否停權
-                    if (user.getStatus() != 1) {
+                    // 檢查帳號狀態
+                    if (user.getStatus() == 6) {
+                        // 重新生成 Email 驗證 Token
+                        String verificationToken = JwtUtil.generateEmailVerificationToken(user.getEmail(), user.getUserId());
+
+                        // 發送 Email 驗證信
+                        emailService.sendVerificationEmail(user.getEmail(), user.getName(), verificationToken);
+
+                        return ResponseEntity.status(403).body("帳號尚未驗證，已重新發送驗證信，請檢查您的 Email。");
+                    } else if (user.getStatus() != 1) {
                         throw new RuntimeException("帳號已停用或停權，無法登入");
                     }
 
-                    // 密碼匹配且狀態正常，生成 JWT
+                    // 密碼匹配且狀態正常，生成登入用 JWT
                     String token = JwtUtil.sign(user.getEmail(), user.getUserId());
 
                     // 返回 Token 和用戶基本資料
@@ -168,6 +179,22 @@ public class UserController {
         } catch (RuntimeException e) {
             log.error("停用帳號失敗，原因：{}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @GetMapping("/verifyEmail")
+    public ResponseEntity<String> verifyEmail(@RequestParam("token") String token) {
+        try {
+            // 驗證 Token 並獲取 Email
+            String[] decodedToken = JwtUtil.verifyEmailToken(token);
+            String email = decodedToken[0];
+
+            // 更新用戶狀態
+            userService.verifyEmail(email);
+
+            return ResponseEntity.ok("驗證成功！請返回首頁重新登入。");
+        } catch (RuntimeException e) {
+            log.error("Email 驗證失敗，原因：{}", e.getMessage());
+            return ResponseEntity.status(400).body("驗證失敗：" + e.getMessage());
         }
     }
 
