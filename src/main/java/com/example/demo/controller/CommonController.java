@@ -27,9 +27,14 @@ public class CommonController {
         return "users/login"; // 渲染 src/main/resources/templates/users/login.html
     }
 
+    /**
+     * @param model 123
+     * @return
+     */
     @GetMapping("/Collect")
     public String collect(Model model) {
-        return "housecollect"; // 渲染 src/main/resources/templates/users/login.html
+        return "housec" +
+                "ollect"; // 渲染 src/main/resources/templates/users/login.html
     }
     
 }

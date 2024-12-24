@@ -36,6 +36,7 @@ public class CollectService {
 	    if (collect.getHouse() == null || collect.getHouse().getHouseId() == null) {
 	        throw new RuntimeException("House ID cannot be null");
 	    }
+	    
 	    HouseTableBean existingHouse = houseRepository.findById(collect.getHouse().getHouseId())
 	            .orElseThrow(() -> new RuntimeException("House does not exist"));
 	    collect.setHouse(existingHouse); // 設置已存在的 house
