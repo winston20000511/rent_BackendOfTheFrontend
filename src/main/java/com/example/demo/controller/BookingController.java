@@ -154,14 +154,14 @@ public class BookingController {
 	@ResponseBody
 	@PutMapping("/api/booking/guest")
 	public ResponseEntity<?> putBookingByUser(@RequestBody BookingDTO bookingDTO) throws MessagingException {
-
+		bookingDTO.setStatus((byte)4);	//status '4' : 用戶取消
 		return ResponseEntity.ok().body(bookingService.updateBookingByGuest(bookingDTO));
 	}
 
 	@ResponseBody
 	@PutMapping("/api/booking/host")
 	public ResponseEntity<?> putBookingByHouse(@RequestBody BookingDTO bookingDTO) throws MessagingException {
-
+		bookingDTO.setStatus((byte)3);	//status '3' : 屋主取消
 		return ResponseEntity.ok().body(bookingService.updateBookingByHost(bookingDTO));
 	}
 

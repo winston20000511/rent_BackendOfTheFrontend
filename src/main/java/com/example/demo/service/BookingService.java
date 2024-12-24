@@ -144,16 +144,19 @@ public class BookingService {
 		return convertToDTO(bookingRepo.save(newBean));
 	}
 
-	public BookingDTO updateBookingByGuest(BookingDTO booking) {
+	public BookingResponseDTO updateBookingByGuest(BookingDTO booking) {
 		Optional<BookingBean> op = bookingRepo.findById(booking.getBookingId());
 
 		BookingBean newBean = new BookingBean();
 		if (op.isPresent()) {
 			newBean = op.get();
 			newBean.setStatus(booking.getStatus());
+			bookingRepo.save(newBean);
+			return new BookingResponseDTO("success", "已完成取消!");
 		}
-
-		return convertToDTO(bookingRepo.save(newBean));
+		
+//		return convertToDTO();
+		return new BookingResponseDTO("danger", "取消失敗!");
 	}
 
 	private void sendSimpleEmail(String to, String subject, String text) throws MessagingException {

@@ -54,7 +54,7 @@ public interface BookingRepository extends JpaRepository<BookingBean, Long> {
 	void updateStatusOfFinish(LocalDate date);
 
 	/*
-	 * status 0:待確認 1:屋主接受 2:屋主拒絕 3:屋主取消 4:租客取消 5:逾期 6:結束
+	 * status 0:待確認 1:屋主接受 2:屋主拒絕 3:屋主取消 4:用戶取消 5:逾期 6:結束
 	 */
 
 }
