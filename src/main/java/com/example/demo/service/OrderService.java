@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -65,17 +66,18 @@ public class OrderService {
 	 * @return Page<OrderResponseDTO>
 	 */
 	public Page<OrderResponseDTO> findOrdersByConditions(
-			Long userId, Integer pageNumber, String orderStatus, String dateRange, String inputCondition, String userInput) {
+			Long userId, Map<String, String> conditions) {
 
+		Integer pageNumber = Integer.parseInt(conditions.get("page"));
+		String orderStatus = conditions.get("status");
+		String dateRange = conditions.get("daterange");
+		String inputCondition = conditions.get("inputcondition");
+		String userInput = conditions.get("input");
+		
 		Specification<OrderBean> spec = OrderSpecification.filter(userId, pageNumber, orderStatus, dateRange, inputCondition, userInput);
 
 		Pageable pageable = PageRequest.of(pageNumber - 1, 10, Sort.Direction.DESC, "merchantTradNo");
 		Page<OrderBean> page = orderRepository.findAll(spec, pageable);
-
-		List<OrderBean> orders = page.getContent();
-		for (OrderBean order : orders) {
-			logger.severe("order id: " + order.getMerchantTradNo());
-		}
 
 		List<OrderResponseDTO> responseDTOs = setOrderDetailsResponseDTOs(page.getContent());
 
@@ -89,10 +91,12 @@ public class OrderService {
 	 * @return OrderResponseDTO 訂單詳細資料
 	 */
 	public OrderResponseDTO findOrdersByMerchantTradNo(Long userId, String merchantTradNo) {
-		logger.severe(merchantTradNo);
 		OrderBean order = orderRepository.findByMerchantTradNo(merchantTradNo);
 		
-		if(!order.getUserId().equals(userId)) return null;
+		if(!order.getUserId().equals(userId)) {
+			logger.info("OrderResponseDTO: " + merchantTradNo + " 沒有該訂單");
+			return null;
+		}
 		
 		OrderResponseDTO dto = new OrderResponseDTO();
 
@@ -145,6 +149,7 @@ public class OrderService {
 	    // 檢驗該cart是該user的
 	    CartBean cart = cartRepository.findById(requestDTO.getCartId()).orElse(null);
 	    if (cart == null || !Objects.equals(cart.getUserId(), userId)) {
+	    	logger.info("該使用者沒有購物車，或資料不符");
 	        return null;
 	    }
 
@@ -196,22 +201,19 @@ public class OrderService {
 	    newOrder.setTotalAmount(totalAmount);
 	    newOrder.setUserId(userId);
 	    Optional<UserTableBean> optional = userRepository.findById(userId);
-	    if (optional.isEmpty()) return null;
-	    
 	    UserTableBean user = optional.get();
+
 	    newOrder.setUser(user);
 	    newOrder.setAds(ads);
 
 	    OrderBean savedOrder = orderRepository.save(newOrder);
 	    
 	    int result = userRepository.removeOneCoupon(userId);
-	    if(result > 0) {
-	    	logger.info("成功刪除優惠券");
-	    }else {
-	    	logger.info("沒有刪除優惠券");
-	    }
+	    if(result > 0) logger.info("成功刪除優惠券");
+	    else logger.info("沒有刪除優惠券");
 
 	    OrderResponseDTO responseDTO = setOrderDetailsResponseDTO(savedOrder);
+	    
 	    return responseDTO;
 	}
 	
@@ -230,11 +232,15 @@ public class OrderService {
 	public boolean cancelOrderByMerchantTradNo(Long userId, String merchantTradNo) {
 		Optional<OrderBean> optional = orderRepository.findById(merchantTradNo);
 		if (optional.isEmpty()) {
+			logger.info("沒有該訂單號碼: " + merchantTradNo);
 			return false;
 		}
 
 		OrderBean order = optional.get();
-		if(!order.getUserId().equals(userId)) return false;
+		if(!order.getUserId().equals(userId)) {
+			logger.info("會員與訂單資料不相符");
+			return false;
+		}
 		
 		order.setOrderStatus((short) 2); // 確認後方可取消
 		orderRepository.save(order);
@@ -340,8 +346,6 @@ public class OrderService {
 		responseDTO.setAdtypes(adtypes);
 		responseDTO.setPrices(adPrices);
 		responseDTO.setHouseTitles(houseTitles);
-
-		System.out.println("order.getChoosePayment() " + order.getChoosePayment());
 		responseDTO.setChoosePayment(order.getChoosePayment());
 		responseDTO.setMerchantTradDate(order.getMerchantTradDate());
 		responseDTO.setMerchantTradNo(order.getMerchantTradNo());

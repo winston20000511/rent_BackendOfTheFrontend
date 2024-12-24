@@ -18,7 +18,6 @@ import com.example.demo.repository.CartItemRepository;
 import com.example.demo.repository.CartRepository;
 import com.example.demo.repository.UserRepository;
 
-import jakarta.transaction.Transactional;
 
 @Service
 public class CartService {
@@ -120,8 +119,10 @@ public class CartService {
 		
 		// 查詢該用戶的購物車
 		CartBean cart = cartRepository.findCartByUserId(userId);
-		if (cart == null) return false;
-		logger.info("user id: " + userId + " get cart id: " + cart.getCartId());
+		if (cart == null) {
+			logger.info("沒有購物車");
+			return false;
+		}
 	    
 		// 查詢購物車中的項目
 	    Optional<CartItemBean> optional = cartItemRepository.findByAdIdAndCartId(adId, cart.getCartId());

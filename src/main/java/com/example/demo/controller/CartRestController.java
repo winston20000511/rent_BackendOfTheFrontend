@@ -34,12 +34,7 @@ public class CartRestController {
 		Long userId = Long.parseLong(userInfo[1]);
 
 		List<CartItemBean> cartItems = cartService.findCartItemsByUserId(userId);
-		logger.severe("購物車內容: " + cartItems);
 		if(cartItems == null) return null;
-		
-		for(CartItemBean cartItem : cartItems) {
-			logger.severe("購物車編號: " + cartItem.getCartId().toString());
-		}
 		
 		return cartItems;
 	}

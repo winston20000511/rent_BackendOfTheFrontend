@@ -2,11 +2,13 @@ package com.example.demo.dto;
 
 import java.time.LocalDateTime;
 
+import lombok.ToString;
+
+@ToString
 public class AdDetailsResponseDTO {
 	
 	private Long adId;
 	private Long userId;
-	private String userName;
 	private String houseTitle;
 	private String adName;
 	private Integer adPrice;
@@ -19,11 +21,10 @@ public class AdDetailsResponseDTO {
 	}
 	
 
-	public AdDetailsResponseDTO(Long adId, Long userId, String userName, String houseTitle, String adName, Integer adPrice,
+	public AdDetailsResponseDTO(Long adId, Long userId, String houseTitle, String adName, Integer adPrice,
 			String isPaid, String orderId, String paidDate) {
 		this.adId = adId;
 		this.userId = userId;
-		this.userName = userName;
 		this.houseTitle = houseTitle;
 		this.adName = adName;
 		this.adPrice = adPrice;
@@ -46,14 +47,6 @@ public class AdDetailsResponseDTO {
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
-	}
-
-	public String getUserName() {
-		return userName;
-	}
-
-	public void setUserName(String userName) {
-		this.userName = userName;
 	}
 
 	public String getHouseTitle() {
@@ -119,15 +112,5 @@ public class AdDetailsResponseDTO {
     public void setRemainingDays(Long remainingDays) {
         this.remainingDays = remainingDays;
     }
-
-
-	@Override
-	public String toString() {
-		return "AdDetailsResponseDTO [adId=" + adId + ", userId=" + userId + ", userName=" + userName + ", houseTitle="
-				+ houseTitle + ", adName=" + adName + ", adPrice=" + adPrice + ", isPaid=" + isPaid + ", orderId="
-				+ orderId + ", paidDate=" + paidDate + ", remainingDays=" + remainingDays + "]";
-	}
-	
-	
 	
 }

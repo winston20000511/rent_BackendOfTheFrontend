@@ -55,27 +55,34 @@ public class EcpayService {
 	 */
 	public boolean verifyEcpayCheckValue(String returnValue) {
 		
-		String hashKey = ecpayApiConfig.getHashKey(); 
-		String hashIV = ecpayApiConfig.getHashIV();
-		
-		// 抓出綠界回傳值中的 checkMacValue 及 MerchantTradeNo
-		JSONObject queryStringToJson = queryStringToJson(returnValue);
-		String merchantTradNo = (String) queryStringToJson.get("MerchantTradeNo");
-		// 正式生產環境中，需要自己生成驗證碼並送給綠界，再和綠界回傳的驗證碼進行核對
-		// String returnedCheckMacValue = (String) queryStringToJson.get("CheckMacValue");
-		
-		// 與資料庫資料比對
-		OrderBean order = orderRepository.findByMerchantTradNo(merchantTradNo);
-		
-		order.setReturnValue(returnValue);
-		order.setOrderStatus((short)1);
-		
-		List<AdBean> ads = adService.updateAdBeansAfterPaymentVerified(order.getAds(), order);
-		order.setAds(ads);
-		
-		orderRepository.save(order);
-		
-		return true;
+		try {
+			
+			String hashKey = ecpayApiConfig.getHashKey(); 
+			String hashIV = ecpayApiConfig.getHashIV();
+			
+			// 抓出綠界回傳值中的 checkMacValue 及 MerchantTradeNo
+			JSONObject queryStringToJson = queryStringToJson(returnValue);
+			String merchantTradNo = (String) queryStringToJson.get("MerchantTradeNo");
+			// 正式生產環境中，需要自己生成驗證碼並送給綠界，再和綠界回傳的驗證碼進行核對
+			// String returnedCheckMacValue = (String) queryStringToJson.get("CheckMacValue");
+			
+			// 與資料庫資料比對
+			OrderBean order = orderRepository.findByMerchantTradNo(merchantTradNo);
+			
+			order.setReturnValue(returnValue);
+			order.setOrderStatus((short)1);
+			
+			List<AdBean> ads = adService.updateAdBeansAfterPaymentVerified(order.getAds(), order);
+			order.setAds(ads);
+			
+			orderRepository.save(order);
+			
+			return true;
+		}catch(Exception exception) {
+			logger.info("驗證失敗");
+		}
+
+		return false;
 	}
 	
 	/**

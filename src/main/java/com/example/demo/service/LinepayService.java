@@ -11,7 +11,9 @@ import java.util.logging.Logger;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -24,7 +26,6 @@ import com.example.demo.model.linepay.CheckoutPaymentRequestForm;
 import com.example.demo.model.linepay.ProductForm;
 import com.example.demo.model.linepay.ProductPackageForm;
 import com.example.demo.model.linepay.RedirectUrls;
-import com.example.demo.repository.CartRepository;
 import com.example.demo.repository.OrderRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -35,15 +36,13 @@ public class LinepayService {
 
 	private Logger logger = Logger.getLogger(LinepayService.class.getName());
 	private OrderRepository orderRepository;
-	private CartRepository cartRepository;
 	private LinepayApiConfig linpayApiConfig;
 	private AdService adService;
 	private CartService cartService;
 
 	public LinepayService(
-			OrderRepository orderRepository, CartRepository cartRepository, LinepayApiConfig linpayApiConfig, AdService adService, CartService cartService) {
+			OrderRepository orderRepository, LinepayApiConfig linpayApiConfig, AdService adService, CartService cartService) {
 		this.orderRepository = orderRepository;
-		this.cartRepository = cartRepository;
 		this.linpayApiConfig = linpayApiConfig;
 		this.adService = adService;
 		this.cartService = cartService;
@@ -54,8 +53,8 @@ public class LinepayService {
 	 * @param orderId
 	 * @return
 	 */
-	public String processPaymentRequest(String orderId) {
-
+	public ResponseEntity<?> processPaymentRequest(String orderId) {
+		
 		CheckoutPaymentRequestForm paymentForm = generatePaymentForm(orderId);
 
 		Map<String, String> requestInfo = generateRequestInfo(paymentForm);
@@ -67,7 +66,20 @@ public class LinepayService {
 		String response = sendRequest(headers, requestBody);
 		String paymentURL = processResponse(response, orderId);
 		
-		return paymentURL;
+		try {
+			
+			if (orderId == null || orderId.isEmpty()) 
+				return ResponseEntity.ok(Map.of("paymentUrl", paymentURL));
+			
+		}catch(Exception exception){
+			
+			logger.info(exception.getMessage());
+			
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error processing payment request: " + exception.getMessage());
+		}
+
+		return null;
 	}
 
 	/**
@@ -144,8 +156,8 @@ public class LinepayService {
 			// 回傳資料
 			return requestInfo;
 
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+		} catch (JsonProcessingException exception) {
+			exception.printStackTrace();
 		}
 
 		return null;
@@ -226,9 +238,9 @@ public class LinepayService {
 				return paymentURL;
 			}
 
-		} catch (JsonProcessingException e) {
+		} catch (JsonProcessingException exception) {
 			logger.info("LINEPAY付款失敗");
-			e.printStackTrace();
+			exception.printStackTrace();
 		}
 
 		return null;
@@ -271,6 +283,7 @@ public class LinepayService {
 		}else {
 			logger.info("沒有該筆訂單資料: " + orderId);
 		}
+		
 		return false;
 	}
 	

@@ -24,6 +24,7 @@ import com.example.demo.service.OrderService;
 public class OrderRestController {
 
 	private Logger logger = Logger.getLogger(OrderResponseDTO.class.getName());
+	
 	private OrderService orderService;
 	
 	public OrderRestController(OrderService orderService) {
@@ -49,15 +50,7 @@ public class OrderRestController {
 		String[] userInfo = JwtUtil.verify(authorizationHeader);
 		Long userId = Long.parseLong(userInfo[1]);
 		
-		Integer pageNumber = Integer.parseInt(conditions.get("page"));
-		String orderStatus = conditions.get("status");
-		String dateRange = conditions.get("daterange");
-		String inputCondition = conditions.get("inputcondition");
-		String userInput = conditions.get("input");
-		
-		logger.info("user input: " + userInput);
-		
-		return orderService.findOrdersByConditions(userId, pageNumber, orderStatus, dateRange, inputCondition, userInput);
+		return orderService.findOrdersByConditions(userId, conditions);
 	}
 	
 	@Transactional
@@ -69,8 +62,6 @@ public class OrderRestController {
 		Long userId = Long.parseLong(userInfo[1]);
 		
 		OrderResponseDTO newOrder = orderService.createOrder(userId, requestDTO);
-		
-		logger.info("新訂單資料: " + newOrder.toString());
 		
 		return newOrder;
 	}
@@ -92,8 +83,7 @@ public class OrderRestController {
 		String[] userInfo = JwtUtil.verify(authorizationHeader);
 		Long userId = Long.parseLong(userInfo[1]);
 		
-		boolean result = orderService.cancelOrderByMerchantTradNo(userId, merchantTradNo);
-		return result;
+		return orderService.cancelOrderByMerchantTradNo(userId, merchantTradNo);
 	}
 	
 	/**
