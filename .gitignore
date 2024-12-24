@@ -81,3 +81,4 @@ linepayapi.properties
 ecpayapi.properties
 Azure.properties
 recaptcha.properties
+googleoauth.properties
