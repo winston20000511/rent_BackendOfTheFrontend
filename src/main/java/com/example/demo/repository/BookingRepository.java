@@ -23,9 +23,8 @@ public interface BookingRepository extends JpaRepository<BookingBean, Long> {
 	@Query("SELECT new com.example.demo.dto.BookingListDTO(b.bookingId AS bookingId, b.houseId AS houseId, "
 			+ "h.title AS houseTitle, h.address AS houseAddress, b.userId AS userId, b.createDate AS createDate, "
 			+ "h.price AS housePrice, CAST(CONCAT(b.bookingDate, ' ', b.bookingTime) AS LocalDateTime) AS bookingDate, "
-			+ "b.status AS status) " + "FROM BookingBean b "
-			+ "JOIN b.house h "
-			+ "WHERE b.userId = :userId")
+			+ "b.status AS status) FROM BookingBean b JOIN b.house h "
+			+ "WHERE b.userId = :userId ORDER BY b.bookingId DESC")
 	List<BookingListDTO> findBookingListByUserId(Long userId);
 
 	@Query("SELECT CONCAT(bookingDate,' ',bookingTime) FROM BookingBean WHERE houseId = :houseId AND status <=1")

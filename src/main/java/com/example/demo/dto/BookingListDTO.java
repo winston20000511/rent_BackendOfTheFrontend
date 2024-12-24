@@ -19,7 +19,7 @@ public class BookingListDTO {
 	private Integer housePrice;
 	private Long userId;
 	private LocalDateTime createDate;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime bookingDate;
 	private Byte status;
 

@@ -150,18 +150,22 @@ public class BookingController {
 		BookingSlotDTO bookingTimeSlot = bookingService.findTimeSlotByHouseId(houseId);
 		return ResponseEntity.ok().body(bookingTimeSlot);
 	}
-
+	
+	// 用戶 取消 預約
 	@ResponseBody
 	@PutMapping("/api/booking/guest")
 	public ResponseEntity<?> putBookingByUser(@RequestBody BookingDTO bookingDTO) throws MessagingException {
-		bookingDTO.setStatus((byte)4);	//status '4' : 用戶取消
-		return ResponseEntity.ok().body(bookingService.updateBookingByGuest(bookingDTO));
+		bookingDTO.setStatus((byte)4);	//status 4: 用戶取消
+		return ResponseEntity.ok().body(bookingService.cancelBookingByGuest(bookingDTO));
 	}
-
+	
+	// 屋主 同意/拒絕/取消 預約
 	@ResponseBody
 	@PutMapping("/api/booking/host")
 	public ResponseEntity<?> putBookingByHouse(@RequestBody BookingDTO bookingDTO) throws MessagingException {
-		bookingDTO.setStatus((byte)3);	//status '3' : 屋主取消
+		// 預設前端已將status已改好  1: 屋主同意 ; 2: 屋主拒絕 ; 3:屋主取消
+		
+		
 		return ResponseEntity.ok().body(bookingService.updateBookingByHost(bookingDTO));
 	}
 

@@ -42,6 +42,9 @@ public class BookingService {
 	@Autowired
 	private JavaMailSender mailSender;
 	
+	// 預設網址
+	protected String url = "http://localhost:8080/" ;
+	
 	// 更新 預約狀態
 	@Scheduled(cron = "0 1 0 * * ?")//每天 01:01 更新
     public void updateHouseStatus() {
@@ -73,6 +76,7 @@ public class BookingService {
 	
 	// 使用者的預約清單
 	public List<BookingListDTO> getBookingByUser(Long userId) {
+		
 		return bookingRepo.findBookingListByUserId(userId);
 	}
 
@@ -102,8 +106,6 @@ public class BookingService {
 			if (newBean != null) {
 				BookingDetailDTO b = bookingRepo.findBookingDetailsById(newBean.getBookingId());
 				
-				// 房東的查看預約網址
-				String url = "http://localhost:8080/" ;
 				
 				String formattedMessage = booking.getMessage()
 		                .replace("<", "&lt;")
@@ -116,7 +118,7 @@ public class BookingService {
 			             "<span style='text-align: center;'>立即查看： </span>" +
 			             "<span style='text-align: center;'><a href='"+ url +"' style='color: blue;'>"+url+"</a></span>" +
 			             "<h3 style='text-align: start;'>給您的留言:</h3>" +
-			             "<div style='border: 1px dashed #ccc; padding: 10px; margin-top: 15px;'>" +
+			             "<div style='border: 1px solid #ccc; padding: 10px; margin-top: 15px;'>" +
 			             "<p style='text-align: start;'>" + formattedMessage + "</p>" +
 			             "</div>" +
 			             "<hr style='border-top: 1px solid #ccc;'>" +
@@ -131,31 +133,69 @@ public class BookingService {
 			}
 		}
 	}
-
-	public BookingDTO updateBookingByHost(BookingDTO booking) {
+	
+	// 屋主更改預約狀態 (1: 屋主同意 ; 2: 屋主拒絕 ; 3:屋主取消)
+	public BookingResponseDTO updateBookingByHost(BookingDTO booking) throws MessagingException {
 		Optional<BookingBean> op = bookingRepo.findById(booking.getBookingId());
 
 		BookingBean newBean = new BookingBean();
 		if (op.isPresent()) {
 			newBean = op.get();
 			newBean.setStatus(booking.getStatus());
+			BookingBean b = bookingRepo.save(newBean);
+			
+			String text ="";
+			Byte status = b.getStatus();
+			
+			switch (status){
+				case 1 : text = "同意"; break;
+				case 2 : text = "拒絕"; break;
+				case 3 : text = "取消"; break;
+				default: return new BookingResponseDTO("danger", "無效的預約!");
+			}
+			
+
+			String msg = "<div style='width:400px; border: 1px solid #007bff; border-radius: 10px; padding: 15px;'>" +
+		             "<h2 style='text-align: left ;'>您在 <span style='color:red;'>" + 
+		             b.getBookingDate() + " " + b.getBookingTime() + "</span> 的預約已"+text+"</h2>" +
+		             "<span style='text-align: center;'>立即查看： </span>" +
+		             "<span style='text-align: center;'><a href='"+ url +"' style='color: blue;'>"+url+"</a></span>" +
+		             "<hr style='border-top: 1px solid #ccc;'>" +
+		             "<footer style='text-align: end; font-size: small; color: gray;'>感謝您的使用！</footer>" +
+		             "</div>";
+			
+			sendSimpleEmail(b.getHouse().getUser().getEmail(), "《通知》預約已"+text, msg);
+			
+			
+			return new BookingResponseDTO("success", "操作成功!");
 		}
-
-		return convertToDTO(bookingRepo.save(newBean));
+		return new BookingResponseDTO("danger", "操作失敗!");
 	}
-
-	public BookingResponseDTO updateBookingByGuest(BookingDTO booking) {
+	
+	// 用戶更改預約狀態
+	public BookingResponseDTO cancelBookingByGuest(BookingDTO booking) throws MessagingException {
 		Optional<BookingBean> op = bookingRepo.findById(booking.getBookingId());
 
 		BookingBean newBean = new BookingBean();
 		if (op.isPresent()) {
 			newBean = op.get();
 			newBean.setStatus(booking.getStatus());
-			bookingRepo.save(newBean);
+			BookingBean b = bookingRepo.save(newBean);
+			
+			
+			String msg = "<div style='width:400px; border: 1px solid #007bff; border-radius: 10px; padding: 15px;'>" +
+		             "<h2 style='text-align: left ;'>您在 <span style='color:red;'>" + 
+		             b.getBookingDate() + " " + b.getBookingTime() + "</span> 的預約已被取消</h2>" +
+		             "<span style='text-align: center;'>立即查看： </span>" +
+		             "<span style='text-align: center;'><a href='"+ url +"' style='color: blue;'>"+url+"</a></span>" +
+		             "<hr style='border-top: 1px solid #ccc;'>" +
+		             "<footer style='text-align: end; font-size: small; color: gray;'>感謝您的使用！</footer>" +
+		             "</div>";
+			
+			sendSimpleEmail(b.getHouse().getUser().getEmail(), "《通知》預約已取消", msg);
 			return new BookingResponseDTO("success", "已完成取消!");
 		}
 		
-//		return convertToDTO();
 		return new BookingResponseDTO("danger", "取消失敗!");
 	}
 
