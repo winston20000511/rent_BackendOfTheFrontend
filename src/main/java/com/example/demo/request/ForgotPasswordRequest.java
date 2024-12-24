@@ -1,9 +1,10 @@
 package com.example.demo.request;
 
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
+import lombok.NonNull;
 @Data
 public class ForgotPasswordRequest {
+    @NonNull
     private String email;
 
 

@@ -34,4 +34,5 @@ public interface UserRepository extends JpaRepository<UserTableBean, Long> {
      * @return 會員資料
      */
     Optional<UserTableBean> findById(Long userId);
+
 }

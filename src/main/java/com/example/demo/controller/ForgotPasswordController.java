@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -25,9 +26,8 @@ public class ForgotPasswordController {
     // 忘記密碼請求處理
     @Public
     @PostMapping("/forgotPassword")
-    public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
+    public ResponseEntity<String> forgotPassword(@RequestBody @Validated ForgotPasswordRequest forgotPasswordRequest) {
         log.info(forgotPasswordRequest.getEmail()
-
         );
         try {
             forgotPasswordService.processForgotPassword(forgotPasswordRequest.getEmail());
