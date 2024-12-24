@@ -26,7 +26,7 @@ public class ForgotPasswordController {
     // 忘記密碼請求處理
     @Public
     @PostMapping("/forgotPassword")
-    public ResponseEntity<String> forgotPassword(@RequestBody @Validated ForgotPasswordRequest forgotPasswordRequest) {
+    public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
         log.info(forgotPasswordRequest.getEmail()
         );
         try {
