@@ -14,6 +14,7 @@ import java.util.Optional;
 import com.example.demo.dto.KeyWordDTO;
 import com.example.demo.model.ConditionTableBean;
 import com.example.demo.model.FurnitureTableBean;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
@@ -29,6 +30,7 @@ import com.example.demo.pojo.ResponseMapPOJO;
 import com.example.demo.repository.SearchRepository;
 
 
+@Slf4j
 @Service
 public class SearchService {
 	
@@ -43,62 +45,34 @@ public class SearchService {
 		return searchRepo.findAll();
 	}
 
-	public List<AddressDTO> caseFilter(List<AddressDTO> listAddressDTO , KeyWordDTO key) {
+	public List<AddressDTO> caseFilter(List<AddressDTO> listAddressDTO , AddressDTO userKey) {
 
-		if (key.getMaxPrice() == 0){
-			key.setMaxPrice(9999999);
+		if (userKey.getMaxPrice() == 0){
+			userKey.setMaxPrice(9999999);
 		}
 
-		boolean result;
 		List<AddressDTO> newListAddressDTO = new ArrayList<>();
 		for(AddressDTO item : listAddressDTO ){
-			Optional<HouseTableBean> op = searchRepo.findById(item.getHouseid());
-			if (op.isPresent()){
-				HouseTableBean house = op.get();
-				FurnitureTableBean houseFurniture = house.getFurniture();
-				ConditionTableBean houseCondition= house.getCondition();
-				KeyWordDTO houseKey = new KeyWordDTO(
-						item.getAddress(),
-						item.getPrice(),
-						item.getPrice(),
-						houseFurniture.getWashingMachine(),
-						houseFurniture.getAirConditioner(),
-						houseFurniture.getNetwork(),
-						houseFurniture.getBedstead(),
-						houseFurniture.getMattress(),
-						houseFurniture.getRefrigerator(),
-						houseFurniture.getEwaterHeater(),
-						houseFurniture.getGwaterHeater(),
-						houseFurniture.getTelevision(),
-						houseFurniture.getChannel4(),
-						houseFurniture.getSofa(),
-						houseFurniture.getTables(),
-						houseCondition.getPet(),
-						houseCondition.getParkingSpace(),
-						houseCondition.getElevator(),
-						houseCondition.getBalcony(),
-						houseCondition.getShortTerm(),
-						houseCondition.getCooking(),
-						houseCondition.getWaterDispenser(),
-						houseCondition.getManagementFee(),
-						houseCondition.getGenderRestrictions(),
-						house.getHouseType(),
-						key.getPriority()
-				);
-				if (key.equals(houseKey)){
-					newListAddressDTO.add(item);
-				}
+
+			item.setMinPrice(item.getPrice());
+			item.setMaxPrice(item.getPrice());
+			item.setPriority(userKey.getPriority());
+			log.info(item.getHouseType());
+			log.info(item.getHouseid().toString());
+			if (userKey.equals(item)){
+				newListAddressDTO.add(item);
 			}
 		};
 		return newListAddressDTO;
 	}
 
-	public ResponseMapPOJO findByCityAndTownship(AddressDTO origin){
+	public ResponseMapPOJO findByCityAndTownship(AddressDTO origin , AddressDTO userKey){
 		String[] Parts = searchHelp.splitCityTown(origin.getAddress());
 		HashSet<AddressDTO> setAddressDTO = searchRepo.findByCityAndTownship(Parts[0]);
 		Integer placeAvgPrice = searchHelp.getPlaceAvgPrice(setAddressDTO);
-		setAddressDTO.add(origin);
+//		setAddressDTO.add(origin);
 		List<AddressDTO> listAddressDTO = new ArrayList<>(setAddressDTO);
+		listAddressDTO = caseFilter(listAddressDTO,userKey);
 		return new ResponseMapPOJO(listAddressDTO,origin,placeAvgPrice);
 	}
 	

@@ -35,11 +35,11 @@ public class SearchController {
 		return houseList;
 	}
 	
-	@CrossOrigin(origins = "*")
+	@CrossOrigin(origins="*")
 	@PostMapping("/api/map")
-	public ResponseMapPOJO searchShowMap(@RequestBody OriginDTO request) {
-		AddressDTO origin = searchService.placeConvertToAdress(request.getOrigin());
-		ResponseMapPOJO mapPOJO = searchService.findByCityAndTownship(origin);
+	public ResponseMapPOJO searchShowMap(@RequestBody AddressDTO key) {
+		AddressDTO origin = searchService.placeConvertToAdress(key.getAddress());
+		ResponseMapPOJO mapPOJO = searchService.findByCityAndTownship(origin,key);
 		long startTime = System.currentTimeMillis();
 		mapPOJO.setSearchList(searchService.getDurationAndDistance(mapPOJO.getSearchList(), origin,2));
 		long endTime = System.currentTimeMillis();
@@ -49,11 +49,10 @@ public class SearchController {
 	
 	@CrossOrigin(origins="*")
 	@PostMapping("/api/keyword")
-	public List<AddressDTO> searchShowkeyword(@RequestBody KeyWordDTO key){
-		List<AddressDTO> addressDtoList = searchService.findByKeyWord(key.getOrigin());
-		addressDtoList = searchService.caseFilter(addressDtoList,key);
+	public List<AddressDTO> searchShowkeyword(@RequestBody OriginDTO address){
+		List<AddressDTO> addressDtoList = searchService.findByKeyWord(address.getOrigin());
 		if (addressDtoList.size() == 0 ) {
-			AddressDTO house = searchService.placeConvertToAdress(key.getOrigin());
+			AddressDTO house = searchService.placeConvertToAdress(address.getOrigin());
 			addressDtoList.add(house);
 			return addressDtoList;
 		}else if(addressDtoList.size() < 10) {
