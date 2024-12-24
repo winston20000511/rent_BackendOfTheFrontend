@@ -79,4 +79,4 @@ node_modules
 googleapikey.properties
 linepayapi.properties
 ecpayapi.properties
-
+Azure.properties
