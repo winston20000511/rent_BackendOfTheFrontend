@@ -3,6 +3,9 @@ package com.example.demo.controller;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
@@ -85,9 +88,13 @@ public class HouseController {
 			@RequestParam Boolean shortTerm, @RequestParam Boolean cooking, @RequestParam Boolean waterDispenser,
 			@RequestParam Boolean managementFee, @RequestParam Byte genderRestrictions,
 			@RequestParam String description, @RequestParam String houseType,
-			@RequestParam("images") List<MultipartFile> images, @RequestParam Date fromDate, @RequestParam Date toDate,
-			@RequestParam Time fromTime, @RequestParam Time toTime, @RequestParam Short duration,
-			@RequestParam String weekDay) {
+			@RequestParam("images") List<MultipartFile> images,
+			@RequestParam LocalDate fromDate,
+	        @RequestParam LocalDate toDate,
+	        @RequestParam LocalTime fromTime,
+	        @RequestParam LocalTime toTime,
+	        @RequestParam Short duration,
+	        @RequestParam String weekDay) {
 
 		System.out.println(
 				"Received house details: " + title + ", images count: " + (images != null ? images.size() : 0));

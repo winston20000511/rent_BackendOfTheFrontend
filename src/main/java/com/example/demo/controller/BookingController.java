@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.demo.dto.BookingDTO;
+import com.example.demo.dto.BookingListDTO;
 import com.example.demo.dto.BookingResponseDTO;
 import com.example.demo.dto.BookingSlotDTO;
 import com.example.demo.helper.JwtUtil;
@@ -79,15 +81,21 @@ public class BookingController {
 
 		return ResponseEntity.ok("/");
 	}
-
+	
+	// 根據登入者 獲取預約清單
 	@ResponseBody
 	@GetMapping("/api/booking/guest")
-	public ResponseEntity<?> getBookingByUser(Long userId) {
-		List<BookingDTO> bookingList = bookingService.getBookingByUser(userId);
+	public ResponseEntity<?> getBookingByUser(@RequestHeader("authorization") String token) {
+		String[] userInfo = JwtUtil.verify(token);
+		Long userId = Long.parseLong(userInfo[1]);
+		
+		List<BookingListDTO> bookingList = bookingService.getBookingByUser(userId);
 
 		return ResponseEntity.ok().body(bookingList);
 	}
-
+	
+	// *********************************還沒好
+	// 根據登入者 獲取房屋的預約清單
 	@ResponseBody
 	@GetMapping("/api/booking/host")
 	public ResponseEntity<?> getBookingByHouse(Long houseId) {
@@ -115,7 +123,7 @@ public class BookingController {
 	        bookingDTO.setUserId(Long.parseLong(jwtResult[1]));
 	        bookingDTO.setCreateDate(LocalDateTime.now());
 	        bookingDTO.setStatus((byte) 0);
-	        System.out.println(bookingDTO.getUserId());
+
 	        BookingResponseDTO response = bookingService.createBooking(bookingDTO);
 	        return ResponseEntity.ok().body(response);
 
@@ -142,18 +150,22 @@ public class BookingController {
 		BookingSlotDTO bookingTimeSlot = bookingService.findTimeSlotByHouseId(houseId);
 		return ResponseEntity.ok().body(bookingTimeSlot);
 	}
-
+	
+	// 用戶 取消 預約
 	@ResponseBody
 	@PutMapping("/api/booking/guest")
 	public ResponseEntity<?> putBookingByUser(@RequestBody BookingDTO bookingDTO) throws MessagingException {
-
-		return ResponseEntity.ok().body(bookingService.updateBookingByGuest(bookingDTO));
+		bookingDTO.setStatus((byte)4);	//status 4: 用戶取消
+		return ResponseEntity.ok().body(bookingService.cancelBookingByGuest(bookingDTO));
 	}
-
+	
+	// 屋主 同意/拒絕/取消 預約
 	@ResponseBody
 	@PutMapping("/api/booking/host")
 	public ResponseEntity<?> putBookingByHouse(@RequestBody BookingDTO bookingDTO) throws MessagingException {
-
+		// 預設前端已將status已改好  1: 屋主同意 ; 2: 屋主拒絕 ; 3:屋主取消
+		
+		
 		return ResponseEntity.ok().body(bookingService.updateBookingByHost(bookingDTO));
 	}
 
