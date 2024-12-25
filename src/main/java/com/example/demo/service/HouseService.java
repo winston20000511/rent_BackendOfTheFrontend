@@ -25,6 +25,7 @@ import com.example.demo.repository.HouseImageRepository;
 import com.example.demo.repository.HouseRepository;
 import com.example.demo.repository.UserRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -220,6 +221,14 @@ public class HouseService {
 	    }
 	    return null; 
 	}
-	
-	
+//	COUNT function
+	  public void incrementClickCount(Long HouseId) {
+	        int updatedRows = houseRepository.incrementClickCount(HouseId);
+	        if (updatedRows == 0) {
+	            throw new EntityNotFoundException("House not found with ID: " + HouseId);
+	        }
+	    }
+	    public Integer getClickCount(Long houseId) {
+	        return houseRepository.findClickCountByHouseId(houseId);
+	    }
 }
