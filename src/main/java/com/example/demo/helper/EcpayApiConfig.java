@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@PropertySource("ecpayapi.properties")
+//@PropertySource("ecpayapi.properties")
 public class EcpayApiConfig {
 	
 	@Value("${merchantid}")
