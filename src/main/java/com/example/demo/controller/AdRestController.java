@@ -60,7 +60,7 @@ public class AdRestController {
 		String dateRange = conditions.get("daterange");
         String paymentStatus = conditions.get("paymentstatus");
         String houseTitle = conditions.get("housetitle");
-		
+        
 		Page<AdDetailsResponseDTO> pages= adService.findAdsByConditions(
 				userId, pageNumber, dateRange, paymentStatus, houseTitle);
 
@@ -92,7 +92,7 @@ public class AdRestController {
 	
 	
 	@PostMapping
-	public boolean createAdById(
+	public boolean createAd(
 	        @RequestBody AdCreationRequestDTO requestDTO, @RequestHeader("authorization") String authorizationHeader) {
 	    
 	    String[] userInfo = JwtUtil.verify(authorizationHeader);

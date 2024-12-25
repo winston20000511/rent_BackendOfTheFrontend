@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.AlgorithmParameters;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -23,6 +24,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Logger;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -46,6 +48,7 @@ import ecpay.payment.integration.exception.EcpayException;
  */
 public class EcpayFunction {
 	
+	private static Logger logger = Logger.getLogger(EcpayFunction.class.getName());
 	private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
 	private final static String CIPHER_ALGORITHM = "AES/CBC/NoPadding";
 		

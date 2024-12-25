@@ -1,11 +1,13 @@
 package com.example.demo.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.model.AdBean;
@@ -15,6 +17,8 @@ import com.example.demo.repository.AdRepository;
 import com.example.demo.repository.CartItemRepository;
 import com.example.demo.repository.CartRepository;
 import com.example.demo.repository.UserRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class CartService {
@@ -148,22 +152,62 @@ public class CartService {
 	    return false;
 	}
 	
+	
+	public boolean deleteCartItems(Integer cartId) {
+		Optional<CartBean> optional = cartRepository.findById(cartId);
+		if (optional.isEmpty()) return false;
+		
+		List<CartItemBean> cartItems = cartItemRepository.findByCartId(cartId);
+	    if (cartItems.isEmpty()) return false;
+	    
+	    cartItemRepository.deleteAll(cartItems);
+	    
+	    // 驗證
+	    List<CartItemBean> deletedCartItems = cartItemRepository.findByCartId(optional.get().getCartId());
+	    if (deletedCartItems.isEmpty()) return true;
+
+	    return false;
+	}
+	
+	public boolean deleteCart(Long userId) {
+		CartBean cart = cartRepository.findCartByUserId(userId);
+		if (cart == null) return false;
+	    
+	    cartRepository.delete(cart);
+	    
+	    // 驗證
+	    Optional<CartBean> deletedCart = cartRepository.findById(cart.getCartId());
+	    if (deletedCart.isEmpty()) return true;
+
+	    return false;
+	}
+	
 	/**
-	 * 以 userId 及 cartId 刪除購物車
+	 * 定時刪除購物車
 	 * @param userId
 	 * @param cartId
 	 * @return
 	 */
-	public boolean deleteCart(Long userId, Integer cartId) {
-		boolean sucess = deleteCartItems(userId);
+	@Scheduled(cron = "0 0 0 * * *")
+	public boolean cleanUpCart() {
 		
-		if(!sucess) return false; 
+		logger.info("啟動自動清除購物車");
 		
-		cartRepository.deleteById(cartId);
+		LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
+		List<CartBean> carts = cartRepository.findCartLeftOverThreeDays(threeDaysAgo);
 		
-		// 驗證
-		Optional<CartBean> optional = cartRepository.findById(cartId);
-		if(optional.isPresent()) return false;
+		for(CartBean cart : carts) {
+			Integer cartId = cart.getCartId();
+			
+			boolean sucess = deleteCartItems(cartId);
+			
+			if(!sucess) return false; 
+			
+			cartRepository.deleteByCartId(cartId);
+			
+			Optional<CartBean> optional = cartRepository.findById(cartId);
+			if(optional.isPresent()) return false;
+		}
 		
 		return true;
 	}

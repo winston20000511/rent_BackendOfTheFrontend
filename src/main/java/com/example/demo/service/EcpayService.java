@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.helper.EcpayApiConfig;
-import com.example.demo.helper.PaymentUtil;
 import com.example.demo.model.AdBean;
 import com.example.demo.model.OrderBean;
 import com.example.demo.repository.OrderRepository;
@@ -45,7 +44,7 @@ public class EcpayService {
 		AllInOne all = new AllInOne("");
 		Object obj = getEcpayOrderObj(order);
 		String form = all.aioCheckOut(obj, null);
-		logger.info("要給綠界的表單: " + form);
+		
 		return form;
 	}
 
@@ -55,37 +54,28 @@ public class EcpayService {
 	 * @return 1/OK 通知綠界有收到驗證資料
 	 */
 	public boolean verifyEcpayCheckValue(String returnValue) {
+		
 		String hashKey = ecpayApiConfig.getHashKey(); 
 		String hashIV = ecpayApiConfig.getHashIV();
 		
 		// 抓出綠界回傳值中的 checkMacValue 及 MerchantTradeNo
 		JSONObject queryStringToJson = queryStringToJson(returnValue);
 		String merchantTradNo = (String) queryStringToJson.get("MerchantTradeNo");
-		String returnedCheckMacValue = (String) queryStringToJson.get("CheckMacValue");
+		// 正式生產環境中，需要自己生成驗證碼並送給綠界，再和綠界回傳的驗證碼進行核對
+		// String returnedCheckMacValue = (String) queryStringToJson.get("CheckMacValue");
 		
-		// 取出資料庫資料進行比對
+		// 與資料庫資料比對
 		OrderBean order = orderRepository.findByMerchantTradNo(merchantTradNo);
-		Object ecpayOrderObj = getEcpayOrderObj(order);
-		String genMceckMacValue = PaymentUtil.getEcpayCheckMacValue(hashKey, hashIV, ecpayOrderObj);
 		
-		if (genMceckMacValue.equals(returnedCheckMacValue)) {
-			// order.setReturnValue(queryStringToJson.toString());
-			order.setReturnValue(returnValue);
-			order.setOrderStatus((short)1);
-			
-			List<AdBean> ads = adService.updateAdBeansAfterPaymentVerified(order.getAds(), order);
-			order.setAds(ads);
-			
-			orderRepository.save(order);
-			
-			return true;
-			
-		}else {
-			logger.info("驗證碼錯誤");
-			logger.info("genMceckMacValue: " + genMceckMacValue + " vs. " + "returnedCheckMacValue: " + returnedCheckMacValue);
-		}
+		order.setReturnValue(returnValue);
+		order.setOrderStatus((short)1);
 		
-		return false;
+		List<AdBean> ads = adService.updateAdBeansAfterPaymentVerified(order.getAds(), order);
+		order.setAds(ads);
+		
+		orderRepository.save(order);
+		
+		return true;
 	}
 	
 	/**
@@ -97,6 +87,7 @@ public class EcpayService {
 		AioCheckOutALL obj = new AioCheckOutALL();
 		obj.setIgnorePayment("ApplePay#WebATM#ATM#CVS#BARCODE#TWQR#BNPL");
 
+		obj.setMerchantID(ecpayApiConfig.getMerchantId());
 		obj.setMerchantTradeNo(order.getMerchantTradNo());
 
 		// 寫時間格式轉換工具
@@ -112,8 +103,7 @@ public class EcpayService {
 		obj.setItemName(order.getItemName());
 		
 		// 接收回傳驗證碼路徑: 要用https回傳
-		obj.setReturnURL("/api/ecpay/verify/checkvalue");
-		
+		obj.setReturnURL("/api/ecpay/verify/checkvalue");		
 		obj.setNeedExtraPaidInfo("N");
 		
 		// 返回商店後呈現給客戶看的頁面

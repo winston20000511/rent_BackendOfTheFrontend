@@ -4,9 +4,11 @@ import java.util.logging.Logger;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.helper.JwtUtil;
 import com.example.demo.service.EcpayService;
 
 @RestController
@@ -26,7 +28,11 @@ public class EcpayRestController {
 	 * @return
 	 */
 	@PostMapping("/ecpayCheckout")
-	public String ecpayCheckout(@RequestBody String merchantTradNo) {
+	public String ecpayCheckout(
+			@RequestBody String merchantTradNo, @RequestHeader("authorization") String authorizationHeader) {
+		
+		JwtUtil.verify(authorizationHeader);
+		
 		logger.info("訂單號碼: " + merchantTradNo);
 		String form =  ecpayService.ecpayCheckout(merchantTradNo);	
 		return form;
@@ -39,6 +45,7 @@ public class EcpayRestController {
 	 */
 	@PostMapping("/verify/checkvalue")
 	public String verify(@RequestBody String response) {
+		
 		logger.info("綠界的回應: " + response);
 		
 		if(response != null) {
@@ -53,6 +60,5 @@ public class EcpayRestController {
 		
 		return "1|OK";
 	}
-	
 	
 }

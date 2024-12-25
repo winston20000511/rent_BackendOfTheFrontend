@@ -4,11 +4,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.logging.Logger;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import com.example.demo.dto.OrderSearchRequestDTO;
 import com.example.demo.model.AdBean;
 import com.example.demo.model.HouseTableBean;
 import com.example.demo.model.OrderBean;
@@ -18,6 +17,8 @@ import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 
 public class OrderSpecification {
+	
+	private Logger logger = Logger.getLogger(OrderSpecification.class.getName());
 	
 	public static Specification<OrderBean> filter(
 			Long userId, Integer page, String orderStatus, String dateRange, String inputCondition, String userInput){
