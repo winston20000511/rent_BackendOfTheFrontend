@@ -38,6 +38,7 @@ public interface UserRepository extends JpaRepository<UserTableBean, Long> {
      * @return 會員資料
      */
     Optional<UserTableBean> findById(Long userId);
+
     
     @Query("SELECT u.coupon FROM UserTableBean u WHERE u.userId =:userId")
 	public Byte getCouponNumber(Long userId);
