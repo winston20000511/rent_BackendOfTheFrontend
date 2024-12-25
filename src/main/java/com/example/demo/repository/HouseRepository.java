@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -16,6 +17,8 @@ import com.example.demo.dto.HouseOwnerInfoDTO;
 import com.example.demo.model.HouseImageTableBean;
 import com.example.demo.model.HouseTableBean;
 import com.example.demo.model.UserTableBean;
+
+import jakarta.transaction.Transactional;
 
 public interface HouseRepository extends JpaRepository<HouseTableBean, Long> {
 
@@ -39,7 +42,13 @@ public interface HouseRepository extends JpaRepository<HouseTableBean, Long> {
 	@Query(value = "SELECT h.house_id, u.email FROM  house_table h JOIN user_table u ON h.user_id = u.user_id WHERE h.user_id = :houseId", nativeQuery = true)
 	HouseOwnerDetailDTO getOwnerDetailByHouseId(Long houseId);
 
+    @Modifying
+    @Transactional
+    @Query("UPDATE HouseTableBean h SET h.clickCount = h.clickCount + 1 WHERE h.houseId = :houseId")
+    int incrementClickCount(@Param("houseId") Long houseId);
 	
+    @Query("SELECT h.clickCount FROM HouseTableBean h WHERE h.houseId = :houseId")
+    Integer findClickCountByHouseId(@Param("houseId") Long houseId);
 	/**
 	 * 篩選使用者當前擁有的物件中，無申請或無使用推播服務者
 	 * @param userId

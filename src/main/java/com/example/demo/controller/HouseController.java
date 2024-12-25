@@ -119,7 +119,7 @@ public class HouseController {
 		house.setAtticAddition(atticAddition);
 		house.setDescription(description);
 		house.setHouseType(houseType);
-		house.setStatus((byte) 1);
+		house.setStatus((byte) 0);
 		house.setClickCount(0);
 
 		try {
@@ -399,5 +399,23 @@ public class HouseController {
 			return ResponseEntity.notFound().build();
 		}
 	}
-
+	@PutMapping("/{houseId}/incrementClick")
+    public ResponseEntity<String> incrementClickCount(@PathVariable Long houseId) {
+        try {
+            houseService.incrementClickCount(houseId);
+            return ResponseEntity.ok("Click count incremented successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to increment click count");
+        }
+    }
+	
+	 @GetMapping("/{houseId}/clickCount")
+	    public ResponseEntity<Integer> getClickCount(@PathVariable Long houseId) {
+	        try {
+	            Integer clickCount = houseService.getClickCount(houseId);
+	            return ResponseEntity.ok(clickCount);
+	        } catch (Exception e) {
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+	        }
+	    }
 }
