@@ -1,7 +1,6 @@
 package com.example.demo.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.example.demo.dto.BookingDTO;
 import com.example.demo.dto.BookingDetailDTO;
 import com.example.demo.dto.BookingListDTO;
+import com.example.demo.dto.BookingOwnerListDTO;
 import com.example.demo.dto.BookingResponseDTO;
 import com.example.demo.dto.BookingSlotDTO;
 import com.example.demo.model.BookingBean;
@@ -81,17 +81,9 @@ public class BookingService {
 	}
 
 	// 使用者的房屋預約清單
-	public List<BookingDTO> getBookingByHouse(Long houseId) {
-		List<BookingBean> bs = bookingRepo.findByHouseId(houseId);
-		List<BookingDTO> dto = new ArrayList<>();
-
-		if (!bs.isEmpty()) {
-			for (BookingBean b : bs) {
-				BookingDTO d = convertToDTO(b);
-				dto.add(d);
-			}
-		}
-		return dto;
+	public List<BookingOwnerListDTO> getBookingByHouseOwner(Long userId) {
+		
+		return bookingRepo.findByHouseOwnerUserId(userId);
 	}
 
 	public BookingResponseDTO createBooking(BookingDTO booking) throws MessagingException {

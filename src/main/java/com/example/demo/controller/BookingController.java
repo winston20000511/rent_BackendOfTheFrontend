@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.demo.dto.BookingDTO;
 import com.example.demo.dto.BookingListDTO;
+import com.example.demo.dto.BookingOwnerListDTO;
 import com.example.demo.dto.BookingResponseDTO;
 import com.example.demo.dto.BookingSlotDTO;
 import com.example.demo.helper.JwtUtil;
@@ -76,30 +77,33 @@ public class BookingController {
 		if (userId == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("/users/login");
 		}
-		
+
 		bookingService.updataTimeSlot(bean);
 
 		return ResponseEntity.ok("/");
 	}
-	
+
 	// 根據登入者 獲取預約清單
 	@ResponseBody
 	@GetMapping("/api/booking/guest")
 	public ResponseEntity<?> getBookingByUser(@RequestHeader("authorization") String token) {
 		String[] userInfo = JwtUtil.verify(token);
 		Long userId = Long.parseLong(userInfo[1]);
-		
+
 		List<BookingListDTO> bookingList = bookingService.getBookingByUser(userId);
 
 		return ResponseEntity.ok().body(bookingList);
 	}
-	
+
 	// *********************************還沒好
 	// 根據登入者 獲取房屋的預約清單
 	@ResponseBody
 	@GetMapping("/api/booking/host")
-	public ResponseEntity<?> getBookingByHouse(Long houseId) {
-		List<BookingDTO> bookingList = bookingService.getBookingByHouse(houseId);
+	public ResponseEntity<?> getBookingByHouse(@RequestHeader("authorization") String token) {
+		String[] userInfo = JwtUtil.verify(token);
+		Long userId = Long.parseLong(userInfo[1]);
+
+		List<BookingOwnerListDTO> bookingList = bookingService.getBookingByHouseOwner(userId);
 
 		return ResponseEntity.ok().body(bookingList);
 	}
@@ -107,37 +111,36 @@ public class BookingController {
 	// 建立新的預約
 	@ResponseBody
 	@PostMapping("/api/booking/host")
-	public ResponseEntity<?> postBooking(@RequestBody BookingDTO bookingDTO, HttpServletRequest request) throws MessagingException {
-	    try {
-	        String token = request.getHeader("authorization");
-	        if (token == null || token.isEmpty()) {
-	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token 未提供");
-	        }
+	public ResponseEntity<?> postBooking(@RequestBody BookingDTO bookingDTO, HttpServletRequest request)
+			throws MessagingException {
+		try {
+			String token = request.getHeader("authorization");
+			if (token == null || token.isEmpty()) {
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token 未提供");
+			}
 
-	        String[] jwtResult = JwtUtil.verify(token);
+			String[] jwtResult = JwtUtil.verify(token);
 
-	        if (jwtResult ==null) {
-	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token 無效");
-	        }
-	        
-	        bookingDTO.setUserId(Long.parseLong(jwtResult[1]));
-	        bookingDTO.setCreateDate(LocalDateTime.now());
-	        bookingDTO.setStatus((byte) 0);
+			if (jwtResult == null) {
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token 無效");
+			}
 
-	        BookingResponseDTO response = bookingService.createBooking(bookingDTO);
-	        return ResponseEntity.ok().body(response);
+			bookingDTO.setUserId(Long.parseLong(jwtResult[1]));
+			bookingDTO.setCreateDate(LocalDateTime.now());
+			bookingDTO.setStatus((byte) 0);
 
-	    } catch (UnTokenException e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token 無效");
-	        
-	    } catch (Exception e) {
-	    	e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("伺服器發生未知錯誤");
-	    }
+			BookingResponseDTO response = bookingService.createBooking(bookingDTO);
+			return ResponseEntity.ok().body(response);
+
+		} catch (UnTokenException e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token 無效");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("伺服器發生未知錯誤");
+		}
 	}
-	
-	
 
 	@ResponseBody
 	@GetMapping("/booking/editTimeSlot")
@@ -150,22 +153,21 @@ public class BookingController {
 		BookingSlotDTO bookingTimeSlot = bookingService.findTimeSlotByHouseId(houseId);
 		return ResponseEntity.ok().body(bookingTimeSlot);
 	}
-	
+
 	// 用戶 取消 預約
 	@ResponseBody
 	@PutMapping("/api/booking/guest")
 	public ResponseEntity<?> putBookingByUser(@RequestBody BookingDTO bookingDTO) throws MessagingException {
-		bookingDTO.setStatus((byte)4);	//status 4: 用戶取消
+		bookingDTO.setStatus((byte) 4); // status 4: 用戶取消
 		return ResponseEntity.ok().body(bookingService.cancelBookingByGuest(bookingDTO));
 	}
-	
+
 	// 屋主 同意/拒絕/取消 預約
 	@ResponseBody
 	@PutMapping("/api/booking/host")
 	public ResponseEntity<?> putBookingByHouse(@RequestBody BookingDTO bookingDTO) throws MessagingException {
-		// 預設前端已將status已改好  1: 屋主同意 ; 2: 屋主拒絕 ; 3:屋主取消
-		
-		
+		// 預設前端已將status已改好 1: 屋主同意 ; 2: 屋主拒絕 ; 3:屋主取消
+
 		return ResponseEntity.ok().body(bookingService.updateBookingByHost(bookingDTO));
 	}
 
