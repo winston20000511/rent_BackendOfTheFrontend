@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.dto.BookingDetailDTO;
 import com.example.demo.dto.BookingListDTO;
+import com.example.demo.dto.BookingOwnerListDTO;
 import com.example.demo.dto.HouseOwnerDetailDTO;
 import com.example.demo.model.BookingBean;
 
@@ -26,6 +27,14 @@ public interface BookingRepository extends JpaRepository<BookingBean, Long> {
 			+ "b.status AS status) FROM BookingBean b JOIN b.house h "
 			+ "WHERE b.userId = :userId ORDER BY b.bookingId DESC")
 	List<BookingListDTO> findBookingListByUserId(Long userId);
+
+	@Query("SELECT new com.example.demo.dto.BookingOwnerListDTO(b.bookingId AS bookingId, b.houseId AS houseId, "
+			+ "h.title AS houseTitle, h.address AS houseAddress, b.userId AS userId, u.name AS userName, "
+			+ "u.email AS userEmail, u.phone AS userPhone, u.status AS userStatus, b.createDate AS createDate, "
+			+ "CAST(CONCAT(b.bookingDate, ' ', b.bookingTime) AS LocalDateTime) AS bookingDate, "
+			+ "b.status AS status) FROM BookingBean b JOIN b.house h JOIN b.rentUser u "
+			+ "WHERE h.user.userId = :houseOwnerUserId ORDER BY b.bookingId DESC")
+	List<BookingOwnerListDTO> findByHouseOwnerUserId(Long houseOwnerUserId);
 
 	@Query("SELECT CONCAT(bookingDate,' ',bookingTime) FROM BookingBean WHERE houseId = :houseId AND status <=1")
 	List<String> findBookingedByHouseId(Long houseId);
