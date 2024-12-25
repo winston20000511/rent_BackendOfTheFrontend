@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.demo.dto.KeyWordDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -256,7 +257,7 @@ public class SearchHelper {
 		}
 
 		return bd.intValue();
-		
+
 	}
 	
 	public DrawLatLngDTO getAvgLatLng(List<DrawLatLngDTO> drawDtoList) {
@@ -282,6 +283,6 @@ public class SearchHelper {
 		double centerLat = Math.toDegrees(Math.atan2(z,Math.sqrt(x*x+y*y)));
 		return new DrawLatLngDTO(centerLat, centerLng);
 
-
 	}
+
 }
