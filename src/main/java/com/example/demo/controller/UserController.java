@@ -26,12 +26,12 @@ import java.util.Map;
 @Slf4j
 public class UserController {
 
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private EmailService emailService;
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private EmailService emailService;
 
-    /**
+	/**
      * 登入邏輯，檢查會員是否已停權
      *
      * @param loginRequest 登入請求的 JSON 格式
@@ -42,20 +42,6 @@ public class UserController {
         String email = loginRequest.get("email");
         String password = loginRequest.get("password");
 
-        UserTableBean user = userService.getUserByEmail(email);
-        if (user != null && user.getPassword().equals(password)) {
-            // 驗證成功，生成 JWT
-            /*
-             * String token = JwtUtil.sign(user.getEmail(),user.getUserId(), user.getName())
-             * response.put("name", user.getName());
-             */
-        	Map<String, Object> response = new HashMap<>();
-            String token = JwtUtil.sign(user.getEmail(), user.getUserId(), user.getName());
-
-            response.put("token", token);
-            response.put("userId", user.getUserId());
-            response.put("email", user.getEmail());
-            response.put("name", user.getName());
         try {
             UserTableBean user = userService.getUserByEmail(email);
             if (user != null) {
@@ -76,7 +62,7 @@ public class UserController {
                     }
 
                     // 密碼匹配且狀態正常，生成登入用 JWT
-                    String token = JwtUtil.sign(user.getEmail(), user.getUserId());
+                    String token = JwtUtil.sign(user.getEmail(), user.getUserId(),user.getName());
 
                     // 返回 Token 和用戶基本資料
                     Map<String, Object> response = new HashMap<>();
@@ -94,8 +80,8 @@ public class UserController {
         } catch (RuntimeException e) {
             log.error("登入失敗，原因：{}", e.getMessage());
             return ResponseEntity.status(401).body(e.getMessage());
-        }
-    }
+        }}
+    
 
     /**
      * 使用者註冊 API
@@ -213,4 +199,4 @@ public class UserController {
         }
     }
 
-}}
+}
