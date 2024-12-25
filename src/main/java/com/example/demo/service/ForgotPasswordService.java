@@ -4,8 +4,6 @@ import com.example.demo.model.UserTableBean;
 import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -15,38 +13,40 @@ import java.util.UUID;
 @Slf4j
 public class ForgotPasswordService {
 
-    // 檢查電子郵件是否存在於資料庫
     private final UserRepository userRepository;
     private final EmailService emailService;
 
+    // 檢查電子郵件是否存在於資料庫
     public boolean emailExists(String email) {
-        // TODO: 使用 Repository 檢查資料庫
-        return userRepository.existsByEmail(email); // 範例邏輯
+        return userRepository.existsByEmail(email);
     }
-
-
 
     // 處理忘記密碼的請求
     public void processForgotPassword(String email) {
-        //檢查Email是否存在在資料庫
+        // 檢查 Email 是否存在於資料庫
         if (!emailExists(email)) {
-            log.info("不存在的email{}",email);
+            log.info("不存在的 Email：{}", email);
             throw new IllegalArgumentException("該電子郵件不存在！");
         }
-        //如果email存在在資料庫中
+
+        // 如果 Email 存在於資料庫
         String token = generateResetToken();
-        // TODO: 儲存 token 到資料庫，並寄送重設密碼連結
+
+        // 儲存 Token 到資料庫
+        UserTableBean user = userRepository.findByEmail(email); // 假設已定義此方法
+        user.setResetToken(token); // 假設 UserTableBean 包含 resetToken 欄位
+        userRepository.save(user); // 儲存更新的使用者資料
+
+        // 發送重設密碼連結
         emailService.sendResetLink(email, token);
-        UserTableBean userTableBean = new UserTableBean();
-
-        log.info("已發送密碼重置信件給{},信箱地址為{}",userTableBean.getName(),email);
-
+        log.info("已發送密碼重置信件給 {}, 電子郵件地址為 {}", user.getName(), email);
     }
 
     // 驗證重設密碼連結的 Token
     public boolean validateToken(String token) {
-        // TODO: 從資料庫驗證 Token
-        return token.equals("mock-valid-token"); // 範例邏輯
+        // 從資料庫驗證 Token
+        UserTableBean user = userRepository.findByResetToken(token); // 假設已定義此方法
+        return user != null && token.equals(user.getResetToken());
     }
 
     // 生成唯一的密碼重設 Token
@@ -54,4 +54,3 @@ public class ForgotPasswordService {
         return UUID.randomUUID().toString();
     }
 }
-

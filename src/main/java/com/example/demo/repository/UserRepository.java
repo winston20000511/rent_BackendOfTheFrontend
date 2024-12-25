@@ -35,4 +35,5 @@ public interface UserRepository extends JpaRepository<UserTableBean, Long> {
      */
     Optional<UserTableBean> findById(Long userId);
 
+    UserTableBean findByResetToken(String token);
 }
