@@ -45,6 +45,13 @@ public class EcpayService {
 		Object obj = getEcpayOrderObj(order);
 		String form = all.aioCheckOut(obj, null);
 		
+		order.setOrderStatus((short)1);
+		
+		List<AdBean> ads = adService.updateAdBeansAfterPaymentVerified(order.getAds(), order);
+		order.setAds(ads);
+		
+		orderRepository.save(order);
+		
 		return form;
 	}
 
