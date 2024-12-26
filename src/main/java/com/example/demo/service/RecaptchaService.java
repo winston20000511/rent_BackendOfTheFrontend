@@ -28,20 +28,22 @@ public class RecaptchaService {
 	}
 	
 	public boolean verifyRecaptcha(String recaptchaToken) {
+		
 		RestTemplate restTemplate = new RestTemplate();
 	    HttpHeaders headers = new HttpHeaders();
 	    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
 	    MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
-	    requestBody.add("secret", recaptchaApiConfig.getSecret());
+	    requestBody.add("secret", "6LclaKUqAAAAABpif_Ui09QQo8OCk5foXVfKbfZ3");
 	    requestBody.add("response", recaptchaToken);
+	    logger.info("後端的request body: " + requestBody);
 
 	    // MultiValueMap: 存一個鍵對應多個值
 	    HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
 
 	    try {
 	    	
-	        ResponseEntity<Map> responseEntity = restTemplate.postForEntity(recaptchaApiConfig.getVerifyurl(), requestEntity, Map.class);
+	        ResponseEntity<Map> responseEntity = restTemplate.postForEntity("https://www.google.com/recaptcha/api/siteverify", requestEntity, Map.class);
 	        Map<String, Object> responseBody = responseEntity.getBody();
 
 	        if (responseBody != null && Boolean.TRUE.equals(responseBody.get("success"))) {
