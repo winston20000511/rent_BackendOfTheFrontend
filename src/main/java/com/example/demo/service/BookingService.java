@@ -183,8 +183,12 @@ public class BookingService {
 		             "<hr style='border-top: 1px solid #ccc;'>" +
 		             "<footer style='text-align: end; font-size: small; color: gray;'>感謝您的使用！</footer>" +
 		             "</div>";
+			long startTime = System.currentTimeMillis();
 			
 			sendSimpleEmail(b.getHouse().getUser().getEmail(), "《通知》預約已取消", msg);
+			long endTime = System.currentTimeMillis();
+			System.out.println("執行時間：" + (endTime - startTime) + " 毫秒");
+			
 			return new BookingResponseDTO("success", "已完成取消!");
 		}
 		
