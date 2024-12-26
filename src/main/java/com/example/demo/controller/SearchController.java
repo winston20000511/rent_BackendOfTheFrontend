@@ -39,19 +39,19 @@ public class SearchController {
 	@PostMapping("/api/map")
 	public ResponseMapPOJO searchShowMap(@RequestBody AddressDTO key) {
 		AddressDTO origin = searchService.placeConvertToAdress(key.getAddress());
-		ResponseMapPOJO mapPOJO = searchService.findByCityAndTownship(origin,key);
+		ResponseMapPOJO mapPOJO = searchService.findByCityAndTownship(origin, key);
 		long startTime = System.currentTimeMillis();
-		mapPOJO.setSearchList(searchService.getDurationAndDistance(mapPOJO.getSearchList(), origin,2));
+		mapPOJO.setSearchList(searchService.getDurationAndDistance(mapPOJO.getSearchList(), origin, 2));
 		long endTime = System.currentTimeMillis();
 		System.out.println("執行時間：" + (endTime - startTime) + " 毫秒");
 		return mapPOJO;
 	}
-	
+
 	@CrossOrigin(origins="*")
 	@PostMapping("/api/keyword")
 	public List<AddressDTO> searchShowkeyword(@RequestBody KeyWordDTO key){
 		List<AddressDTO> addressDtoList = searchService.findByKeyWord(key.getOrigin());
-		addressDtoList = searchService.caseSort(addressDtoList,"a","desc");
+		addressDtoList = searchService.caseSort(addressDtoList,key.getPriority(),key.getSort());
 //		addressDtoList = searchService.caseFilter(addressDtoList,key);
 		if (addressDtoList.size() == 0 ) {
 			AddressDTO house = searchService.placeConvertToAdress(key.getOrigin());

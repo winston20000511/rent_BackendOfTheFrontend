@@ -19,6 +19,7 @@ public class AddressDTO {
 	private Integer price;
 	private String adName;
 	private LocalDateTime paidDate;
+	private int clickCount;
 	private int minPrice;
 	private int maxPrice;
 	private boolean pet;
@@ -35,7 +36,7 @@ public class AddressDTO {
 	private String sort;
 
 	public AddressDTO(Long houseid, String address, Double lat, Double lng, Integer price,
-					  String adName, LocalDateTime paidDate, boolean pet, boolean parkingSpace,
+					  String adName, LocalDateTime paidDate, int clickCount, boolean pet, boolean parkingSpace,
 					  boolean elevator, boolean balcony, boolean shortTerm, boolean cooking,
 					  boolean waterDispenser, boolean fee, int gender, String houseType) {
 		this.houseid = houseid;
@@ -45,6 +46,7 @@ public class AddressDTO {
 		this.price = price;
 		this.adName = adName;
 		this.paidDate = paidDate;
+		this.clickCount = clickCount;
 		this.pet = pet;
 		this.parkingSpace = parkingSpace;
 		this.elevator = elevator;

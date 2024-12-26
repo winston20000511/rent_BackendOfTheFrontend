@@ -92,6 +92,13 @@ public class SearchService {
 		if (keyPriority.equals("p") && keySort.equals("asc")){
 			listAddressDTO.sort(Comparator.comparing(AddressDTO::getPrice));
 		}
+		if (keyPriority.equals("a") && keySort.equals("desc")){
+			listAddressDTO.sort(Comparator.comparing(AddressDTO::getClickCount));
+		}
+		if (keyPriority.equals("a") && keySort.equals("asc")){
+			listAddressDTO.sort(Comparator.comparing(AddressDTO::getClickCount).reversed());
+		}
+
 		return listAddressDTO;
 	}
 
