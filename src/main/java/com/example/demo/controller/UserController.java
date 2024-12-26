@@ -43,6 +43,8 @@ public class UserController {
         String password = loginRequest.get("password");
 
         try {
+            log.info("loginRequest {}",loginRequest);
+            log.info("email:{}",email);
             UserTableBean user = userService.getUserByEmail(email);
             if (user != null) {
                 // 驗證密碼是否匹配
