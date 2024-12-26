@@ -77,6 +77,7 @@ public class UserController {
 
                     return ResponseEntity.ok(response);
                 }
+                log.info("密碼輸入錯誤");
             }
             log.error("登入失敗qq");
             // 密碼錯誤或帳號不存在
