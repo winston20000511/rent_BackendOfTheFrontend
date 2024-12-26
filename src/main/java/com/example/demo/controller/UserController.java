@@ -46,6 +46,7 @@ public class UserController {
             log.info("loginRequest {}",loginRequest);
             log.info("email:{}",email);
             UserTableBean user = userService.getUserByEmail(email);
+            log.info("user {}",user);
             if (user != null) {
                 // 驗證密碼是否匹配
                 boolean isPasswordValid = userService.verifyPassword(password, user.getPassword());
