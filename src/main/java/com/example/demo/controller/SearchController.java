@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import java.io.IOException;
 import java.util.List;
 
+import com.example.demo.dto.KeyWordDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -34,24 +35,26 @@ public class SearchController {
 		return houseList;
 	}
 	
-	@CrossOrigin(origins = "*")
+	@CrossOrigin(origins="*")
 	@PostMapping("/api/map")
-	public ResponseMapPOJO searchShowMap(@RequestBody OriginDTO request) {
-		AddressDTO origin = searchService.placeConvertToAdress(request.getOrigin());
-		ResponseMapPOJO mapPOJO = searchService.findByCityAndTownship(origin);
+	public ResponseMapPOJO searchShowMap(@RequestBody AddressDTO key) {
+		AddressDTO origin = searchService.placeConvertToAdress(key.getAddress());
+		ResponseMapPOJO mapPOJO = searchService.findByCityAndTownship(origin, key);
 		long startTime = System.currentTimeMillis();
-		mapPOJO.setSearchList(searchService.getDurationAndDistance(mapPOJO.getSearchList(), origin,2));
+		mapPOJO.setSearchList(searchService.getDurationAndDistance(mapPOJO.getSearchList(), origin, 2));
 		long endTime = System.currentTimeMillis();
 		System.out.println("執行時間：" + (endTime - startTime) + " 毫秒");
 		return mapPOJO;
 	}
-	
+
 	@CrossOrigin(origins="*")
 	@PostMapping("/api/keyword")
-	public List<AddressDTO> searchShowkeyword(@RequestBody String srhReq){
-		List<AddressDTO> addressDtoList = searchService.findByKeyWord(srhReq);
+	public List<AddressDTO> searchShowkeyword(@RequestBody KeyWordDTO key){
+		List<AddressDTO> addressDtoList = searchService.findByKeyWord(key.getOrigin());
+		addressDtoList = searchService.caseSort(addressDtoList,key.getPriority(),key.getSort());
+//		addressDtoList = searchService.caseFilter(addressDtoList,key);
 		if (addressDtoList.size() == 0 ) {
-			AddressDTO house = searchService.placeConvertToAdress(srhReq);
+			AddressDTO house = searchService.placeConvertToAdress(key.getOrigin());
 			addressDtoList.add(house);
 			return addressDtoList;
 		}else if(addressDtoList.size() < 10) {

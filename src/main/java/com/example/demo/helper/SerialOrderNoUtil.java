@@ -4,11 +4,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.springframework.stereotype.Component;
-
 public class SerialOrderNoUtil {
 	
 	public static String PREFIX = "EE189"; 
+	@SuppressWarnings("unused")
 	private static String currentDateStr; // 紀錄當前時間
 	
 	/**

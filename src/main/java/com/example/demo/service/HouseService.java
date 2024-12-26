@@ -25,6 +25,7 @@ import com.example.demo.repository.HouseImageRepository;
 import com.example.demo.repository.HouseRepository;
 import com.example.demo.repository.UserRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -209,17 +210,25 @@ public class HouseService {
 	}
 
 	public HouseOwnerInfoDTO getOwnerInfoByHouseId(Long houseId) {
-//		HouseOwnerInfoDTO owner = new HouseOwnerInfoDTO();
-	    UserTableBean user = houseRepository.findOwnerByHouseId(houseId);
-//	    String base64Picture = null;
-//        if (owner.getPicture() != null) {
-//            base64Picture = Base64.getEncoder().encodeToString(base64Picture);
-//        }
+		UserTableBean user = houseRepository.findOwnerByHouseId(houseId);
 	    if (user != null) {
-	        return new HouseOwnerInfoDTO(user.getUserId(),user.getName(), user.getPicture(), user.getPhone());
+	        return new HouseOwnerInfoDTO(
+	            user.getUserId(),
+	            user.getName(),
+	            user.getPicture(), // 保留為 byte[]
+	            user.getPhone()
+	        );
 	    }
 	    return null; 
 	}
-	
-	
+//	COUNT function
+	  public void incrementClickCount(Long HouseId) {
+	        int updatedRows = houseRepository.incrementClickCount(HouseId);
+	        if (updatedRows == 0) {
+	            throw new EntityNotFoundException("House not found with ID: " + HouseId);
+	        }
+	    }
+	    public Integer getClickCount(Long houseId) {
+	        return houseRepository.findClickCountByHouseId(houseId);
+	    }
 }

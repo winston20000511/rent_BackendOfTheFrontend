@@ -11,9 +11,9 @@
             <HashIV></HashIV>
         </MInfo>
         <MInfo name="Stage_Account">
-            <MerchantID>3002599</MerchantID>
-            <HashKey>spPjZn66i0OhqJsQ</HashKey>
-            <HashIV>hT5OJckN45isQTTs</HashIV>
+            <MerchantID>3002607</MerchantID>
+            <HashKey>pwFHCqoQZGmho4w6</HashKey>
+            <HashIV>EkRm7iFT261dpevs</HashIV>
         </MInfo>
     </MerchantInfo>
     

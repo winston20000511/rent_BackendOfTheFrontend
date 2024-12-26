@@ -55,6 +55,8 @@ public class OrderRestController {
 		String inputCondition = conditions.get("inputcondition");
 		String userInput = conditions.get("input");
 		
+		logger.info("user input: " + userInput);
+		
 		return orderService.findOrdersByConditions(userId, pageNumber, orderStatus, dateRange, inputCondition, userInput);
 	}
 	
@@ -74,14 +76,23 @@ public class OrderRestController {
 	}
 	
 	@PostMapping("/merchantTradNo")
-	public OrderResponseDTO findOrderByMerchantTradNo(@RequestBody String merchantTradNo) {
-		System.out.println("要找的merchantTradNo: " +  merchantTradNo);
-		return orderService.findOrdersByMerchantTradNo(merchantTradNo);
+	public OrderResponseDTO findOrderByMerchantTradNo(
+			@RequestBody String merchantTradNo, @RequestHeader("authorization") String authorizationHeader) {
+		
+		String[] userInfo = JwtUtil.verify(authorizationHeader);
+		Long userId = Long.parseLong(userInfo[1]);
+		
+		return orderService.findOrdersByMerchantTradNo(userId, merchantTradNo);
 	}
 	
 	@PutMapping("/merchantTradNo")
-	public boolean cancelOrderByMerchantTradNo(@RequestBody String merchantTradNo) {
-		boolean result = orderService.cancelOrderByMerchantTradNo(merchantTradNo);
+	public boolean cancelOrderByMerchantTradNo(
+			@RequestBody String merchantTradNo, @RequestHeader("authorization") String authorizationHeader) {
+		
+		String[] userInfo = JwtUtil.verify(authorizationHeader);
+		Long userId = Long.parseLong(userInfo[1]);
+		
+		boolean result = orderService.cancelOrderByMerchantTradNo(userId, merchantTradNo);
 		return result;
 	}
 	
@@ -92,9 +103,7 @@ public class OrderRestController {
 	 */
 	@PostMapping("/content/confirmation")
 	public List<OrderConfirmationResponseDTO> confirmOrderContent(@RequestBody Integer cartId) {
-		System.out.println("confirm page cart id: " + cartId);
 		return orderService.getOrderConfirmationResponseDTOsByCartId(cartId);
 	}
-
 	
 }

@@ -20,11 +20,11 @@ public interface CartItemRepository extends JpaRepository<CartItemBean, Long>{
 	@Query("From CartItemBean where cartId = :cartId")
 	public List<CartItemBean> findByCartId(Integer cartId);
 	
-	@Query("select ci.adId from CartItemBean ci join ci.cart c where c.userId = :userId")
+	@Query("Select ci.adId from CartItemBean ci join ci.cart c where c.userId = :userId")
 	public Optional<List<Long>> findAdIdsByUserId(Long userId);
 	
 	@Modifying
-	@Query("delete from CartItemBean c where c.adId = :adId")
-	void deleteByAdId(@Param("adId") Long adId);
+	@Query("Delete from CartItemBean c where c.adId = :adId")
+	public void deleteByAdId(@Param("adId") Long adId);
 	
 }

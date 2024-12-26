@@ -88,9 +88,12 @@ public class OrderService {
 	 * @param merchantTradNo
 	 * @return OrderResponseDTO 訂單詳細資料
 	 */
-	public OrderResponseDTO findOrdersByMerchantTradNo(String merchantTradNo) {
+	public OrderResponseDTO findOrdersByMerchantTradNo(Long userId, String merchantTradNo) {
 		logger.severe(merchantTradNo);
 		OrderBean order = orderRepository.findByMerchantTradNo(merchantTradNo);
+		
+		if(!order.getUserId().equals(userId)) return null;
+		
 		OrderResponseDTO dto = new OrderResponseDTO();
 
 		dto.setMerchantTradNo(merchantTradNo);
@@ -99,23 +102,32 @@ public class OrderService {
 		List<String> adtypes = new ArrayList<>();
 		List<Integer> prices = new ArrayList<>();
 		List<Long> adIds = new ArrayList<>();
+		List<Integer> adtypesPrices = new ArrayList<>();
+		List<Integer> coupons = new ArrayList<>();
+		
 		for (AdBean ad : ads) {
 			houseTitles.add(ad.getHouse().getTitle());
 			adtypes.add(ad.getAdtype().getAdName());
+			adtypesPrices.add(ad.getAdtype().getAdPrice());
 			prices.add(ad.getAdPrice());
 			adIds.add(ad.getAdId());
+			if(ad.getIsCouponUsed() == 1) {
+				coupons.add(ad.getAdId().intValue());
+			}
 		}
 
+		dto.setCoupons(coupons);
 		dto.setHouseTitles(houseTitles);
 		dto.setAdtypes(adtypes);
 		dto.setPrices(prices);
 		dto.setAdIds(adIds);
+		dto.setAdtypesPrices(adtypesPrices);
 
 		dto.setTotalAmount(order.getTotalAmount());
 		dto.setMerchantTradDate(order.getMerchantTradDate());
 		dto.setOrderStatus(order.getOrderStatus());
 		dto.setChoosePayment(order.getChoosePayment());
-
+		
 		return dto;
 	}
 
@@ -151,8 +163,6 @@ public class OrderService {
 	    List<CartItemBean> cartItems = cartItemRepository.findByCartId(requestDTO.getCartId());
 	    Set<Long> appliedAdIds = new HashSet<>(requestDTO.getCouponApplied());
 
-	    // 計算總金額並更新商品價格
-	    Long totalAmount = 0L;
 	    List<Long> adIds = new ArrayList<>();
 	    for (CartItemBean cartItem : cartItems) {
 	        adIds.add(cartItem.getAdId());
@@ -161,17 +171,21 @@ public class OrderService {
 	    List<AdBean> ads = adRepository.findAllById(adIds);
 
 	    // 更新商品價格並計算總金額
+	    Long totalAmount = 0L;
 	    for (AdBean ad : ads) {
 	        boolean isCouponApplied = appliedAdIds.contains(ad.getAdId());
+	        logger.info("訂單的ad: " + ad.getAdId() +" 是否有優惠: " + isCouponApplied);
 	        int discount = isCouponApplied ? calculateDiscount(ad.getAdPrice()) : 0;
-	        totalAmount += ad.getAdPrice() - discount;
+	        logger.info("計算出來的折扣: " + discount);
+	        totalAmount += (ad.getAdPrice() - discount);
+	        logger.info("最後的總價格: " + totalAmount);
 
-	        ad.setAdPrice(ad.getAdPrice() - discount);
 	        ad.setIsCouponUsed(isCouponApplied ? 1 : 0);
 	        ad.setOrderId(newOrder.getMerchantTradNo());
 
 	        if (isCouponApplied) {
 	            ad.setAdPrice(ad.getAdPrice() - discount);
+	            logger.info("有折價的AD: " + ad.getAdId() + " 折扣: " + discount + " 折價後的金額: " + ad.getAdPrice());
 	        }
 
 	        newOrder.setItemName(ad.getAdtype().getAdName());
@@ -213,13 +227,15 @@ public class OrderService {
 	 * @param merchantTradNo
 	 * @return boolean 提出申請就設為 2 = 待平台方確認
 	 */
-	public boolean cancelOrderByMerchantTradNo(String merchantTradNo) {
+	public boolean cancelOrderByMerchantTradNo(Long userId, String merchantTradNo) {
 		Optional<OrderBean> optional = orderRepository.findById(merchantTradNo);
 		if (optional.isEmpty()) {
 			return false;
 		}
 
 		OrderBean order = optional.get();
+		if(!order.getUserId().equals(userId)) return false;
+		
 		order.setOrderStatus((short) 2); // 確認後方可取消
 		orderRepository.save(order);
 		

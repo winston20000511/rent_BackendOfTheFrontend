@@ -1,10 +1,6 @@
 package com.example.demo.service;
 
-import java.util.Optional;
-import com.example.demo.dto.HouseOwnerInfoDTO;
 import com.example.demo.dto.*;
-import com.example.demo.dto.UserCenterDTO;
-import com.example.demo.dto.UserRegisterDTO;
 import com.example.demo.helper.JwtUtil;
 import com.example.demo.model.UserTableBean;
 import com.example.demo.repository.UserRepository;
@@ -12,9 +8,8 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.example.demo.model.UserTableBean;
-import com.example.demo.repository.UserRepository;
 import java.util.Base64;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -28,6 +23,11 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private EmailService emailService;
+
 
     /**
      * 根據 ID 查詢使用者
@@ -48,13 +48,7 @@ public class UserService {
     public String registerUser(UserRegisterDTO userRegisterDTO) {
         log.info("開始處理註冊請求：{}", userRegisterDTO);
 
-        // 檢查名稱是否已存在
-        if (userRepository.existsByName(userRegisterDTO.getName())) {
-            log.warn("名稱已被註冊：{}", userRegisterDTO.getName());
-            return "使用者名稱已被註冊";
-        }
-
-        // 檢查電子郵件是否已存在
+        // 檢查電子郵件是否已註冊
         if (userRepository.existsByEmail(userRegisterDTO.getEmail())) {
             log.warn("電子郵件已被註冊：{}", userRegisterDTO.getEmail());
             return "電子郵件已被註冊";
@@ -78,19 +72,47 @@ public class UserService {
             return "密碼格式不正確，需至少 8 位且包含英文與數字";
         }
 
-        // 建立新使用者
+        // 新增用戶資料，設置 status 為 6
         UserTableBean user = new UserTableBean();
         user.setName(userRegisterDTO.getName());
         user.setEmail(userRegisterDTO.getEmail());
-        user.setPassword(userRegisterDTO.getPassword()); // 暫時直接儲存明文密碼
+        user.setPassword(passwordEncoder.encode(userRegisterDTO.getPassword()));
         user.setPhone(userRegisterDTO.getPhone());
         user.setGender(userRegisterDTO.getGender());
-        user.setStatus((byte) 1); // 預設啟用狀態
+        user.setStatus((byte) 6); // 未驗證狀態
+
         userRepository.save(user); // 儲存資料到資料庫
 
-        log.info("註冊成功：{}", userRegisterDTO.getName());
-        return "註冊成功";
+        // 生成 Email 驗證 Token
+        String verificationToken = JwtUtil.generateEmailVerificationToken(user.getEmail(), user.getUserId());
+
+        // 構造驗證連結
+        String verificationLink = "http://localhost:8080/api/user/verifyEmail?token=" + verificationToken;
+
+        // 使用注入的 EmailService 發送驗證信
+        emailService.sendVerificationEmail(user.getEmail(), user.getName(), verificationLink);
+
+        log.info("註冊成功，已發送驗證信至：{}", userRegisterDTO.getEmail());
+        return "註冊成功，請檢查您的 Email 完成驗證";
     }
+
+    @Transactional
+    public void verifyEmail(String email) {
+        UserTableBean user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("會員資料未找到");
+        }
+
+        if (user.getStatus() != 6) {
+            throw new RuntimeException("帳號已驗證，無需重複驗證");
+        }
+
+        user.setStatus((byte) 1); // 更新為啟用狀態
+        userRepository.save(user);
+
+        log.info("Email 驗證成功，Email：{}", email);
+    }
+
 
     /**
      * 驗證手機號碼格式
@@ -110,7 +132,20 @@ public class UserService {
      */
     private boolean isValidPassword(String password) {
         String passwordPattern = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$";
-        return password != null && Pattern.matches(passwordPattern, password);
+        return password != null && password.matches(passwordPattern);
+    }
+
+    /**
+     * 驗證密碼是否匹配
+     *
+     * @param rawPassword 使用者輸入的明文密碼
+     * @param encodedPassword 資料庫中的加密密碼
+     * @return 是否匹配
+     */
+    public boolean verifyPassword(String rawPassword, String encodedPassword) {
+        log.info("rawPassword{}",rawPassword);
+        log.info("encodedPassword{}",encodedPassword);
+        return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 
 
@@ -162,12 +197,6 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    /**
-     * 查詢屋主資訊，根據房屋 ID
-     * @param houseId 房屋的 ID
-     * @return 屋主資訊的 DTO，包括名稱、電話和圖片（Base64 格式）
-     */
-    
 
     /**
      * 從 Token 中解析使用者資料並返回會員中心資料
@@ -302,6 +331,34 @@ public class UserService {
         log.info("會員資料更新成功，Email：{}", email);
 
         return userCenterDTO;
+    }
+
+    /**
+     * 停用會員帳號，設置 `status` 為 0
+     *
+     * @param token JWT Token
+     */
+    @Transactional
+    public void deactivateAccount(String token) {
+        String email = JwtUtil.verify(token)[0];
+        if (email == null) {
+            throw new RuntimeException("無效的 Token");
+        }
+
+        log.info("解析 Token 成功，email: {}", email);
+
+        UserTableBean user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("會員資料未找到");
+        }
+
+        if (user.getStatus() == 0) {
+            throw new RuntimeException("帳號已停權，無法重複停用");
+        }
+
+        user.setStatus((byte) 0); // 將狀態設為停權
+        userRepository.save(user);
+        log.info("會員帳號已自行停權，Email：{}", email);
     }
 
 }

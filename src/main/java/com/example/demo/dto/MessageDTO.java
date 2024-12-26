@@ -15,6 +15,9 @@ public class MessageDTO {
         this.timestamp = timestamp;
     }
 
+	public MessageDTO() {
+	}
+
 	public String getSenderName() {
 		return senderName;
 	}
