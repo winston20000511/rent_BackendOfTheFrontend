@@ -40,7 +40,7 @@ public class CommonController {
     @GetMapping("/fake")
     public void fake() {
         try {
-            fakeDataService.imageFakeData();
+            fakeDataService.userFakeData();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -92,11 +92,11 @@ public class SearchService {
 		if (keyPriority.equals("p") && keySort.equals("asc")){
 			listAddressDTO.sort(Comparator.comparing(AddressDTO::getPrice));
 		}
-		if (keyPriority.equals("a") && keySort.equals("desc")){
-			listAddressDTO.sort(Comparator.comparing(AddressDTO::getClickCount));
-		}
-		if (keyPriority.equals("a") && keySort.equals("asc")){
+		if (keyPriority.equals("c") && keySort.equals("desc")){
 			listAddressDTO.sort(Comparator.comparing(AddressDTO::getClickCount).reversed());
+		}
+		if (keyPriority.equals("c") && keySort.equals("asc")){
+			listAddressDTO.sort(Comparator.comparing(AddressDTO::getClickCount));
 		}
 
 		return listAddressDTO;

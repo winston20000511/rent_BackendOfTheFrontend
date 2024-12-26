@@ -76,9 +76,7 @@ public class SearchController {
             throw new RuntimeException(e);
         }
         long startTime = System.currentTimeMillis();
-//		int[] spec = searchService.getMinAndMaxRadius(drawDtoList,mapPOJO.getSearchOrigin());
 		mapPOJO.setSearchList(searchService.getDrawDistance(mapPOJO.getSearchList(), mapPOJO.getSearchOrigin(),drawDtoList));
-		long endTime = System.currentTimeMillis();
 		return mapPOJO;
 	}
 	

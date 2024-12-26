@@ -11,9 +11,11 @@ import com.example.demo.repository.HouseImageRepository;
 import com.example.demo.repository.HouseRepository;
 import com.example.demo.repository.MessageRepository;
 import com.example.demo.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import net.andreinc.mockneat.MockNeat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -27,6 +29,7 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 
+@Slf4j
 @Service
 public class FakeDataService {
 
@@ -41,6 +44,9 @@ public class FakeDataService {
     private MessageRepository messageRepo;
     @Autowired
     private HouseImageRepository houseImageRepo;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     private final MockNeat mock = MockNeat.threadLocal();
     private final Random random = new Random();
@@ -188,12 +194,14 @@ public class FakeDataService {
 
     public void userFakeData() throws IOException {
 
+        log.info(passwordEncoder.encode("Pasword123"));
         for (int i = 0; i < 7046; i++) {
             UserTableBean user = new UserTableBean();
             //user.setUserId((long) i);
             user.setName(getRandomName());
             user.setEmail(mock.emails().val());
-            user.setPassword(getRandomPassword());
+//            user.setPassword(passwordEncoder.encode(getRandomPassword()));
+            user.setPassword(passwordEncoder.encode("Password123"));
             user.setPhone(mock.regex("09\\d{8}").val());
             user.setPicture(getMemberJpg());
             user.setCreateTime(getRandomLocalDateTime(
