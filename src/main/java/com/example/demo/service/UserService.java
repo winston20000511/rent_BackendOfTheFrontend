@@ -146,6 +146,8 @@ public class UserService {
      * @return 是否匹配
      */
     public boolean verifyPassword(String rawPassword, String encodedPassword) {
+        log.info("rawPassword{}",rawPassword);
+        log.info("encodedPassword{}",encodedPassword);
         return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 
