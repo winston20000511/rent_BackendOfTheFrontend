@@ -73,11 +73,12 @@ public class UserController {
                     response.put("userId", user.getUserId());
                     response.put("email", user.getEmail());
                     response.put("name", user.getName());
+                    log.info("登入成功");
 
                     return ResponseEntity.ok(response);
                 }
             }
-
+            log.error("登入失敗qq");
             // 密碼錯誤或帳號不存在
             return ResponseEntity.status(401).body("帳號或密碼錯誤");
         } catch (RuntimeException e) {
