@@ -28,7 +28,6 @@ public class RecaptchaService {
 	}
 	
 	public boolean verifyRecaptcha(String recaptchaToken) {
-		
 		RestTemplate restTemplate = new RestTemplate();
 	    HttpHeaders headers = new HttpHeaders();
 	    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);

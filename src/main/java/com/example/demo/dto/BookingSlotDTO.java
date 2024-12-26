@@ -2,6 +2,8 @@ package com.example.demo.dto;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import lombok.Data;
@@ -11,10 +13,10 @@ import lombok.NoArgsConstructor;
 @Data
 public class BookingSlotDTO {
 	private Long houseId;
-	private Date fromDate;
-	private Date toDate;
-	private Time fromTime;
-	private Time toTime;
+	private LocalDate fromDate;
+	private LocalDate toDate;
+	private LocalTime fromTime;
+	private LocalTime toTime;
 	private Short duration;
 	private String weekDay;
 	private List<String> excludedTime;

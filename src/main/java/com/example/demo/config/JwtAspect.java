@@ -1,24 +1,19 @@
 package com.example.demo.config;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.springframework.stereotype.Component;
+import jakarta.servlet.http.HttpServletRequest;
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.example.demo.helper.JwtUtil;
 import com.example.demo.helper.UnTokenException;
 
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
+import java.util.*;
 
 @Component // 將此類別交由Spring容器管理
 @Aspect    // 標示這是一個切面類別，用於AOP（面向切面編程）
@@ -31,14 +26,12 @@ public class JwtAspect {
     static {
         EXCLUDED_URIS.add("/api/user/login");    // 登入頁面
         EXCLUDED_URIS.add("/api/user/register"); // 註冊頁面
+        EXCLUDED_URIS.add("/api/user/verifyEmail"); // 註冊認證
         EXCLUDED_URIS.add("/"); // 首頁
         EXCLUDED_URIS.add("/public/api");        // 未來新增的公共頁面
         EXCLUDED_URIS.add("/api/test"); //SearchController
         EXCLUDED_URIS.add("/api/map"); //SearchController
-        EXCLUDED_URIS.add("/api/draw"); //SearchController
         EXCLUDED_URIS.add("/api/keyword"); //SearchController
-        EXCLUDED_URIS.add("/api/linepay/request"); //LinepayController
-        EXCLUDED_URIS.add("/api/ecpay/verify/checkvalue"); //EcpayController
     }
 
 
@@ -78,14 +71,16 @@ public class JwtAspect {
 
         // 驗證 Token 是否存在
         if (token != null) {
-             String[] verify = JwtUtil.verify(token);
-             
-            if (verify == null) {
+            String[] jwt = JwtUtil.verify(token);
+            String userEmail = jwt[0];
+            Long userId = Long.parseLong(jwt[1]);
+
+            if (userEmail == null) {
                 throw new UnTokenException("無效的 Token，請重新登入。");
             }
             // 檢查 Token 是否需要更新
             if (JwtUtil.isNeedUpdate(token)) {
-                String newToken = JwtUtil.sign(verify[0], Long.parseLong(verify[1]),verify[2] );//modify {,verify[2]} 
+                String newToken = JwtUtil.sign(userEmail,userId);
                 attributes.getResponse().setHeader(JwtUtil.TOKEN, newToken);
             }
         } else {
