@@ -274,8 +274,8 @@ public class UserService {
         userSimpleInfoDTO.setName(user.getName());
         userSimpleInfoDTO.setEmail(user.getEmail());
         userSimpleInfoDTO.setPhone(user.getPhone());
-        userSimpleInfoDTO.setPicture(user.getPicture());
-
+        String base64Picture = Base64.getEncoder().encodeToString(user.getPicture());
+        userSimpleInfoDTO.setPicture(base64Picture);
         return userSimpleInfoDTO;
     }
 
