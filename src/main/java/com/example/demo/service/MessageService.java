@@ -26,7 +26,7 @@ public class MessageService {
 	// welcome user register
 	public void sendSystemMSG(Long receiverId , String messageContent) {
 		MessageBean sysMSGUserRegister = new MessageBean();
-		sysMSGUserRegister.setSenderId((long) 52);
+		sysMSGUserRegister.setSenderId((long) 3);
 		sysMSGUserRegister.setReceiverId(receiverId);
 		sysMSGUserRegister.setMessage(messageContent);
 		sysMSGUserRegister.setPicture(null);
@@ -42,31 +42,31 @@ public class MessageService {
 	private MessageService MSGservice;
 	// we receive you complaint form
 	String Message = "我們已經收到你的申訴單," +loginUsername + "!";
-	MSGservice.sendSystemMSG(logingUserId, Message );
+	messageService.sendSystemMSG(userId, message);
 	*/
 	
 //	String welocomeMessage = "歡迎你來到我們網站," +user.name() + "!";
-//	MSGservice.sendSystemMSG(user.getUserId(), welcomeMessage );
+//	messageService.sendSystemMSG(userId, message);
 	
 
 	// office gift coupon 	
 //	String giftMessage = "你獲得了一張優惠券, " + user.getName() + "!";
-//	MSGservice.sendSystemMSG(user.getUserId(), giftMessage);
+//	messageService.sendSystemMSG(userId, message);
 	
 	
 	// you has a new booking	
 //	String bookingMessage = "你有一個新的預約申請, " + user.getName() + "!";
-//	MSGservice.sendSystemMSG(user.getUserId(), bookingMessage);
+//	messageService.sendSystemMSG(userId, message);
 	
 	
 	// you submission has been approved	
 //	String approvalMessage = "你的申請已被核准, " + user.getName() + "!";
-//	MSGservice.sendSystemMSG(user.getUserId(), approvalMessage);
+//	messageService.sendSystemMSG(userId, message);
 	
 	
 	// we receive you complaint form
-//	String Message = "我們已經收到你的申訴單," +user.name() + "!";
-//	MSGservice.sendSystemMSG(user.getUserId(), Message );
+//    String message = "我們已經收到你的申訴單, " + username + "!";
+//    messageService.sendSystemMSG(userId, message);
 	
 	
 	

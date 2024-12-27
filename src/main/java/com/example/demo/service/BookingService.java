@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +20,7 @@ import com.example.demo.dto.BookingSlotDTO;
 import com.example.demo.model.BookingBean;
 import com.example.demo.model.HouseBookingTimeSlotBean;
 import com.example.demo.model.HouseTableBean;
+import com.example.demo.model.MessageBean;
 import com.example.demo.model.UserTableBean;
 import com.example.demo.repository.BookingRepository;
 import com.example.demo.repository.BookingTimeSlotRepository;
@@ -29,7 +31,7 @@ import jakarta.mail.internet.MimeMessage;
 
 @Service
 public class BookingService {
-
+	
 	@Autowired
 	private BookingRepository bookingRepo;
 
@@ -41,6 +43,9 @@ public class BookingService {
 
 	@Autowired
 	private JavaMailSender mailSender;
+	
+	@Autowired
+    private MessageService messageService;
 	
 	// 預設網址
 	protected String url = "http://localhost:8080/" ;
@@ -85,7 +90,8 @@ public class BookingService {
 		
 		return bookingRepo.findByHouseOwnerUserId(userId);
 	}
-
+	
+	// 新建預約
 	public BookingResponseDTO createBooking(BookingDTO booking) throws MessagingException {
 		Integer bool = bookingRepo.isExistBooking(booking.getHouseId(), booking.getBookingDate(),
 				booking.getBookingTime());
@@ -96,7 +102,7 @@ public class BookingService {
 		} else {
 			newBean = bookingRepo.save(convertToBean(booking));
 			if (newBean != null) {
-				BookingDetailDTO b = bookingRepo.findBookingDetailsById(newBean.getBookingId());
+				BookingDetailDTO bookingDetail = bookingRepo.findBookingDetailsById(newBean.getBookingId());
 				
 				
 				String formattedMessage = booking.getMessage()
@@ -104,9 +110,9 @@ public class BookingService {
 		                .replace(">", "&gt;")
 		                .replace("\n", "<br/>");
 				
-				String msg = "<div style='width:400px; border: 1px solid #007bff; border-radius: 10px; padding: 15px;'>" +
+				String sendMailMSG = "<div style='width:400px; border: 1px solid #007bff; border-radius: 10px; padding: 15px;'>" +
 			             "<h2 style='text-align: left ;'>您在 <span style='color:red;'>" + 
-			             b.getBookingDate() + " " + b.getBookingTime() + "</span> 有新的預約</h2>" +
+			             bookingDetail.getBookingDate() + " " + bookingDetail.getBookingTime() + "</span> 有新的預約</h2>" +
 			             "<span style='text-align: center;'>立即查看： </span>" +
 			             "<span style='text-align: center;'><a href='"+ url +"' style='color: blue;'>"+url+"</a></span>" +
 			             "<h3 style='text-align: start;'>給您的留言:</h3>" +
@@ -117,7 +123,35 @@ public class BookingService {
 			             "<footer style='text-align: end; font-size: small; color: gray;'>感謝您的使用！</footer>" +
 			             "</div>";
 
-				sendSimpleEmail(b.getOwnerEmail(), "《通知》您有新的預約", msg);
+				//sendSimpleEmail(bookingDetail.getOwnerEmail(), "《通知》您有新的預約", sendMailMSG);
+				
+				LocalDateTime now = LocalDateTime.now();
+				
+				MessageBean msgBean = new MessageBean();
+				MessageBean msgBean2 = new MessageBean();
+
+				String sendChatRoomMSG ="我在 "+bookingDetail.getBookingDate()+" "+bookingDetail.getBookingTime()+" 有一個預約。";
+				
+				System.out.println(sendChatRoomMSG);
+				
+
+				msgBean.setSenderId(bookingDetail.getOwnerId());	//房東ID
+				msgBean.setReceiverId(booking.getUserId());			//預約者ID
+				msgBean.setMessage(sendChatRoomMSG);
+				msgBean.setTimestamp(now);
+				messageService.saveMessage(msgBean);
+				
+				// 預約者有留言時，則發第二條訊息
+				if(!booking.getMessage().isEmpty()) {
+					msgBean2.setSenderId(bookingDetail.getOwnerId());	//房東ID
+					msgBean2.setReceiverId(booking.getUserId());			//預約者ID
+					msgBean2.setMessage(booking.getMessage());
+					msgBean2.setTimestamp(now);
+					messageService.saveMessage(msgBean2);
+				}
+				
+
+		
 				return new BookingResponseDTO("success", "預約已送出!");
 			} else {
 

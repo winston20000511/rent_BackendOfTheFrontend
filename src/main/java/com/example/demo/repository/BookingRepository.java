@@ -39,7 +39,7 @@ public interface BookingRepository extends JpaRepository<BookingBean, Long> {
 	@Query("SELECT CONCAT(bookingDate,' ',bookingTime) FROM BookingBean WHERE houseId = :houseId AND status <=1")
 	List<String> findBookingedByHouseId(Long houseId);
 
-	@Query(value = "SELECT new com.example.demo.dto.BookingDetailDTO(ow.name, ow.email, u.name, u.email, "
+	@Query(value = "SELECT new com.example.demo.dto.BookingDetailDTO(ow.id , ow.name, ow.email, u.name, u.email, "
 			+ "b.createDate, b.bookingDate, b.bookingTime, b.status) " + "FROM BookingBean b " + "JOIN b.house h "
 			+ "JOIN h.user ow " + "JOIN b.rentUser u " + "WHERE b.bookingId = :id")
 	BookingDetailDTO findBookingDetailsById(Long id);

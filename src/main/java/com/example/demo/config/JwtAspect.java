@@ -74,13 +74,14 @@ public class JwtAspect {
             String[] jwt = JwtUtil.verify(token);
             String userEmail = jwt[0];
             Long userId = Long.parseLong(jwt[1]);
+            String name = jwt[2];
 
             if (userEmail == null) {
                 throw new UnTokenException("無效的 Token，請重新登入。");
             }
             // 檢查 Token 是否需要更新
             if (JwtUtil.isNeedUpdate(token)) {
-                String newToken = JwtUtil.sign(userEmail,userId);
+                String newToken = JwtUtil.sign(userEmail,userId,name);
                 attributes.getResponse().setHeader(JwtUtil.TOKEN, newToken);
             }
         } else {

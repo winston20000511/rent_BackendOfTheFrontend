@@ -65,7 +65,7 @@ public class UserController {
                     }
 
                     // 密碼匹配且狀態正常，生成登入用 JWT
-                    String token = JwtUtil.sign(user.getEmail(), user.getUserId());
+                    String token = JwtUtil.sign(user.getEmail(), user.getUserId(),user.getName());
 
                     // 返回 Token 和用戶基本資料
                     Map<String, Object> response = new HashMap<>();
