@@ -95,8 +95,8 @@ public class BookingController {
 		return ResponseEntity.ok().body(bookingList);
 	}
 
-	// *********************************還沒好
-	// 根據登入者 獲取房屋的預約清單
+
+	// 根據登入者 獲取所擁有房屋的預約清單
 	@ResponseBody
 	@GetMapping("/api/booking/host")
 	public ResponseEntity<?> getBookingByHouse(@RequestHeader("authorization") String token) {

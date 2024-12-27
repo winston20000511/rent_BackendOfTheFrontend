@@ -50,6 +50,11 @@ public class BookingService {
 	// 預設網址
 	protected String url = "http://localhost:8080/" ;
 	
+	// 取得當下時間
+	protected LocalDateTime getCurrentTime() {
+	    return LocalDateTime.now();
+	}
+	
 	// 更新 預約狀態
 	@Scheduled(cron = "0 1 0 * * ?")//每天 01:01 更新
     public void updateHouseStatus() {
@@ -96,14 +101,14 @@ public class BookingService {
 		Integer bool = bookingRepo.isExistBooking(booking.getHouseId(), booking.getBookingDate(),
 				booking.getBookingTime());
 		BookingBean newBean = null;
-
+		
+		// 檢查 有無重複預約
 		if (bool != null && bool > 0) {
 			return new BookingResponseDTO("danger", "預約失敗: 該時段已被預約!");
 		} else {
 			newBean = bookingRepo.save(convertToBean(booking));
 			if (newBean != null) {
 				BookingDetailDTO bookingDetail = bookingRepo.findBookingDetailsById(newBean.getBookingId());
-				
 				
 				String formattedMessage = booking.getMessage()
 		                .replace("<", "&lt;")
@@ -125,33 +130,28 @@ public class BookingService {
 
 				//sendSimpleEmail(bookingDetail.getOwnerEmail(), "《通知》您有新的預約", sendMailMSG);
 				
-				LocalDateTime now = LocalDateTime.now();
-				
+				// 寄Mail
 				MessageBean msgBean = new MessageBean();
 				MessageBean msgBean2 = new MessageBean();
-
 				String sendChatRoomMSG ="我在 "+bookingDetail.getBookingDate()+" "+bookingDetail.getBookingTime()+" 有一個預約。";
+//				System.out.println(sendChatRoomMSG);
 				
-				System.out.println(sendChatRoomMSG);
-				
-
-				msgBean.setSenderId(bookingDetail.getOwnerId());	//房東ID
-				msgBean.setReceiverId(booking.getUserId());			//預約者ID
+				// 發站內訊息
+				msgBean.setSenderId(booking.getUserId());				//預約者ID
+				msgBean.setReceiverId(bookingDetail.getHouseOwnerId());	//房東ID	
 				msgBean.setMessage(sendChatRoomMSG);
-				msgBean.setTimestamp(now);
+				msgBean.setTimestamp(getCurrentTime());
 				messageService.saveMessage(msgBean);
 				
 				// 預約者有留言時，則發第二條訊息
 				if(!booking.getMessage().isEmpty()) {
-					msgBean2.setSenderId(bookingDetail.getOwnerId());	//房東ID
-					msgBean2.setReceiverId(booking.getUserId());			//預約者ID
+					msgBean.setSenderId(booking.getUserId());				//預約者ID
+					msgBean.setReceiverId(bookingDetail.getHouseOwnerId());	//房東ID	
 					msgBean2.setMessage(booking.getMessage());
-					msgBean2.setTimestamp(now);
+					msgBean2.setTimestamp(getCurrentTime());
 					messageService.saveMessage(msgBean2);
 				}
 				
-
-		
 				return new BookingResponseDTO("success", "預約已送出!");
 			} else {
 
@@ -169,9 +169,10 @@ public class BookingService {
 			newBean = op.get();
 			newBean.setStatus(booking.getStatus());
 			BookingBean b = bookingRepo.save(newBean);
+			BookingDetailDTO bookingDetail = bookingRepo.findBookingDetailsById(b.getBookingId());
 			
 			String text ="";
-			Byte status = b.getStatus();
+			Byte status = bookingDetail.getStatus();
 			
 			switch (status){
 				case 1 : text = "同意"; break;
@@ -180,8 +181,8 @@ public class BookingService {
 				default: return new BookingResponseDTO("danger", "無效的預約!");
 			}
 			
-
-			String msg = "<div style='width:400px; border: 1px solid #007bff; border-radius: 10px; padding: 15px;'>" +
+			// 寄Mail
+			String sendMailMSG = "<div style='width:400px; border: 1px solid #007bff; border-radius: 10px; padding: 15px;'>" +
 		             "<h2 style='text-align: left ;'>您在 <span style='color:red;'>" + 
 		             b.getBookingDate() + " " + b.getBookingTime() + "</span> 的預約已"+text+"</h2>" +
 		             "<span style='text-align: center;'>立即查看： </span>" +
@@ -189,9 +190,16 @@ public class BookingService {
 		             "<hr style='border-top: 1px solid #ccc;'>" +
 		             "<footer style='text-align: end; font-size: small; color: gray;'>感謝您的使用！</footer>" +
 		             "</div>";
+			//sendSimpleEmail(b.getHouse().getUser().getEmail(), "《通知》預約已"+text, sendMailMSG);
 			
-			sendSimpleEmail(b.getHouse().getUser().getEmail(), "《通知》預約已"+text, msg);
-			
+			// 發站內訊息
+			String sendChatRoomMSG = "預約時間: "+bookingDetail.getBookingDate()+" "+bookingDetail.getBookingTime()+"，此次預約已"+text+"!。敬請留意。";
+			MessageBean msgBean = new MessageBean();
+			msgBean.setSenderId(bookingDetail.getHouseOwnerId());	//房東ID(寄信者)
+			msgBean.setReceiverId(booking.getUserId());			//預約者ID(收信者)
+			msgBean.setMessage(sendChatRoomMSG);
+			msgBean.setTimestamp(getCurrentTime());
+			messageService.saveMessage(msgBean);
 			
 			return new BookingResponseDTO("success", "操作成功!");
 		}
@@ -207,9 +215,10 @@ public class BookingService {
 			newBean = op.get();
 			newBean.setStatus(booking.getStatus());
 			BookingBean b = bookingRepo.save(newBean);
-			
-			
-			String msg = "<div style='width:400px; border: 1px solid #007bff; border-radius: 10px; padding: 15px;'>" +
+			BookingDetailDTO bookingDetail = bookingRepo.findBookingDetailsById(b.getBookingId());
+
+			// 寄Mail
+			String sendMailMSG = "<div style='width:400px; border: 1px solid #007bff; border-radius: 10px; padding: 15px;'>" +
 		             "<h2 style='text-align: left ;'>您在 <span style='color:red;'>" + 
 		             b.getBookingDate() + " " + b.getBookingTime() + "</span> 的預約已被取消</h2>" +
 		             "<span style='text-align: center;'>立即查看： </span>" +
@@ -217,11 +226,16 @@ public class BookingService {
 		             "<hr style='border-top: 1px solid #ccc;'>" +
 		             "<footer style='text-align: end; font-size: small; color: gray;'>感謝您的使用！</footer>" +
 		             "</div>";
-			long startTime = System.currentTimeMillis();
+			//sendSimpleEmail(b.getHouse().getUser().getEmail(), "《通知》預約已取消", sendMailMSG);
 			
-			sendSimpleEmail(b.getHouse().getUser().getEmail(), "《通知》預約已取消", msg);
-			long endTime = System.currentTimeMillis();
-			System.out.println("執行時間：" + (endTime - startTime) + " 毫秒");
+			// 發站內訊息
+			String sendChatRoomMSG = "預約時間: "+bookingDetail.getBookingDate()+" "+bookingDetail.getBookingTime()+"，此次預約已取消!。敬請留意。";
+			MessageBean msgBean = new MessageBean();
+			msgBean.setSenderId(bookingDetail.getHouseOwnerId());	//預約者ID(收信者)
+			msgBean.setReceiverId(booking.getUserId());				//房東ID(寄信者)
+			msgBean.setMessage(sendChatRoomMSG);
+			msgBean.setTimestamp(getCurrentTime());
+			messageService.saveMessage(msgBean);
 			
 			return new BookingResponseDTO("success", "已完成取消!");
 		}
@@ -253,8 +267,8 @@ public class BookingService {
 	private BookingDetailDTO convertToDetailDTO(BookingBean bean) {
 		BookingDetailDTO dto = new BookingDetailDTO();
 
-		dto.setOwnerName(bean.getHouse().getUser().getName());
-		dto.setOwnerEmail(bean.getHouse().getUser().getEmail());
+		dto.setHouseOwnerName(bean.getHouse().getUser().getName());
+		dto.setHouseOwnerEmail(bean.getHouse().getUser().getEmail());
 		dto.setUserName(null);
 		dto.setUserEmail(null);
 		dto.setBookingDate(bean.getBookingDate());
