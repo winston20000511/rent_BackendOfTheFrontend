@@ -297,18 +297,20 @@ public class OrderService {
 
 			List<AdBean> ads = order.getAds();
 			List<Long> adIds = new ArrayList<>();
+			List<Long> houseIds = new ArrayList<>();
 			List<String> adtypes = new ArrayList<>();
 			List<String> houseTitles = new ArrayList<>();
 			for (AdBean ad : ads) {
 				adIds.add(ad.getAdId());
 				adtypes.add(ad.getAdtype().getAdName());
+				houseIds.add(ad.getHouse().getHouseId());
 				houseTitles.add(ad.getHouse().getTitle());
 			}
 
 			responseDTO.setAdIds(adIds);
 			responseDTO.setAdtypes(adtypes);
+			responseDTO.setHouseIds(houseIds);
 			responseDTO.setHouseTitles(houseTitles);
-
 			responseDTO.setMerchantTradDate(order.getMerchantTradDate());
 			responseDTO.setMerchantTradNo(order.getMerchantTradNo());
 			responseDTO.setOrderStatus(order.getOrderStatus());

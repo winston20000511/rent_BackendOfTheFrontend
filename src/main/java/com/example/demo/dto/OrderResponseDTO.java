@@ -3,14 +3,21 @@ package com.example.demo.dto;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 @ToString
+@Getter
+@Setter
+@NoArgsConstructor
 public class OrderResponseDTO {
 
 	// table 用
 	private String merchantTradNo;
 	private List<String> houseTitles;
+	private List<Long> houseIds;
 	private String merchantTradDate;
 	private String orderStatus;
 	
@@ -22,37 +29,12 @@ public class OrderResponseDTO {
  	private List<Integer> prices;
 	private Long totalAmount;
 	private String choosePayment;
-	
-	public OrderResponseDTO() {
-	}
 
-	public String getMerchantTradNo() {
-		return merchantTradNo;
-	}
-
-	public void setMerchantTradNo(String merchantTradNo) {
-		this.merchantTradNo = merchantTradNo;
-	}
-
-	public List<String> getHouseTitles() {
-		return houseTitles;
-	}
-
-	public void setHouseTitles(List<String> houseTitles) {
-		this.houseTitles = houseTitles;
-	}
-
-	public String getMerchantTradDate() {
-		return merchantTradDate;
-	}
 
 	public void setMerchantTradDate(LocalDateTime merchantTradDate) {
 		this.merchantTradDate = merchantTradDate.toString().substring(0,10);
 	}
 
-	public String getOrderStatus() {
-		return orderStatus;
-	}
 
 	public void setOrderStatus(Short orderStatus) {
 		if(orderStatus == (short)0) {
@@ -68,52 +50,6 @@ public class OrderResponseDTO {
 		}
 	}
 
-	public List<String> getAdtypes() {
-		return adtypes;
-	}
-
-	public void setAdtypes(List<String> adtypes) {
-		this.adtypes = adtypes;
-	}
-
-	public Long getTotalAmount() {
-		return totalAmount;
-	}
-
-	public void setTotalAmount(Long totalAmount) {
-		this.totalAmount = totalAmount;
-	}
-
-
-	public List<Long> getAdIds() {
-		return adIds;
-	}
-
-
-	public void setAdIds(List<Long> adIds) {
-		this.adIds = adIds;
-	}
-
-
-	public void setOrderStatus(String orderStatus) {
-		this.orderStatus = orderStatus;
-	}
-
-
-	public List<Integer> getPrices() {
-		return prices;
-	}
-
-
-	public void setPrices(List<Integer> prices) {
-		this.prices = prices;
-	}
-
-
-	public String getChoosePayment() {
-		return choosePayment;
-	}
-
 
 	public void setChoosePayment(String choosePayment) {
 		if(choosePayment.equals("Credit")) {
@@ -125,22 +61,5 @@ public class OrderResponseDTO {
 		}
 	}
 
-
-	public List<Integer> getCoupons() {
-		return coupons;
-	}
-
-
-	public void setCoupons(List<Integer> coupons) {
-		this.coupons = coupons;
-	}
-
-	public List<Integer> getAdtypesPrices() {
-		return adtypesPrices;
-	}
-
-	public void setAdtypesPrices(List<Integer> adtypesPrices) {
-		this.adtypesPrices = adtypesPrices;
-	}
 	
 }

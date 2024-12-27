@@ -75,7 +75,7 @@ public class AdSpecification {
 	            Join<Object, Object> join = root.join("house", JoinType.INNER);
 	            predicates.add(builder.like(join.get("title"), "%" + houseTitle + "%"));
 	        }
-
+	        
 	        // 返回所有條件的合併結果
 	        return builder.and(predicates.toArray(new Predicate[0]));
 	    };

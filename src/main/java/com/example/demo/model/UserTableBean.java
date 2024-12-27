@@ -25,7 +25,6 @@ import lombok.ToString;
 @Setter
 @Entity
 @Table(name = "user_table")
-@ToString
 public class UserTableBean {
 
     @Id
