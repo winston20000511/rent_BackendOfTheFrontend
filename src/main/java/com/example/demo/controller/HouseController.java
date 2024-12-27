@@ -256,7 +256,7 @@ public class HouseController {
 	     // 將每張圖片轉成 { "id": 123, "base64": "xxxx" }
 	     List<Map<String, String>> result = images.stream()
 	         .map(img -> {
-	             Map<String, String> map = new HashMap<>();
+	             Map<String, String> map = new   HashMap<>();
 	             map.put("id", String.valueOf(img.getImageId()));
 	             String base64 = Base64.getEncoder().encodeToString(img.getImages());
 	             map.put("base64", base64);

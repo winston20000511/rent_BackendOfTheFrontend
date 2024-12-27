@@ -11,6 +11,9 @@ import com.example.demo.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -143,6 +146,16 @@ public class UserController {
             return ResponseEntity.status(401).body(null); // 返回失敗結果
         }
     }
+
+//    @PostMapping("/userPicture")
+//    public ResponseEntity<byte[]> downloadPhotos(@RequestHeader("Authorization") String authorization) {
+//
+//        UserSimpleInfoDTO userSimpleInfo = userService.getUserSimpleInfo(authorization);
+//        byte[] photoByte = userSimpleInfo.getPicture();
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.IMAGE_JPEG);
+//        return new ResponseEntity<byte[]>(HttpStatus.NOT_FOUND);
+//    }
 
     /**
      * 更新會員資料的 API

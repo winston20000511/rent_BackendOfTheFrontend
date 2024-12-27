@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import java.util.Base64;
 
 import java.util.Base64;
 import java.util.Optional;
@@ -269,10 +270,36 @@ public class UserService {
         userSimpleInfoDTO.setName(user.getName());
         userSimpleInfoDTO.setEmail(user.getEmail());
         userSimpleInfoDTO.setPhone(user.getPhone());
-        userSimpleInfoDTO.setPicture(user.getPicture());
+
+        String base64Picture = Base64.getEncoder().encodeToString(user.getPicture());
+        userSimpleInfoDTO.setPicture(base64Picture);
+        return userSimpleInfoDTO;
+    }
+    public UserSimpleInfoDTO getUserPicure(String token){
+        // 驗證並解析 JWT Token，取得 email
+        String email = JwtUtil.verify(token)[0];
+        if (email == null) {
+            throw new RuntimeException("無效的 Token"); // Token 無效則拋出例外
+        }
+
+        log.info("解析 Token 成功，email: {}", email);
+
+        // 根據 email 查詢使用者資料
+        Optional<UserTableBean> userOptional = Optional.ofNullable(userRepository.findByEmail(email));
+        if (userOptional.isEmpty()) {
+            log.warn("未找到對應的使用者資料，email: {}", email);
+            throw new RuntimeException("會員資料未找到");
+        }
+
+        UserTableBean user = userOptional.get();
+
+        // 將會員資料轉換為 DTO
+        UserSimpleInfoDTO userSimpleInfoDTO = new UserSimpleInfoDTO();
+//        userSimpleInfoDTO.setPicture(user.getPicture());
 
         return userSimpleInfoDTO;
     }
+
 
     @Transactional
     public UserCenterDTO updateUserProfile(String token, UserUpdateDTO updateRequest) {

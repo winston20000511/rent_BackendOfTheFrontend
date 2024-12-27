@@ -217,9 +217,9 @@ public class FakeDataService {
     public void messageFakeData(){
         for (int i = 0; i < 7046; i++) {
             MessageBean message = new MessageBean();
-            UserTableBean user = getRandomUser(7046);
-
-            message.setSenderId((long)52);
+            //UserTableBean user = getRandomUser(7046);
+            UserTableBean user = getUser(i);
+            message.setSenderId((long)3);
             message.setReceiverId(user.getUserId());
             message.setMessage(String.join("" ,
                     "歡迎光臨 ",user.getName()," 來到我們網站,有送3張折價卷到你的帳戶"));
