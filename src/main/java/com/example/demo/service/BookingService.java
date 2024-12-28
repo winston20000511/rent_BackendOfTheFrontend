@@ -128,14 +128,14 @@ public class BookingService {
 			             "<footer style='text-align: center; font-size: small; color: gray;'><p>如有任何問題，請聯絡客服：rent189.customer.service@gmail.com</p><p>© 2024 189租屋網 版權所有</p></footer>" +
 			             "</div>";
 
-				sendSimpleEmail(bookingDetail.getHouseOwnerEmail(), "《通知》您有新的預約", sendMailMSG);
+				//sendSimpleEmail(bookingDetail.getHouseOwnerEmail(), "《通知》您有新的預約", sendMailMSG);
 				
 				// 寄Mail
 				MessageBean msgBean = new MessageBean();
 				MessageBean msgBean2 = new MessageBean();
 				String sendChatRoomMSG ="我在 "+bookingDetail.getBookingDate()+" "+bookingDetail.getBookingTime()+" 有一個預約。";
 //				System.out.println(sendChatRoomMSG);
-				
+				System.out.println("1屋主的ID"+bookingDetail.getHouseOwnerId());
 				// 發站內訊息
 				msgBean.setSenderId(booking.getUserId());				//預約者ID
 				msgBean.setReceiverId(bookingDetail.getHouseOwnerId());	//房東ID	
@@ -145,11 +145,14 @@ public class BookingService {
 				
 				// 預約者有留言時，則發第二條訊息
 				if(!booking.getMessage().isEmpty()) {
-					msgBean.setSenderId(booking.getUserId());				//預約者ID
-					msgBean.setReceiverId(bookingDetail.getHouseOwnerId());	//房東ID	
+					msgBean2.setSenderId(booking.getUserId());	
+					System.out.println("2屋主的ID"+bookingDetail.getHouseOwnerId());
+					msgBean2.setReceiverId(bookingDetail.getHouseOwnerId());	//房東ID	
 					msgBean2.setMessage(booking.getMessage());
 					msgBean2.setTimestamp(getCurrentTime());
+					System.out.println("發送前");
 					messageService.saveMessage(msgBean2);
+					System.out.println("發送後");
 				}
 				
 				return new BookingResponseDTO("success", "預約已送出!");
