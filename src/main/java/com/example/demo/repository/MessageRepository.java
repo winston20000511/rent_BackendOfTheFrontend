@@ -46,15 +46,37 @@ public interface MessageRepository extends JpaRepository<MessageBean, Long> {
 
 	//create friend list ******
 	//save
-	@Query("SELECT DISTINCT " +
-		       "CASE WHEN m.senderId = :currentUserId THEN r.userId ELSE s.userId END AS userId, " +
-		       "CASE WHEN m.senderId = :currentUserId THEN r.name ELSE s.name END AS userName " +
-		       "FROM MessageBean m " +
-		       "JOIN m.sender s " +
-		       "JOIN m.receiver r " +
-		       "WHERE m.senderId = :currentUserId OR m.receiverId = :currentUserId")
-		List<Object[]> findChatUserDetails(@Param("currentUserId") Long currentUserId);
-		
+//	@Query("SELECT DISTINCT " +
+//		       "CASE WHEN m.senderId = :currentUserId THEN r.userId ELSE s.userId END AS userId, " +
+//		       "CASE WHEN m.senderId = :currentUserId THEN r.name ELSE s.name END AS userName " +
+//		       "FROM MessageBean m " +
+//		       "JOIN m.sender s " +
+//		       "JOIN m.receiver r " +
+//		       "WHERE m.senderId = :currentUserId OR m.receiverId = :currentUserId")
+//		List<Object[]> findChatUserDetails(@Param("currentUserId") Long currentUserId);
+
+	@Query("""
+			   SELECT
+			   	   DISTINCT
+			       CASE WHEN m.senderId = :currentUserId THEN r.userId ELSE s.userId END,
+			       CASE WHEN m.senderId = :currentUserId THEN r.name ELSE s.name END,
+			       m.timestamp
+			   FROM MessageBean m
+			   JOIN m.sender s
+			   JOIN m.receiver r
+			   WHERE m.timestamp = (
+			       SELECT MAX(m2.timestamp)
+			       FROM MessageBean m2
+			       WHERE (m2.senderId = :currentUserId OR m2.receiverId = :currentUserId)
+			         AND CASE WHEN m2.senderId = :currentUserId THEN m2.receiverId ELSE m2.senderId END =
+			             CASE WHEN m.senderId = :currentUserId THEN m.receiverId ELSE m.senderId END
+			   )
+			   ORDER BY m.timestamp DESC
+			""")
+	List<Object[]> findChatUserDetails(@Param("currentUserId") Long currentUserId);
+	
+	
+	
 		
 	// search MSG *******
 	//save

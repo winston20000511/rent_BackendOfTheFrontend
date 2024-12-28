@@ -22,12 +22,13 @@ import lombok.Setter;
 @Entity
 @Table(name = "image_table")
 public class HouseImageTableBean {
-    @Id
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
+    @Column(name = "image_id")
+    private Long imageId; // 主鍵
+
     @Lob
-    @Column(name = "image_url", columnDefinition = "VARBINARY(MAX)")
+    @Column(name = "image_url", columnDefinition = "VARBINARY(MAX)") // 二進位型別
     private byte[] images;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -39,7 +40,4 @@ public class HouseImageTableBean {
     @JoinColumn(name = "user_id", nullable = false) // 用戶ID作為外鍵
     @JsonIgnore
     private UserTableBean user;
-
-    
-
 }

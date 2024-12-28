@@ -3,6 +3,9 @@ package com.example.demo.dto;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import lombok.ToString;
+
+@ToString
 public class OrderResponseDTO {
 
 	// table 用
@@ -13,27 +16,15 @@ public class OrderResponseDTO {
 	
 	// 詳細內容用
 	private List<Long> adIds;
+	private List<Integer> coupons; // 有coupon的ad
  	private List<String> adtypes;
+ 	private List<Integer> adtypesPrices;
  	private List<Integer> prices;
 	private Long totalAmount;
 	private String choosePayment;
 	
 	public OrderResponseDTO() {
 	}
-	
-
-	public OrderResponseDTO(String merchantTradNo, List<String> houseTitles, String merchantTradDate,
-			String orderStatus, List<Long> adIds, List<String> adtypes, Long totalAmount, String choosePayment) {
-		this.merchantTradNo = merchantTradNo;
-		this.houseTitles = houseTitles;
-		this.merchantTradDate = merchantTradDate;
-		this.orderStatus = orderStatus;
-		this.adIds = adIds;
-		this.adtypes = adtypes;
-		this.totalAmount = totalAmount;
-		this.choosePayment = choosePayment;
-	}
-
 
 	public String getMerchantTradNo() {
 		return merchantTradNo;
@@ -128,6 +119,28 @@ public class OrderResponseDTO {
 		if(choosePayment.equals("Credit")) {
 			this.choosePayment = "信用卡";
 		}
+		
+		if(choosePayment.equals("linepay")) {
+			this.choosePayment = "LINEPAY";
+		}
+	}
+
+
+	public List<Integer> getCoupons() {
+		return coupons;
+	}
+
+
+	public void setCoupons(List<Integer> coupons) {
+		this.coupons = coupons;
+	}
+
+	public List<Integer> getAdtypesPrices() {
+		return adtypesPrices;
+	}
+
+	public void setAdtypesPrices(List<Integer> adtypesPrices) {
+		this.adtypesPrices = adtypesPrices;
 	}
 	
 }

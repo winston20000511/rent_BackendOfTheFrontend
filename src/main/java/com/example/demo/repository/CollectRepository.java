@@ -15,12 +15,16 @@ import jakarta.transaction.Transactional;
 @Repository
 public interface CollectRepository extends JpaRepository<CollectTableBean, Long> {
 	// 根據USERID列出USER收藏房屋的ID清單
-	@Query("SELECT c.house.houseId FROM CollectTableBean c WHERE c.user.userId = :userId")
-	List<Long> findHouseIdsByUserId(@Param("userId") Long userId);
-
-	@Modifying
+    @Query("SELECT c.house.houseId FROM CollectTableBean c WHERE c.user.userId = :userId")
+    List<Long> findHouseIdsByUserId(Long userId);
+  
+	@Query("SELECT o.name, o.picture, o.phone FROM HouseTableBean h JOIN h.user o WHERE o.userId = :userId")
+	List<Object[]> findRawHouseOwnerInfoByUserId(@Param("userId") Long userId);
+    @Modifying
 	@Transactional
 	@Query("DELETE FROM CollectTableBean c WHERE c.user.userId = :userId AND c.house.houseId = :houseId")
 	void deleteByUserIdAndHouseId(@Param("userId") Long userId, @Param("houseId") Long houseId);
 	
+	boolean existsByUser_UserIdAndHouse_HouseId(Long userId, Long houseId);
+  
 }

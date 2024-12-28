@@ -1,10 +1,9 @@
 package com.example.demo.model;
 
-import java.sql.Date;
-import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -22,7 +21,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -46,10 +44,10 @@ public class BookingBean {
 	private LocalDateTime createDate;
 	
 	@Column(name = "booking_date")
-	private Date bookingDate;
+	private LocalDate bookingDate;
 
 	@Column(name = "booking_time")
-	private Time bookingTime;
+	private LocalTime bookingTime;
 	
 	@Column(name = "status")
 	private Byte status;

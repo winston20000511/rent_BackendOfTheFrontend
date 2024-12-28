@@ -1,7 +1,7 @@
 package com.example.demo.model;
 
-import java.sql.Date;
-import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -27,13 +27,13 @@ public class HouseBookingTimeSlotBean {
 	@Id
 	private Long houseId;
 	@Column(name = "from_date")
-	private Date fromDate;
+	private LocalDate fromDate;
 	@Column(name = "to_date")
-	private Date toDate;
+	private LocalDate toDate;
 	@Column(name = "from_time")
-	private Time fromTime;
+	private LocalTime fromTime;
 	@Column(name = "to_time")
-	private Time toTime;
+	private LocalTime toTime;
 	@Column(name = "duration")
 	private Short duration;
 	@Column(name = "week_Day")

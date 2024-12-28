@@ -1,8 +1,8 @@
 package com.example.demo.dto;
 
-import java.sql.Date;
-import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,7 +17,7 @@ public class BookingDetailDTO {
 	private String userName;
 	private String userEmail;
 	private LocalDateTime createDate;
-	private Date bookingDate;
-	private Time bookingTime;
+	private LocalDate bookingDate;
+	private LocalTime bookingTime;
 	private Byte status;
 }

@@ -4,39 +4,36 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.data.jpa.domain.Specification;
 
 import com.example.demo.model.AdBean;
-import com.example.demo.model.HouseTableBean;
-import com.example.demo.model.OrderBean;
 
-import jakarta.persistence.criteria.Fetch;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 
 public class AdSpecification {
 
-    // 動態加入篩選條件
-	public static Specification<AdBean> filter(Map<String, String> conditions) {
+	/**
+	 * 動態加入篩選條件
+	 * @param userId
+	 * @param pageNumber
+	 * @param dateRange
+	 * @param paymentStatus
+	 * @param houseTitle
+	 * @return
+	 */
+	public static Specification<AdBean> filter(
+			Long userId, Integer pageNumber, String dateRange, String paymentStatus, String houseTitle) {
 	    return (root, query, builder) -> {
-	        // 確保結果集不會因為 JOIN 造成重複
-	        query.distinct(true);  // 避免重複的 AdBean 物件
+	    	
+//	    	query.distinct(true);  // 避免重複的 AdBean 物件
 
 	        List<Predicate> predicates = new ArrayList<>();
 	        
-	        // 取得篩選條件
-	        String dateRange = conditions.get("daterange");
-	        String paymentStatus = conditions.get("paymentstatus");
-	        String houseTitle = conditions.get("input");
+	        predicates.add(builder.equal(root.get("userId"), userId));
 	        
-	        System.out.println("houseTitle: " + houseTitle);
-
-	        // 如何避免N+1??
-
 	        if (dateRange != null && !dateRange.equals("all")) {
 	            LocalDateTime endDate = LocalDateTime.now();
 	            LocalDateTime startDate;
