@@ -191,6 +191,9 @@ public class OrderService {
 	        if (isCouponApplied) {
 	            ad.setAdPrice(ad.getAdPrice() - discount);
 	            logger.info("有折價的AD: " + ad.getAdId() + " 折扣: " + discount + " 折價後的金額: " + ad.getAdPrice());
+	            int result = userRepository.removeOneCoupon(userId);
+	    	    if(result > 0) logger.info("成功刪除優惠券");
+	    	    else logger.info("沒有刪除優惠券");
 	        }
 
 	        newOrder.setItemName(ad.getAdtype().getAdName());
@@ -207,10 +210,6 @@ public class OrderService {
 	    newOrder.setAds(ads);
 
 	    OrderBean savedOrder = orderRepository.save(newOrder);
-	    
-	    int result = userRepository.removeOneCoupon(userId);
-	    if(result > 0) logger.info("成功刪除優惠券");
-	    else logger.info("沒有刪除優惠券");
 
 	    OrderResponseDTO responseDTO = setOrderDetailsResponseDTO(savedOrder);
 	    
