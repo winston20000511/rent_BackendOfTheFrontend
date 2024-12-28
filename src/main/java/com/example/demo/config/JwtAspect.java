@@ -27,6 +27,8 @@ public class JwtAspect {
         EXCLUDED_URIS.add("/api/user/login");    // 登入頁面
         EXCLUDED_URIS.add("/api/user/register"); // 註冊頁面
         EXCLUDED_URIS.add("/api/user/verifyEmail"); // 註冊認證
+        EXCLUDED_URIS.add("/api/user/google/login"); // 第三方登入
+        EXCLUDED_URIS.add("/api/user/google/callback"); // 第三方登入
         EXCLUDED_URIS.add("/"); // 首頁
         EXCLUDED_URIS.add("/public/api");        // 未來新增的公共頁面
         EXCLUDED_URIS.add("/api/test"); //SearchController

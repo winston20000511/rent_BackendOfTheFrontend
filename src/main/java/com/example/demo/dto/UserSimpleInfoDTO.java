@@ -12,6 +12,6 @@ public class UserSimpleInfoDTO {
     private String name;         // 使用者名稱
     private String email;        // 電子郵件
     private String phone;        // 手機號碼
-    private byte[] picture;      // 使用者圖片
+    private String picture;      // 使用者圖片
 
 }
