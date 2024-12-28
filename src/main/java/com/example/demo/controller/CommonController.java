@@ -39,11 +39,7 @@ public class CommonController {
 
     @GetMapping("/fake")
     public void fake() {
-        try {
-            fakeDataService.userFakeData();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        fakeDataService.messageFakeData();
         System.out.println("ok");
     }
 

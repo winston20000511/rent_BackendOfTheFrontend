@@ -215,7 +215,7 @@ public class FakeDataService {
     }
 
     public void messageFakeData(){
-        for (int i = 0; i < 7046; i++) {
+        for (int i = 1133; i < 7046; i++) {
             MessageBean message = new MessageBean();
             //UserTableBean user = getRandomUser(7046);
             UserTableBean user = getUser(i);
