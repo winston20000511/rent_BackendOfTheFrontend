@@ -32,6 +32,8 @@ public class JwtAspect {
         EXCLUDED_URIS.add("/api/test"); //SearchController
         EXCLUDED_URIS.add("/api/map"); //SearchController
         EXCLUDED_URIS.add("/api/ads"); //SearchController
+        EXCLUDED_URIS.add("/api/draw"); //SearchController
+        EXCLUDED_URIS.add("/fake"); //SearchController
         EXCLUDED_URIS.add("/api/keyword"); //SearchController
     }
 

@@ -231,7 +231,9 @@ public class UserService {
         userCenterDTO.setName(user.getName());
         userCenterDTO.setEmail(user.getEmail());
         userCenterDTO.setPhone(user.getPhone());
-        userCenterDTO.setPicture(user.getPicture());
+
+        String base64Picture = Base64.getEncoder().encodeToString(user.getPicture());
+        userCenterDTO.setPicture(base64Picture);
         userCenterDTO.setGender(user.getGender());
         userCenterDTO.setCoupon(user.getCoupon());
         userCenterDTO.setStatus(user.getStatus());
@@ -271,8 +273,8 @@ public class UserService {
         userSimpleInfoDTO.setEmail(user.getEmail());
         userSimpleInfoDTO.setPhone(user.getPhone());
 
-        String base64Picture = Base64.getEncoder().encodeToString(user.getPicture());
-        userSimpleInfoDTO.setPicture(base64Picture);
+//        String base64Picture = Base64.getEncoder().encodeToString(user.getPicture());
+        userSimpleInfoDTO.setPicture(Base64.getEncoder().encodeToString(user.getPicture()));
         return userSimpleInfoDTO;
     }
     public UserSimpleInfoDTO getUserPicure(String token){
@@ -336,8 +338,18 @@ public class UserService {
         if (updateRequest.getGender() != null) {
             user.setGender(updateRequest.getGender());
         }
+
+        String base64Image = updateRequest.getPicture();
+        byte[] imageBytes = null;
+
+        if (base64Image != null ) {
+//            base64Image = base64Image.split(",")[1]; // 去掉 `data:image/png;base64,` 前綴
+            imageBytes = Base64.getDecoder().decode(base64Image);
+        }
+        System.out.println("Decoded byte array length: " + imageBytes.length);
+
         if (updateRequest.getPicture() != null) {
-            user.setPicture(updateRequest.getPicture());
+            user.setPicture(imageBytes);
         }
 
         // 儲存更新後的使用者
@@ -349,7 +361,9 @@ public class UserService {
         userCenterDTO.setName(user.getName());
         userCenterDTO.setEmail(user.getEmail());
         userCenterDTO.setPhone(user.getPhone());
-        userCenterDTO.setPicture(user.getPicture());
+
+        String base64Picture = Base64.getEncoder().encodeToString(user.getPicture());
+        userCenterDTO.setPicture(base64Picture);
         userCenterDTO.setGender(user.getGender());
         userCenterDTO.setCoupon(user.getCoupon());
         userCenterDTO.setStatus(user.getStatus());
