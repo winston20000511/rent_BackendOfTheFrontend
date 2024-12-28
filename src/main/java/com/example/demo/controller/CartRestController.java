@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dto.CartItemResponseDTO;
 import com.example.demo.helper.JwtUtil;
 import com.example.demo.model.CartItemBean;
 import com.example.demo.service.CartService;
@@ -27,15 +29,28 @@ public class CartRestController {
 	}
 	
 	@PostMapping("/list")
-	public List<CartItemBean> getCartItems(@RequestHeader("authorization") String authorizationHeader){
+	public List<CartItemResponseDTO> getCartItems(@RequestHeader("authorization") String authorizationHeader){
 		
 		String[] userInfo = JwtUtil.verify(authorizationHeader);
 		Long userId = Long.parseLong(userInfo[1]);
-
+		
 		List<CartItemBean> cartItems = cartService.findCartItemsByUserId(userId);
 		if(cartItems == null) return null;
+
+		List<CartItemResponseDTO> responseDTOs = new ArrayList<>();
+		for(CartItemBean cartItem : cartItems) {
+			CartItemResponseDTO responseDTO = new CartItemResponseDTO();
+			responseDTO.setAdId(userId);
+			responseDTO.setCartId(cartItem.getCartId());
+			responseDTO.setHouseTitle(cartItem.getAd().getHouse().getTitle());
+			responseDTO.setAdName(cartItem.getAdtype().getAdName());
+			responseDTO.setAdPrice(cartItem.getAdPrice());
+			responseDTO.setAddedDate(cartItem.getAddedDate());
+			
+			responseDTOs.add(responseDTO);
+		}
 		
-		return cartItems;
+		return responseDTOs;
 	}
 	
 	@PostMapping("/add/item")

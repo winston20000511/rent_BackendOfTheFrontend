@@ -115,8 +115,10 @@ public class CartService {
 		}
 	}
 	
+	@Transactional
 	public boolean deleteCartItem(Long userId, Long adId) {
 		
+		logger.info("刪除中的使用者ID: " + userId);
 		// 查詢該用戶的購物車
 		CartBean cart = cartRepository.findCartByUserId(userId);
 		if (cart == null) {
