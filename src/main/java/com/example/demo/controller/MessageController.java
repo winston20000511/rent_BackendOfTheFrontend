@@ -105,6 +105,7 @@ public class MessageController {
 	        }
 
 	        List<Object[]> chatUsers = messageService.findChatUsers(currentUserId);
+
 	        return ResponseEntity.ok(chatUsers);
 
 	    } catch (UnTokenException e) {

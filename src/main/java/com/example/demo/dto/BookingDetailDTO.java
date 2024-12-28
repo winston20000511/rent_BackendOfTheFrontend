@@ -12,8 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class BookingDetailDTO {
-	private String ownerName;
-	private String ownerEmail;
+	private Long houseOwnerId;
+	private String houseOwnerName;
+	private String houseOwnerEmail;
 	private String userName;
 	private String userEmail;
 	private LocalDateTime createDate;
