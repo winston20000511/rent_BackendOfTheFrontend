@@ -9,14 +9,13 @@ import java.util.Map;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.example.demo.model.AdBean;
-import com.example.demo.model.HouseTableBean;
-import com.example.demo.model.OrderBean;
 
-import jakarta.persistence.criteria.Fetch;
+
+
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+
 
 public class AdSpecification {
 
