@@ -80,7 +80,6 @@ public class EcpayService {
 			OrderBean order = orderRepository.findByMerchantTradNo(merchantTradNo);
 			logger.info("從資料庫中撈到的 order: " + order);
 			
-//			order.setReturnValue(queryStringToJson(returnValue).toString());
 			order.setReturnValue(returnValue);
 			order.setOrderStatus((short)1);
 			
@@ -133,7 +132,7 @@ public class EcpayService {
 		obj.setItemName(order.getItemName());
 		
 		// 接收回傳驗證碼路徑: 要用https回傳
-		obj.setReturnURL("https://c77e-2402-7500-a44-1da4-dd02-db4f-2070-910d.ngrok-free.app/api/ecpay/verify/checkvalue");		
+		obj.setReturnURL("/api/ecpay/verify/checkvalue");		
 		obj.setNeedExtraPaidInfo("N");
 		
 		// 返回商店後呈現給客戶看的頁面

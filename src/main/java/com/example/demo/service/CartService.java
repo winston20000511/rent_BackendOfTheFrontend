@@ -158,6 +158,7 @@ public class CartService {
 	    
 		try {
 		    cartItemRepository.deleteCartItemsByCartId(cartId);
+		    logger.info("linepay 成功刪除購物車");
 		} catch (Exception e) {
 		    logger.severe("刪除購物車商品時出錯: " + e);
 		    throw e;

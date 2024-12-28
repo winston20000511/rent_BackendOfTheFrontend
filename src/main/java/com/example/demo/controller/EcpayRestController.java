@@ -30,8 +30,7 @@ public class EcpayRestController {
 	@PostMapping("/ecpayCheckout")
 	public String ecpayCheckout(
 			@RequestBody String merchantTradNo, @RequestHeader("authorization") String authorizationHeader) {
-		String[] userInfo = JwtUtil.verify(authorizationHeader);
-		logger.info("使用者ID: " + Long.parseLong(userInfo[1]));
+		JwtUtil.verify(authorizationHeader);
 		return  ecpayService.ecpayCheckout(merchantTradNo);	
 	}
 	

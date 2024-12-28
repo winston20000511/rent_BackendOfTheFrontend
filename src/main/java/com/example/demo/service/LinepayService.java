@@ -68,9 +68,10 @@ public class LinepayService {
 		
 		try {
 			
-			if (orderId == null || orderId.isEmpty()) 
+			if (orderId != null) {
+				logger.info("回傳的路徑: " + paymentURL);
 				return ResponseEntity.ok(Map.of("paymentUrl", paymentURL));
-			
+			}
 		}catch(Exception exception){
 			
 			logger.info(exception.getMessage());
