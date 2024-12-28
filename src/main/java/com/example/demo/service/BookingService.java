@@ -128,7 +128,7 @@ public class BookingService {
 			             "<footer style='text-align: center; font-size: small; color: gray;'><p>如有任何問題，請聯絡客服：rent189.customer.service@gmail.com</p><p>© 2024 189租屋網 版權所有</p></footer>" +
 			             "</div>";
 
-				//sendSimpleEmail(bookingDetail.getHouseOwnerEmail(), "《通知》您有新的預約", sendMailMSG);
+				sendSimpleEmail(bookingDetail.getHouseOwnerEmail(), "《通知》您有新的預約", sendMailMSG);
 				
 				// 寄Mail
 				MessageBean msgBean = new MessageBean();
