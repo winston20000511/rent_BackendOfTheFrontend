@@ -1,12 +1,9 @@
 package com.example.demo.repository;
 
-import java.time.LocalDateTime;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com.example.demo.dto.AdDetailsResponseDTO;
@@ -21,11 +18,11 @@ public interface AdRepository extends JpaRepository<AdBean, Long>{
 			+ "join UserTableBean u on a.userId = u.userId "
 			+ "join HouseTableBean h on a.houseId = h.houseId "
 			+ "where a.adId = :adId")
-	public AdDetailsResponseDTO findAdDetailsByAdId(Long adId);
+	AdDetailsResponseDTO findAdDetailsByAdId(Long adId);
 	
 	@Query("From AdBean where adId = :adId and userId = :userId")
-	public AdBean findAdByAdIdAndUserId(Long adId, Long userId);
+	AdBean findAdByAdIdAndUserId(Long adId, Long userId);
 
-	public Page<AdBean> findAll(Specification<AdBean> spec, Pageable pageable);
+	Page<AdBean> findAll(Specification<AdBean> spec, Pageable pageable);
 	
 }

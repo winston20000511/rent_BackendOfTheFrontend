@@ -35,6 +35,7 @@ public class RecaptchaService {
 	    MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
 	    requestBody.add("secret", recaptchaApiConfig.getSecret());
 	    requestBody.add("response", recaptchaToken);
+	    logger.info("後端的request body: " + requestBody);
 
 	    // MultiValueMap: 存一個鍵對應多個值
 	    HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);

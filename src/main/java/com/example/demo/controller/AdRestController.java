@@ -53,6 +53,8 @@ public class AdRestController {
 	public Page<AdDetailsResponseDTO> filter(
 			@RequestBody Map<String, String> conditions, @RequestHeader("authorization") String authorizationHeader) {
 		
+		logger.info("廣告篩選條件: " + conditions);
+		
 		String[] userInfo = JwtUtil.verify(authorizationHeader);
 		Long userId = Long.parseLong(userInfo[1]);
 		
@@ -64,6 +66,7 @@ public class AdRestController {
 		Page<AdDetailsResponseDTO> pages= adService.findAdsByConditions(
 				userId, pageNumber, dateRange, paymentStatus, houseTitle);
 
+		logger.info("ad filter: " + pages.toString());
 		return pages;
 	}
 	

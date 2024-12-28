@@ -1,14 +1,18 @@
 package com.example.demo.helper;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class RecaptchaApiConfig {
 
+	@Value("${reCaptchaSiteKey}")
 	private String site;
 	
+	@Value("${reCaptchaSecretKey}")
 	private String secret;
 
+	@Value("${verifyurl}")
 	private String verifyurl;
 
 	public String getSite() {

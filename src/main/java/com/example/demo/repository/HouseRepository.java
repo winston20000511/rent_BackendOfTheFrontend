@@ -59,7 +59,7 @@ public interface HouseRepository extends JpaRepository<HouseTableBean, Long> {
 	@Query(value = "SELECT h.house_id AS houseId, h.title AS houseTitle " +
             "FROM house_table h " +
             "LEFT JOIN ads_table a ON a.house_id = h.house_id " +
-            "WHERE h.status = 1 AND " +
+            "WHERE (h.status = 1 OR h.status = 0) AND " +
             "(a.ad_id IS NULL OR " +
             "(a.is_paid = 1 AND a.paid_date IS NOT NULL AND " +
             "DATEADD(DAY, CASE WHEN a.adtype_id = 1 THEN 30 " +
@@ -68,7 +68,7 @@ public interface HouseRepository extends JpaRepository<HouseTableBean, Long> {
     countQuery = "SELECT COUNT(*) " +
                  "FROM house_table h " +
                  "LEFT JOIN ads_table a ON a.house_id = h.house_id " +
-                 "WHERE h.status = 1 AND " +
+                 "WHERE (h.status = 1 OR h.status = 0) AND " +
                  "(a.ad_id IS NULL OR " +
                  "(a.is_paid = 1 AND a.paid_date IS NOT NULL AND " +
                  "DATEADD(DAY, CASE WHEN a.adtype_id = 1 THEN 30 " +
