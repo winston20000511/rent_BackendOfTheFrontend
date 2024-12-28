@@ -76,15 +76,15 @@ public class UserService {
         UserTableBean user = new UserTableBean();
         user.setName(userRegisterDTO.getName());
         user.setEmail(userRegisterDTO.getEmail());
+        // 將密碼加密後存入資料庫
         user.setPassword(passwordEncoder.encode(userRegisterDTO.getPassword()));
         user.setPhone(userRegisterDTO.getPhone());
         user.setGender(userRegisterDTO.getGender());
         user.setStatus((byte) 6); // 未驗證狀態
-        // 將密碼加密後存入資料庫
-        String encryptedPassword = passwordEncoder.encode(userRegisterDTO.getPassword());
-        user.setPassword(encryptedPassword);
 
-        userRepository.save(user); // 儲存資料到資料庫
+        // 儲存資料到資料庫
+        userRepository.save(user);
+
 
         // 生成 Email 驗證 Token
         String verificationToken = JwtUtil.generateEmailVerificationToken(user.getEmail(), user.getUserId());
