@@ -36,9 +36,10 @@ public interface MessageRepository extends JpaRepository<MessageBean, Long> {
 	// save
 	@Query("""
 			   SELECT
-			       CASE WHEN m.senderId = :currentUserId THEN r.userId ELSE s.userId END,
-			       CASE WHEN m.senderId = :currentUserId THEN r.name ELSE s.name END,
-			       m.timestamp
+					DISTINCT
+					CASE WHEN m.senderId = :currentUserId THEN r.userId ELSE s.userId END,
+					CASE WHEN m.senderId = :currentUserId THEN r.name ELSE s.name END,
+					m.timestamp
 			   FROM MessageBean m
 			   JOIN m.sender s
 			   JOIN m.receiver r

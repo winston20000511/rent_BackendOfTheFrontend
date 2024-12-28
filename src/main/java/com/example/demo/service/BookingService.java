@@ -47,8 +47,8 @@ public class BookingService {
 	@Autowired
     private MessageService messageService;
 	
-	// 預設網址
-	protected String url = "http://localhost:8080/" ;
+	// 預設前台會員中心網址
+	protected String url = "http://localhost:5173/member-center" ;
 	
 	// 取得當下時間
 	protected LocalDateTime getCurrentTime() {
@@ -115,20 +115,20 @@ public class BookingService {
 		                .replace(">", "&gt;")
 		                .replace("\n", "<br/>");
 				
-				String sendMailMSG = "<div style='width:400px; border: 1px solid #007bff; border-radius: 10px; padding: 15px;'>" +
+				String sendMailMSG = "<div style='width:640px; border: 1px solid #007bff; border-radius: 10px; padding: 15px;'>" +
 			             "<h2 style='text-align: left ;'>您在 <span style='color:red;'>" + 
 			             bookingDetail.getBookingDate() + " " + bookingDetail.getBookingTime() + "</span> 有新的預約</h2>" +
 			             "<span style='text-align: center;'>立即查看： </span>" +
-			             "<span style='text-align: center;'><a href='"+ url +"' style='color: blue;'>"+url+"</a></span>" +
+			             "<span style='text-align: center;'><a href='"+ url +"/homeowner' style='color: blue;'>"+url+"</a></span>" +
 			             "<h3 style='text-align: start;'>給您的留言:</h3>" +
 			             "<div style='border: 1px solid #ccc; padding: 10px; margin-top: 15px;'>" +
 			             "<p style='text-align: start;'>" + formattedMessage + "</p>" +
 			             "</div>" +
 			             "<hr style='border-top: 1px solid #ccc;'>" +
-			             "<footer style='text-align: end; font-size: small; color: gray;'>感謝您的使用！</footer>" +
+			             "<footer style='text-align: center; font-size: small; color: gray;'><p>如有任何問題，請聯絡客服：rent189.customer.service@gmail.com</p><p>© 2024 189租屋網 版權所有</p></footer>" +
 			             "</div>";
 
-				//sendSimpleEmail(bookingDetail.getOwnerEmail(), "《通知》您有新的預約", sendMailMSG);
+				sendSimpleEmail(bookingDetail.getHouseOwnerEmail(), "《通知》您有新的預約", sendMailMSG);
 				
 				// 寄Mail
 				MessageBean msgBean = new MessageBean();
@@ -182,15 +182,15 @@ public class BookingService {
 			}
 			
 			// 寄Mail
-			String sendMailMSG = "<div style='width:400px; border: 1px solid #007bff; border-radius: 10px; padding: 15px;'>" +
+			String sendMailMSG = "<div style='width:640px; border: 1px solid #007bff; border-radius: 10px; padding: 15px;'>" +
 		             "<h2 style='text-align: left ;'>您在 <span style='color:red;'>" + 
 		             b.getBookingDate() + " " + b.getBookingTime() + "</span> 的預約已"+text+"</h2>" +
 		             "<span style='text-align: center;'>立即查看： </span>" +
-		             "<span style='text-align: center;'><a href='"+ url +"' style='color: blue;'>"+url+"</a></span>" +
+		             "<span style='text-align: center;'><a href='"+ url +"/my-booking' style='color: blue;'>"+url+"/my-booking</a></span>" +
 		             "<hr style='border-top: 1px solid #ccc;'>" +
-		             "<footer style='text-align: end; font-size: small; color: gray;'>感謝您的使用！</footer>" +
+		             "<footer style='text-align: center; font-size: small; color: gray;'><p>© 2024 189租屋網 版權所有</p></footer>" +
 		             "</div>";
-			//sendSimpleEmail(b.getHouse().getUser().getEmail(), "《通知》預約已"+text, sendMailMSG);
+			sendSimpleEmail(b.getHouse().getUser().getEmail(), "《通知》預約已"+text, sendMailMSG);
 			
 			// 發站內訊息
 			String sendChatRoomMSG = "預約時間: "+bookingDetail.getBookingDate()+" "+bookingDetail.getBookingTime()+"，此次預約已"+text+"!。敬請留意。";
@@ -218,15 +218,15 @@ public class BookingService {
 			BookingDetailDTO bookingDetail = bookingRepo.findBookingDetailsById(b.getBookingId());
 
 			// 寄Mail
-			String sendMailMSG = "<div style='width:400px; border: 1px solid #007bff; border-radius: 10px; padding: 15px;'>" +
+			String sendMailMSG = "<div style='width:640px; border: 1px solid #007bff; border-radius: 10px; padding: 15px;'>" +
 		             "<h2 style='text-align: left ;'>您在 <span style='color:red;'>" + 
 		             b.getBookingDate() + " " + b.getBookingTime() + "</span> 的預約已被取消</h2>" +
 		             "<span style='text-align: center;'>立即查看： </span>" +
-		             "<span style='text-align: center;'><a href='"+ url +"' style='color: blue;'>"+url+"</a></span>" +
+		             "<span style='text-align: center;'><a href='"+ url +"/homeowner' style='color: blue;'>"+url+"/homeowner</a></span>" +
 		             "<hr style='border-top: 1px solid #ccc;'>" +
-		             "<footer style='text-align: end; font-size: small; color: gray;'>感謝您的使用！</footer>" +
+		             "<footer style='text-align: center; font-size: small; color: gray;'><p>如有任何問題，請聯絡客服：rent189.customer.service@gmail.com</p><p>© 2024 189租屋網 版權所有</p></footer>" +
 		             "</div>";
-			//sendSimpleEmail(b.getHouse().getUser().getEmail(), "《通知》預約已取消", sendMailMSG);
+			sendSimpleEmail(b.getHouse().getUser().getEmail(), "《通知》預約已取消", sendMailMSG);
 			
 			// 發站內訊息
 			String sendChatRoomMSG = "預約時間: "+bookingDetail.getBookingDate()+" "+bookingDetail.getBookingTime()+"，此次預約已取消!。敬請留意。";
