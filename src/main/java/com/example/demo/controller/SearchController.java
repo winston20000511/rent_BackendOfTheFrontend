@@ -79,5 +79,10 @@ public class SearchController {
 		mapPOJO.setSearchList(searchService.getDrawDistance(mapPOJO.getSearchList(), mapPOJO.getSearchOrigin(),drawDtoList));
 		return mapPOJO;
 	}
-	
+
+	@PostMapping("/api/ads")
+	public ResponseMapPOJO adsMarker() {
+		List<AddressDTO> listAddressDTO = searchService.getAdsMarker();
+		return new ResponseMapPOJO(listAddressDTO,listAddressDTO.get(0),0);
+	}
 }

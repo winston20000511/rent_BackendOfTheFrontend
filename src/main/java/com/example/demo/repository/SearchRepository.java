@@ -35,5 +35,21 @@ public interface SearchRepository extends JpaRepository<HouseTableBean, Long>{
 			"where h.address like CONCAT(:n,'%')")
 	HashSet<AddressDTO> findByCityAndTownship(@Param("n") String name);
 
+	@Query("select new com.example.demo.dto.AddressDTO(h.houseId ,h.address , h.lat , h.lng , h.price , " +
+			"COALESCE(a.adtype.adName,'0天') , COALESCE(a.paidDate,'1999-01-01 00:00:00'), h.title , h.clickCount, " +
+			"c.pet , c.parkingSpace , c.elevator , c.balcony, c.shortTerm , c.cooking , c.waterDispenser, " +
+			"c.managementFee , c.genderRestrictions , h.houseType) " +
+			"from HouseTableBean h " + "left join h.ads a " + "left join a.adtype t " + "Left join h.condition c " +
+			"where h.address like CONCAT(:n,'%')")
+	AddressDTO findByCityAndTownshipSingle(@Param("n") String name);
+
+	@Query("select new com.example.demo.dto.AddressDTO(h.houseId ,h.address , h.lat , h.lng , h.price , " +
+			"COALESCE(a.adtype.adName,'0天') , COALESCE(a.paidDate,'1999-01-01 00:00:00'), h.title , h.clickCount, " +
+			"c.pet , c.parkingSpace , c.elevator , c.balcony, c.shortTerm , c.cooking , c.waterDispenser, " +
+			"c.managementFee , c.genderRestrictions , h.houseType) " +
+			"from HouseTableBean h " + "left join h.ads a " + "left join a.adtype t " + "Left join h.condition c " +
+			"where a.isPaid = :p")
+	List<AddressDTO> findByCityAndTownshipAds(@Param("p") boolean isPaid);
+
 
 }

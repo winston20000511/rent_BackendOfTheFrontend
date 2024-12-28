@@ -31,6 +31,7 @@ public class JwtAspect {
         EXCLUDED_URIS.add("/public/api");        // 未來新增的公共頁面
         EXCLUDED_URIS.add("/api/test"); //SearchController
         EXCLUDED_URIS.add("/api/map"); //SearchController
+        EXCLUDED_URIS.add("/api/ads"); //SearchController
         EXCLUDED_URIS.add("/api/keyword"); //SearchController
     }
 
