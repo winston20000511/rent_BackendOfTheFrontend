@@ -1,16 +1,19 @@
 package com.example.demo.service;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.BookingDTO;
 import com.example.demo.dto.BookingDetailDTO;
+import com.example.demo.dto.BookingListDTO;
+import com.example.demo.dto.BookingOwnerListDTO;
 import com.example.demo.dto.BookingResponseDTO;
 import com.example.demo.dto.BookingSlotDTO;
 import com.example.demo.model.BookingBean;
@@ -38,6 +41,22 @@ public class BookingService {
 
 	@Autowired
 	private JavaMailSender mailSender;
+	
+	// 預設網址
+	protected String url = "http://localhost:8080/" ;
+	
+	// 更新 預約狀態
+	@Scheduled(cron = "0 1 0 * * ?")//每天 01:01 更新
+    public void updateHouseStatus() {
+		System.out.println("-------開始更新預約狀態---------");
+
+		LocalDate yesterday = LocalDate.now().plusDays(1);
+        bookingRepo.updateStatusOfOverdue(yesterday);
+        bookingRepo.updateStatusOfFinish(yesterday);
+        
+        System.out.println("-----------結束--------------");
+    }
+	
 
 	public List<String> findBookingedByHouseId(Long houseId){
 		List<String> bookingedList = bookingRepo.findBookingedByHouseId(houseId);
@@ -54,31 +73,17 @@ public class BookingService {
 		BookingSlotDTO dto = convertToDTO(bean);
 		return dto;
 	}
-
-	public List<BookingDTO> getBookingByUser(Long userId) {
-		List<BookingBean> bs = bookingRepo.findByUserId(userId);
-		List<BookingDTO> dto = new ArrayList<>();
-
-		if (!bs.isEmpty()) {
-			for (BookingBean b : bs) {
-				BookingDTO d = convertToDTO(b);
-				dto.add(d);
-			}
-		}
-		return dto;
+	
+	// 使用者的預約清單
+	public List<BookingListDTO> getBookingByUser(Long userId) {
+		
+		return bookingRepo.findBookingListByUserId(userId);
 	}
 
-	public List<BookingDTO> getBookingByHouse(Long houseId) {
-		List<BookingBean> bs = bookingRepo.findByHouseId(houseId);
-		List<BookingDTO> dto = new ArrayList<>();
-
-		if (!bs.isEmpty()) {
-			for (BookingBean b : bs) {
-				BookingDTO d = convertToDTO(b);
-				dto.add(d);
-			}
-		}
-		return dto;
+	// 使用者的房屋預約清單
+	public List<BookingOwnerListDTO> getBookingByHouseOwner(Long userId) {
+		
+		return bookingRepo.findByHouseOwnerUserId(userId);
 	}
 
 	public BookingResponseDTO createBooking(BookingDTO booking) throws MessagingException {
@@ -93,25 +98,26 @@ public class BookingService {
 			if (newBean != null) {
 				BookingDetailDTO b = bookingRepo.findBookingDetailsById(newBean.getBookingId());
 				
+				
 				String formattedMessage = booking.getMessage()
-		                .replace("\n", "<br>")
 		                .replace("<", "&lt;")
-		                .replace(">", "&gt;");
+		                .replace(">", "&gt;")
+		                .replace("\n", "<br/>");
 				
 				String msg = "<div style='width:400px; border: 1px solid #007bff; border-radius: 10px; padding: 15px;'>" +
-			             "<h2 style='text-align: center;'>您在 <span style='color:red;'>" + 
+			             "<h2 style='text-align: left ;'>您在 <span style='color:red;'>" + 
 			             b.getBookingDate() + " " + b.getBookingTime() + "</span> 有新的預約</h2>" +
-			             "<p style='text-align: center;'>請使用以下連結以查看預約：</p>" +
-			             "<p style='text-align: center;'><a href='http://localhost:8080/' style='color: blue;'>查看預約</a></p>" +
-			             "<div style='border: 1px dashed #ccc; padding: 10px; margin-top: 15px;'>" +
+			             "<span style='text-align: center;'>立即查看： </span>" +
+			             "<span style='text-align: center;'><a href='"+ url +"' style='color: blue;'>"+url+"</a></span>" +
 			             "<h3 style='text-align: start;'>給您的留言:</h3>" +
+			             "<div style='border: 1px solid #ccc; padding: 10px; margin-top: 15px;'>" +
 			             "<p style='text-align: start;'>" + formattedMessage + "</p>" +
 			             "</div>" +
 			             "<hr style='border-top: 1px solid #ccc;'>" +
-			             "<footer style='text-align: center; font-size: small; color: gray;'>感謝您的使用！</footer>" +
+			             "<footer style='text-align: end; font-size: small; color: gray;'>感謝您的使用！</footer>" +
 			             "</div>";
 
-				sendSimpleEmail(b.getOwnerEmail(), "您有新的預約", msg);
+				sendSimpleEmail(b.getOwnerEmail(), "《通知》您有新的預約", msg);
 				return new BookingResponseDTO("success", "預約已送出!");
 			} else {
 
@@ -119,29 +125,70 @@ public class BookingService {
 			}
 		}
 	}
-
-	public BookingDTO updateBookingByHost(BookingDTO booking) {
+	
+	// 屋主更改預約狀態 (1: 屋主同意 ; 2: 屋主拒絕 ; 3:屋主取消)
+	public BookingResponseDTO updateBookingByHost(BookingDTO booking) throws MessagingException {
 		Optional<BookingBean> op = bookingRepo.findById(booking.getBookingId());
 
 		BookingBean newBean = new BookingBean();
 		if (op.isPresent()) {
 			newBean = op.get();
 			newBean.setStatus(booking.getStatus());
-		}
+			BookingBean b = bookingRepo.save(newBean);
+			
+			String text ="";
+			Byte status = b.getStatus();
+			
+			switch (status){
+				case 1 : text = "同意"; break;
+				case 2 : text = "拒絕"; break;
+				case 3 : text = "取消"; break;
+				default: return new BookingResponseDTO("danger", "無效的預約!");
+			}
+			
 
-		return convertToDTO(bookingRepo.save(newBean));
+			String msg = "<div style='width:400px; border: 1px solid #007bff; border-radius: 10px; padding: 15px;'>" +
+		             "<h2 style='text-align: left ;'>您在 <span style='color:red;'>" + 
+		             b.getBookingDate() + " " + b.getBookingTime() + "</span> 的預約已"+text+"</h2>" +
+		             "<span style='text-align: center;'>立即查看： </span>" +
+		             "<span style='text-align: center;'><a href='"+ url +"' style='color: blue;'>"+url+"</a></span>" +
+		             "<hr style='border-top: 1px solid #ccc;'>" +
+		             "<footer style='text-align: end; font-size: small; color: gray;'>感謝您的使用！</footer>" +
+		             "</div>";
+			
+			sendSimpleEmail(b.getHouse().getUser().getEmail(), "《通知》預約已"+text, msg);
+			
+			
+			return new BookingResponseDTO("success", "操作成功!");
+		}
+		return new BookingResponseDTO("danger", "操作失敗!");
 	}
-
-	public BookingDTO updateBookingByGuest(BookingDTO booking) {
+	
+	// 用戶更改預約狀態
+	public BookingResponseDTO cancelBookingByGuest(BookingDTO booking) throws MessagingException {
 		Optional<BookingBean> op = bookingRepo.findById(booking.getBookingId());
 
 		BookingBean newBean = new BookingBean();
 		if (op.isPresent()) {
 			newBean = op.get();
 			newBean.setStatus(booking.getStatus());
+			BookingBean b = bookingRepo.save(newBean);
+			
+			
+			String msg = "<div style='width:400px; border: 1px solid #007bff; border-radius: 10px; padding: 15px;'>" +
+		             "<h2 style='text-align: left ;'>您在 <span style='color:red;'>" + 
+		             b.getBookingDate() + " " + b.getBookingTime() + "</span> 的預約已被取消</h2>" +
+		             "<span style='text-align: center;'>立即查看： </span>" +
+		             "<span style='text-align: center;'><a href='"+ url +"' style='color: blue;'>"+url+"</a></span>" +
+		             "<hr style='border-top: 1px solid #ccc;'>" +
+		             "<footer style='text-align: end; font-size: small; color: gray;'>感謝您的使用！</footer>" +
+		             "</div>";
+			
+			sendSimpleEmail(b.getHouse().getUser().getEmail(), "《通知》預約已取消", msg);
+			return new BookingResponseDTO("success", "已完成取消!");
 		}
-
-		return convertToDTO(bookingRepo.save(newBean));
+		
+		return new BookingResponseDTO("danger", "取消失敗!");
 	}
 
 	private void sendSimpleEmail(String to, String subject, String text) throws MessagingException {

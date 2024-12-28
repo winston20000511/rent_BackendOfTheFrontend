@@ -51,6 +51,9 @@ public class AdBean {
 	@Column(name = "paid_date")
 	private LocalDateTime paidDate;
 	
+	@Column(name = "coupon")
+	private Integer isCouponUsed;
+	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="adtype_id", insertable=false, updatable=false)
 	@JsonIgnore

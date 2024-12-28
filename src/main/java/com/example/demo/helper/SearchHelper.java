@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.demo.dto.KeyWordDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -28,7 +29,7 @@ public class SearchHelper {
 	private GoogleApiConfig googleApiConfig;
 	
 	//地球半徑 單位公里
-	private static final double earthRadiusKm = 6371.0; 
+	private static final double earthRadiusKm = 6378.137;
 	
 	
 	//將地址切割成縣市 , 鄉鎮區 , 街路號
@@ -173,7 +174,75 @@ public class SearchHelper {
         return earthRadiusKm * c;
 		
 	}
-	
+//	public Double getDistance(DrawLatLngDTO Origin , DrawLatLngDTO Target) {
+//
+//		//緯度&經度 角度轉成弧度
+//		double lat1Rad = Math.toRadians(Origin.getLat());
+//		double lng1Rad = Math.toRadians(Origin.getLng());
+//		double lat2Rad = Math.toRadians(Target.getLat());
+//		double lng2Rad = Math.toRadians(Target.getLng());
+//
+//		//Haversine 公式
+//		double deltaLat = lat2Rad - lat1Rad;
+//		double deltaLng = lng2Rad - lng1Rad;
+//
+//		double a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+//				Math.cos(lat1Rad) * Math.cos(lat2Rad) *
+//						Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2);
+//
+//		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+//
+//		//計算距離
+//		return earthRadiusKm * c;
+//
+//	}
+//	public boolean getOvalRotationAngle(AddressDTO origin, AddressDTO point, double maxRadius, double minRadius, double rotation){
+//		maxRadius = maxRadius * 1000; // 長軸半徑
+//		minRadius = minRadius * 1000; // 短軸半徑
+//
+//		double[] pointPlane = convertToPlaneCoordinates(origin,point);  // 點相對於中心的坐標
+//
+//		// 橢圓旋轉
+//		double angle = Math.toRadians(rotation);
+//		double x = Math.cos(angle) * pointPlane[0] - Math.sin(angle) * pointPlane[1];
+//		double y = Math.sin(angle) * pointPlane[0] + Math.cos(angle) * pointPlane[1];
+//
+//		// 判斷是否滿足橢圓方程
+//		boolean result = (x * x) / (maxRadius * maxRadius) + (y * y) / (minRadius * minRadius) <= 1;
+//
+//		// Debug 打印
+////		System.out.println("中心: " + origin.getLat() + ", " + origin.getLng());
+////		System.out.println("目標: " + point.getLat() + ", " + point.getLng());
+////		System.out.println("計算後的 x: " + x + ", y: " + y);
+////		System.out.println("結果: " + result);
+//
+//		return result;
+//	}
+//	public double[] convertToPlaneCoordinates(AddressDTO origin , AddressDTO point) {
+//		double EARTH_RADIUS = 6378137;
+//		double latDiff = Math.toRadians(point.getLat() - origin.getLat());
+//		double lngDiff = Math.toRadians(point.getLng() - origin.getLng());
+//
+//		double x = lngDiff * EARTH_RADIUS * Math.cos(Math.toRadians(origin.getLat()));
+//		double y = latDiff * EARTH_RADIUS;
+//		return new double[] { x, y };
+//	}
+	public boolean isPointInPolygon(double lat, double lng, List<DrawLatLngDTO> polygon) {
+		int n = polygon.size();
+		boolean inside = false;
+
+		for (int i = 0, j = n - 1; i < n; j = i++) {
+			double lat1 = polygon.get(i).getLat(), lng1 = polygon.get(i).getLng();
+			double lat2 = polygon.get(j).getLat(), lng2 = polygon.get(j).getLng();
+
+			boolean intersect = ((lng1 > lng) != (lng2 > lng)) &&
+					(lat < (lat2 - lat1) * (lng - lng1) / (lng2 - lng1) + lat1);
+			if (intersect) inside = !inside;
+		}
+
+		return inside;
+	}
+
 	//計算地區平均價格
 	public Integer getPlaceAvgPrice(HashSet<AddressDTO> setAddressDTO) {
 		
@@ -182,28 +251,38 @@ public class SearchHelper {
 		for (AddressDTO a : setAddressDTO) {
 			sum += a.getPrice();
 		}
-		
-		BigDecimal bd = new BigDecimal(sum / setAddressDTO.size()).setScale(0, RoundingMode.HALF_UP);
+		BigDecimal bd = BigDecimal.ZERO;
+		if (setAddressDTO.size() != 0){
+			bd = new BigDecimal(sum / setAddressDTO.size()).setScale(0, RoundingMode.HALF_UP);
+		}
+
 		return bd.intValue();
-		
+
 	}
 	
 	public DrawLatLngDTO getAvgLatLng(List<DrawLatLngDTO> drawDtoList) {
 		
-		BigDecimal latBd = BigDecimal.ZERO;
-		BigDecimal lngBd = BigDecimal.ZERO;
-		
-		for (DrawLatLngDTO draw : drawDtoList) {
-			latBd = latBd.add(BigDecimal.valueOf(draw.getLat()));
-			lngBd = lngBd.add(BigDecimal.valueOf(draw.getLng()));
-			
+		double x = 0;
+		double y = 0;
+		double z = 0;
+
+		for(DrawLatLngDTO drawDto : drawDtoList){
+			double latRed = Math.toRadians(drawDto.getLat());
+			double lngRed = Math.toRadians(drawDto.getLng());
+			x += Math.cos(latRed) * Math.cos(lngRed);
+			y += Math.cos(latRed) * Math.sin(lngRed);
+			z += Math.sin(latRed);
 		}
-		
-		latBd = latBd.divide(BigDecimal.valueOf(drawDtoList.size()), 4,RoundingMode.HALF_UP);
-		lngBd = lngBd.divide(BigDecimal.valueOf(drawDtoList.size()),4,RoundingMode.HALF_UP);
-		
-		return new DrawLatLngDTO(latBd.doubleValue(),lngBd.doubleValue());
+
+		int totalPoints = drawDtoList.size();
+		x /= totalPoints;
+		y /= totalPoints;
+		z /= totalPoints;
+
+		double centerLng = Math.toDegrees(Math.atan2(y, x));
+		double centerLat = Math.toDegrees(Math.atan2(z,Math.sqrt(x*x+y*y)));
+		return new DrawLatLngDTO(centerLat, centerLng);
 
 	}
-	
+
 }

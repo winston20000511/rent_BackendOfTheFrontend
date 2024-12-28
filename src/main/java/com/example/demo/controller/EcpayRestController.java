@@ -1,50 +1,49 @@
 package com.example.demo.controller;
 
-import java.util.Map;
+import java.util.logging.Logger;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.model.OrderBean;
+import com.example.demo.helper.JwtUtil;
 import com.example.demo.service.EcpayService;
 
 @RestController
 @RequestMapping("/api/ecpay")
 public class EcpayRestController {
 
+	private Logger logger = Logger.getLogger(EcpayRestController.class.getName());
 	private EcpayService ecpayService;
 	
-	
-	@Autowired
 	public EcpayRestController(EcpayService ecpayService) {
 		this.ecpayService = ecpayService;
 	}
 	
-	// 接收 form 表單資料
-	@PostMapping("/test/ecpayCheckout")
-	public String testEecpayCheckout() {
-		String aioCheckOutALLForm = ecpayService.testEcpayCheckout();	
-		return aioCheckOutALLForm;
-	}
-	
+	/**
+	 * 送出資料並取得要送給綠界的表單格式（由前端提交）
+	 * @param merchantTradNo
+	 * @return
+	 */
 	@PostMapping("/ecpayCheckout")
-	public String ecpayCheckout(@RequestBody String merchantTradNo) {
-		String aioCheckOutALLForm = ecpayService.ecpayCheckout(merchantTradNo);	
-		return aioCheckOutALLForm;
+	public String ecpayCheckout(
+			@RequestBody String merchantTradNo, @RequestHeader("authorization") String authorizationHeader) {
+		JwtUtil.verify(authorizationHeader);
+		return  ecpayService.ecpayCheckout(merchantTradNo);	
 	}
 	
+	/**
+	 * 驗證綠界的回傳值
+	 * @param params
+	 * @return
+	 */
 	@PostMapping("/verify/checkvalue")
-//	public String verify(@RequestBody Map<String, String> params) 
-	public String verify(@RequestBody String params) {
-		System.out.println("印啊111");
-		System.out.println(params);
-		System.out.println("印啊222");
-//		String response = orderService.verifyEcpayCheckValue(checkValue);
-//		return response;
-		return null;
+	public String verify(@RequestBody String response) {
+		logger.info("綠界的回應: " + response);
+		if(response != null) ecpayService.verifyEcpayCheckValue(response);
+		return "1|OK";
 	}
 	
 }

@@ -92,7 +92,7 @@ public class HouseTableBean {
     @OneToOne(mappedBy = "house", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JsonManagedReference
     private HouseBookingTimeSlotBean bookingTimeSlots;
-    
+
     @OneToMany(mappedBy = "house", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<AdBean> ads;

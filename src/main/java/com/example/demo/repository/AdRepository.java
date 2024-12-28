@@ -1,7 +1,5 @@
 package com.example.demo.repository;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -12,9 +10,6 @@ import com.example.demo.dto.AdDetailsResponseDTO;
 import com.example.demo.model.AdBean;
 
 public interface AdRepository extends JpaRepository<AdBean, Long>{
-
-	@Query("From AdBean where userId = :userId and isPaid = :isPaid")
-	public List<AdBean> findAdsByUserIdAndIsPaidAndPage(Long userId, Boolean isPaid, Pageable pageable);
 	
 	@Query(value="select new com.example.demo.dto.AdDetailsResponseDTO"
 			+ "(a.adId, u.userId, u.name, h.title, adt.adName, a.adPrice, a.isPaid, a.orderId, a.paidDate) "
@@ -23,13 +18,11 @@ public interface AdRepository extends JpaRepository<AdBean, Long>{
 			+ "join UserTableBean u on a.userId = u.userId "
 			+ "join HouseTableBean h on a.houseId = h.houseId "
 			+ "where a.adId = :adId")
-	public AdDetailsResponseDTO findAdDetailsByAdId(Long adId);
+	AdDetailsResponseDTO findAdDetailsByAdId(Long adId);
 	
 	@Query("From AdBean where adId = :adId and userId = :userId")
-	public AdBean findAdByAdIdAndUserId(Long adId, Long userId);
+	AdBean findAdByAdIdAndUserId(Long adId, Long userId);
 
-	public Page<AdBean> findAll(Specification<AdBean> spec, Pageable pageable);
+	Page<AdBean> findAll(Specification<AdBean> spec, Pageable pageable);
 	
-	
-
 }

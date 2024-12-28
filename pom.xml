@@ -93,12 +93,6 @@
 			<artifactId>mssql-jdbc</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-<dependency>
-    <groupId>org.projectlombok</groupId>
-    <artifactId>lombok</artifactId>
-    <version>1.18.36</version>
-    <scope>provided</scope>
-</dependency>
 		<!-- <https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api> -->
 		<dependency>
 		    <groupId>javax.servlet</groupId>
@@ -114,6 +108,13 @@
 		    <version>2.17.1</version><!--$NO-MVN-MAN-VER$-->
 		</dependency>
 		
+		<!--  https://mvnrepository.com/artifact/org.json/json  -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20240303</version>
+		</dependency>
+		
 
 		
 		<dependency>
@@ -127,11 +128,28 @@
     <artifactId>commons-codec</artifactId>
 </dependency>
 
+<!-- Message -->
+		<dependency>
+    		<groupId>org.springframework.boot</groupId>
+    		<artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
+
+		<dependency>
+    		<groupId>org.springframework</groupId>
+    		<artifactId>spring-messaging</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>net.andreinc</groupId>
+			<artifactId>mockneat</artifactId>
+			<version>0.4.8</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-crypto</artifactId>
 		</dependency>
-
+		
 	</dependencies>
 
 	<build>

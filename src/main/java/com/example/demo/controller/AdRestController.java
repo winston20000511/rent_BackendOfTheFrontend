@@ -2,100 +2,139 @@ package com.example.demo.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.AdCreationRequestDTO;
 import com.example.demo.dto.AdDetailsResponseDTO;
+import com.example.demo.helper.JwtUtil;
 import com.example.demo.model.AdtypeBean;
 import com.example.demo.service.AdService;
 
 @RestController
-@RequestMapping("/advertisements")
+@RequestMapping("/api/advertisements")
 public class AdRestController {
 
+	private Logger logger = Logger.getLogger(AdRestController.class.getName());
+	
 	private AdService adService;
 
-	@Autowired
 	public AdRestController(AdService adService) {
 		this.adService = adService;
 	}
 	
-	// 取得所有廣告：用戶id
-	@GetMapping("/{pageNumber}")
-	public Page<AdDetailsResponseDTO> findAllAds(@PathVariable Integer pageNumber) {
-		return adService.findAllAds(pageNumber);
+	@PostMapping("/adtypes")
+	public List<AdtypeBean> findAllAdtypes(@RequestHeader("authorization") String authorizationHeader){
+		JwtUtil.verify(authorizationHeader);
+		return adService.findAllAdType();
 	}
 
-	// 依條件篩選：用戶id + 付款狀態 + 上架時間
+	/**
+	 * 接收使用者端傳來的篩選條件 conditions:
+	 * String page
+	 * String paymentstatus(all/paid/unpaid)
+	 * String daterange(all/week/month/year)
+	 * String input
+	 * 
+	 * @param conditions
+	 * @param authorizationHeader
+	 * @return
+	 */
 	@PostMapping("/filter")
-	public Page<AdDetailsResponseDTO> filter(@RequestBody Map<String, String> conditions) {
-		// {page=1, daterange=week, paymentstatus=paid}
-		System.out.println("conditions: " + conditions.toString());
-		Page<AdDetailsResponseDTO> pages= adService.findAdsByConditions(conditions);
+	public Page<AdDetailsResponseDTO> filter(
+			@RequestBody Map<String, String> conditions, @RequestHeader("authorization") String authorizationHeader) {
 		
-		System.out.println("pages: " + pages);
+		logger.info("廣告篩選條件: " + conditions);
 		
+		String[] userInfo = JwtUtil.verify(authorizationHeader);
+		Long userId = Long.parseLong(userInfo[1]);
+		
+		Integer pageNumber = Integer.parseInt(conditions.get("page"));
+		String dateRange = conditions.get("daterange");
+        String paymentStatus = conditions.get("paymentstatus");
+        String houseTitle = conditions.get("housetitle");
+        
+		Page<AdDetailsResponseDTO> pages= adService.findAdsByConditions(
+				userId, pageNumber, dateRange, paymentStatus, houseTitle);
+
+		logger.info("ad filter: " + pages.toString());
 		return pages;
 	}
 	
-	// 找到沒有上廣告的房子：用戶id篩選 => 要加上篩選出廣告已過期的
-	@PostMapping("/houseswithoutadds")
-	public Page<Map<String, Object>> filterHousesWithoutAds(@RequestBody Integer pageNumber){
-		Page<Map<String, Object>> housesWithoutAds = adService.findHousesWithoutAds(pageNumber);
+	@PostMapping("/houses/withoutads")
+	public Page<Map<String, Object>> filterHousesWithoutAds(
+			@RequestBody Integer pageNumber, @RequestHeader("authorization") String authorizationHeader){
+
+		String[] userInfo = JwtUtil.verify(authorizationHeader);
+		Long userId = Long.parseLong(userInfo[1]);
+		
+		Page<Map<String, Object>> housesWithoutAds = adService.findHousesWithoutAds(userId, pageNumber);
+		
 		return housesWithoutAds;
 	}
 	
-	// 取得廣告種類
-	@GetMapping("/adtypes")
-	public List<AdtypeBean> findAllAdtypes(){
-		return adService.findAllAdType();
+	
+	@PostMapping("/adId")
+	public AdDetailsResponseDTO findAdDetails(
+			@RequestBody Long adId, @RequestHeader("authorization") String authorizationHeader) {
+
+		String[] userInfo = JwtUtil.verify(authorizationHeader);
+		Long userId = Long.parseLong(userInfo[1]);
+		
+		return adService.findAdDetailsByAdId(userId, adId);
 	}
 	
-	// 取得廣告詳細資料
-	@GetMapping("/adId/{adId}")
-	public AdDetailsResponseDTO findAdDetails(@PathVariable Long adId) {
-		return adService.findAdDetailsByAdId(adId);
-	}
 	
-	// 新增
 	@PostMapping
-	public boolean createAd(@RequestBody AdCreationRequestDTO requestDTO) {
-		return adService.createAd(requestDTO);
+	public boolean createAd(
+	        @RequestBody AdCreationRequestDTO requestDTO, @RequestHeader("authorization") String authorizationHeader) {
+	    
+	    String[] userInfo = JwtUtil.verify(authorizationHeader);
+	    Long userId = Long.parseLong(userInfo[1]);
+	    
+	    return adService.createAd(userId, requestDTO);
+	    
 	}
-	
-	// 刪除
+
 	@Transactional
 	@DeleteMapping
-	public boolean deleteAd(@RequestBody Long adId) {
-		return adService.deleteAdById(adId);
+	public boolean deleteAdById(
+			@RequestBody Long adId, @RequestHeader("authorization") String authorizationHeader) {
+		
+		String[] userInfo = JwtUtil.verify(authorizationHeader);
+		Long userId = Long.parseLong(userInfo[1]);
+		
+		return adService.deleteAdById(userId, adId);
 	}
 	
-	// 修改
+	
+	/**
+	 * 更新未付款的推播服務之種類
+	 * @param request
+	 * @param authorizationHeader
+	 * @return
+	 */
 	@Transactional
 	@PutMapping
-	public AdDetailsResponseDTO update(@RequestBody Map<String, String> request) {
+	public AdDetailsResponseDTO updateAdById(
+			@RequestBody Map<String, String> request, @RequestHeader("authorization") String authorizationHeader) {
+		
+		String[] userInfo = JwtUtil.verify(authorizationHeader);
+		Long userId = Long.parseLong(userInfo[1]);
 		
 		Long adId = Long.parseLong(request.get("adId"));
 		Integer adtypeId = Integer.parseInt(request.get("newAdtypeId"));
 		
-		return adService.updateAdtypeById(adId, adtypeId);
+		return adService.updateAdtypeByAdId(userId, adId, adtypeId);
 	}
-	
-	// 測試用：取得登入的使用者id
-	@GetMapping("/api/userid")
-	public Integer getUserId() {
-		Integer userId = 1;
-		return userId;
-	}
+
 }

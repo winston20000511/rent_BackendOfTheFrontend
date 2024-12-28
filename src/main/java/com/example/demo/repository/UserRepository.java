@@ -1,6 +1,11 @@
 package com.example.demo.repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -12,7 +17,8 @@ import java.util.Optional;
  * 資料訪問層，用於操作 user_table 表
  */
 public interface UserRepository extends JpaRepository<UserTableBean, Long> {
-
+    
+   
     // 根據 email 查詢使用者，登入功能需要用到
     UserTableBean findByEmail(String email);
 
@@ -34,4 +40,15 @@ public interface UserRepository extends JpaRepository<UserTableBean, Long> {
      * @return 會員資料
      */
     Optional<UserTableBean> findById(Long userId);
+
+    
+    @Query("SELECT u.coupon FROM UserTableBean u WHERE u.userId =:userId")
+	public Byte getCouponNumber(Long userId);
+    
+    @Modifying
+    @Query("UPDATE UserTableBean u SET u.coupon = u.coupon - 1 WHERE u.userId = :userId AND u.coupon > 0")
+    public int removeOneCoupon(Long userId);
+    
+    @Query("FROM UserTableBean u WHERE u.createTime BETWEEN :currentDateStart AND :currentDateEnd")
+    public List<UserTableBean> findUsersByCreateTime(LocalDateTime currentDateStart, LocalDateTime currentDateEnd);
 }

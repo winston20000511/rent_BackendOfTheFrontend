@@ -6,6 +6,7 @@ import com.example.demo.dto.UserSimpleInfoDTO;
 import com.example.demo.dto.UserUpdateDTO;
 import com.example.demo.helper.JwtUtil;
 import com.example.demo.model.UserTableBean;
+import com.example.demo.service.RecaptchaService;
 import com.example.demo.service.EmailService;
 import com.example.demo.service.UserService;
 
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * RESTful API 控制層，處理使用者相關的 HTTP 請求
@@ -26,8 +28,14 @@ import java.util.Map;
 @Slf4j
 public class UserController {
 
+	private Logger logger = Logger.getLogger(UserController.class.getName());
+	
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private RecaptchaService recaptchaService;
+
     @Autowired
     private EmailService emailService;
 
@@ -41,9 +49,20 @@ public class UserController {
     public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest) {
         String email = loginRequest.get("email");
         String password = loginRequest.get("password");
+        String recaptchaToken = loginRequest.get("recaptchaToken");
+        
+        // 驗證 reCAPTCHA token
+        boolean isCaptchaValid = recaptchaService.verifyRecaptcha(recaptchaToken);
+        
+        if(!isCaptchaValid) {
+        	return ResponseEntity.status(400).body("reCAPTCHA 驗證失敗");
+        }
 
         try {
+            log.info("loginRequest {}",loginRequest);
+            log.info("email:{}",email);
             UserTableBean user = userService.getUserByEmail(email);
+            log.info("user {}",user);
             if (user != null) {
                 // 驗證密碼是否匹配
                 boolean isPasswordValid = userService.verifyPassword(password, user.getPassword());
@@ -70,11 +89,13 @@ public class UserController {
                     response.put("userId", user.getUserId());
                     response.put("email", user.getEmail());
                     response.put("name", user.getName());
+                    log.info("登入成功");
 
                     return ResponseEntity.ok(response);
                 }
+                log.info("密碼輸入錯誤");
             }
-
+            log.error("登入失敗qq");
             // 密碼錯誤或帳號不存在
             return ResponseEntity.status(401).body("帳號或密碼錯誤");
         } catch (RuntimeException e) {

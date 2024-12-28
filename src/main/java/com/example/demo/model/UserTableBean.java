@@ -1,3 +1,4 @@
+
 package com.example.demo.model;
 
 import java.time.LocalDateTime;
@@ -17,6 +18,8 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+
 @NoArgsConstructor
 @Getter
 @Setter
@@ -44,7 +47,7 @@ public class UserTableBean {
     @Column(name = "picture") // 使用者圖片，以二進制格式儲存
     private byte[] picture;
 
-    @Column(name = "createtime", updatable = false, insertable = false) // 建立時間，資料庫自動生成，程式無需手動插入或更新
+    @Column(name = "createtime") // 建立時間，資料庫自動生成，程式無需手動插入或更新
     private LocalDateTime createTime;
 
     @Column(name = "gender", nullable = false) // 性別必填，0 表示男，1 表示女

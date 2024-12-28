@@ -15,16 +15,16 @@ import com.example.demo.model.CartItemBean;
 public interface CartItemRepository extends JpaRepository<CartItemBean, Long>{
 
 	@Query("From CartItemBean where adId = :adId and cartId = :cartId")
-	public Optional<CartItemBean> findByAdIdAndCartId(Long adId, Integer cartId);
+	Optional<CartItemBean> findByAdIdAndCartId(Long adId, Integer cartId);
 	
 	@Query("From CartItemBean where cartId = :cartId")
-	public List<CartItemBean> findByCartId(Integer cartId);
+	List<CartItemBean> findByCartId(Integer cartId);
 	
-	@Query("select ci.adId from CartItemBean ci join ci.cart c where c.userId = :userId")
-	public Optional<List<Long>> findAdIdsByUserId(Long userId);
+	@Query("Select ci.adId from CartItemBean ci join ci.cart c where c.userId = :userId")
+	Optional<List<Long>> findAdIdsByUserId(Long userId);
 	
 	@Modifying
-	@Query("delete from CartItemBean c where c.adId = :adId")
+	@Query("Delete from CartItemBean c where c.adId = :adId")
 	void deleteByAdId(@Param("adId") Long adId);
 	
 }

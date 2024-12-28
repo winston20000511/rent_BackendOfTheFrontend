@@ -11,6 +11,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.demo.dto.KeyWordDTO;
+import com.example.demo.model.ConditionTableBean;
+import com.example.demo.model.FurnitureTableBean;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
@@ -26,6 +30,7 @@ import com.example.demo.pojo.ResponseMapPOJO;
 import com.example.demo.repository.SearchRepository;
 
 
+@Slf4j
 @Service
 public class SearchService {
 	
@@ -40,21 +45,62 @@ public class SearchService {
 		return searchRepo.findAll();
 	}
 
-	public ResponseMapPOJO findByCityAndTownship(AddressDTO origin){
+	public List<AddressDTO> caseFilter(List<AddressDTO> listAddressDTO , AddressDTO userKey) {
+
+		if (userKey.getMaxPrice() == 0){
+			userKey.setMaxPrice(9999999);
+		}
+
+		List<AddressDTO> newListAddressDTO = new ArrayList<>();
+		for(AddressDTO item : listAddressDTO ){
+
+			item.setMinPrice(item.getPrice());
+			item.setMaxPrice(item.getPrice());
+			item.setPriority(userKey.getPriority());
+			if (userKey.equals(item)){
+				newListAddressDTO.add(item);
+			}
+		};
+		return newListAddressDTO;
+	}
+
+	public ResponseMapPOJO findByCityAndTownship(AddressDTO origin , AddressDTO userKey){
 		String[] Parts = searchHelp.splitCityTown(origin.getAddress());
 		HashSet<AddressDTO> setAddressDTO = searchRepo.findByCityAndTownship(Parts[0]);
 		Integer placeAvgPrice = searchHelp.getPlaceAvgPrice(setAddressDTO);
-		setAddressDTO.add(origin);
+//		setAddressDTO.add(origin);
 		List<AddressDTO> listAddressDTO = new ArrayList<>(setAddressDTO);
+		listAddressDTO = caseFilter(listAddressDTO,userKey);
+		listAddressDTO = caseSort(listAddressDTO,userKey.getPriority(),userKey.getSort());
 		return new ResponseMapPOJO(listAddressDTO,origin,placeAvgPrice);
 	}
 	
 	public List<AddressDTO> findByKeyWord(String name){
-		List<AddressDTO> listAddressDTO = searchRepo.findByKeyWord(name);
-		listAddressDTO.sort(Comparator.comparing(AddressDTO::getPaidDate).reversed());
-		return listAddressDTO;
+		return searchRepo.findByKeyWord(name);
 	}
 
+	public List<AddressDTO> caseSort(List<AddressDTO> listAddressDTO , String keyPriority ,String keySort){
+		if (keyPriority.equals("a") && keySort.equals("desc")){
+			listAddressDTO.sort(Comparator.comparing(AddressDTO::getPaidDate).reversed());
+		}
+		if (keyPriority.equals("a") && keySort.equals("asc")){
+			listAddressDTO.sort(Comparator.comparing(AddressDTO::getPaidDate));
+		}
+		if (keyPriority.equals("p") && keySort.equals("desc")){
+			listAddressDTO.sort(Comparator.comparing(AddressDTO::getPrice).reversed());
+		}
+		if (keyPriority.equals("p") && keySort.equals("asc")){
+			listAddressDTO.sort(Comparator.comparing(AddressDTO::getPrice));
+		}
+		if (keyPriority.equals("a") && keySort.equals("desc")){
+			listAddressDTO.sort(Comparator.comparing(AddressDTO::getClickCount));
+		}
+		if (keyPriority.equals("a") && keySort.equals("asc")){
+			listAddressDTO.sort(Comparator.comparing(AddressDTO::getClickCount).reversed());
+		}
+
+		return listAddressDTO;
+	}
 
 	public List<HouseTableBean> houseUpdateAll(List<HouseTableBean> houseList) {
 		return searchRepo.saveAll(houseList);
@@ -172,16 +218,15 @@ public class SearchService {
 		return houseList;
 	}
 	
-	public List<AddressDTO> getDurationAndDistance(List<AddressDTO> addressDtoList , AddressDTO origin) {
-		
-		//String encodedOrigin;
+	public List<AddressDTO> getDurationAndDistance(List<AddressDTO> addressDtoList , AddressDTO origin , int spec) {
+
 		List<AddressDTO> newAddressDtoList = new ArrayList<>();
 		
-		for(int i = 1 ; i < addressDtoList.size() ; i++) {
+		for(int i = 0 ; i < addressDtoList.size() ; i++) {
 			
 			Double distance = searchHelp.getDistance(origin, addressDtoList.get(i));
 			BigDecimal roundedValue = new BigDecimal(distance).setScale(5, RoundingMode.HALF_UP);
-			if (roundedValue.compareTo(BigDecimal.valueOf(2.0))< 0 && origin.getAddress() != addressDtoList.get(i).getAddress()) {
+			if (roundedValue.compareTo(BigDecimal.valueOf(spec))< 0 && origin.getAddress() != addressDtoList.get(i).getAddress()) {
 				newAddressDtoList.add(addressDtoList.get(i));
 			}
 		}
@@ -189,26 +234,50 @@ public class SearchService {
 		return newAddressDtoList;
 
 	}
-	
-	public void getPlaceGoogleAPI(List<DrawLatLngDTO> drawDtoList) {
+
+	public List<AddressDTO> getDrawDistance(List<AddressDTO> addressDtoList , AddressDTO origin , List<DrawLatLngDTO> drawDtoList) {
+
+		List<AddressDTO> newAddressDtoList = new ArrayList<>();
+
+		for(int i = 0 ; i < addressDtoList.size() ; i++) {
+
+			if (searchHelp.isPointInPolygon(addressDtoList.get(i).getLat()
+					,addressDtoList.get(i).getLng(), drawDtoList) &&
+					!origin.getAddress().equals(addressDtoList.get(i).getAddress())){
+				newAddressDtoList.add(addressDtoList.get(i));
+
+			}
+		}
+
+		return newAddressDtoList;
+
+	}
+
+	public ResponseMapPOJO getPlaceGoogleAPI(List<DrawLatLngDTO> drawDtoList) throws JSONException, IOException {
 		
 		String address="";
-		try {
-			DrawLatLngDTO drawDTO = searchHelp.getAvgLatLng(drawDtoList);
-			JSONObject json =  searchHelp.fetchReverseGeocodingFromAPI(drawDTO);
-			Optional<String> optionAddress = searchHelp.parseAddress(json);
-			if (optionAddress.isPresent()) {
-				address = optionAddress.get();
-			}
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		AddressDTO origin = new AddressDTO();
+
+		DrawLatLngDTO drawDTO = searchHelp.getAvgLatLng(drawDtoList);
+		JSONObject json =  searchHelp.fetchReverseGeocodingFromAPI(drawDTO);
+		Optional<String> optionAddress = searchHelp.parseAddress(json);
+		if (optionAddress.isPresent()) {
+			address = optionAddress.get();
+
 		}
-		
+		origin.setAddress(address);
+		origin.setLat(drawDTO.getLat());
+		origin.setLng(drawDTO.getLng());
+
+		String[] Parts = searchHelp.splitCityTown(address);
+		HashSet<AddressDTO> setAddressDTO = searchRepo.findByCityAndTownship(Parts[0]);
+		Integer placeAvgPrice = searchHelp.getPlaceAvgPrice(setAddressDTO);
+
+		origin.setPrice(placeAvgPrice);
+		setAddressDTO.add(origin);
+		List<AddressDTO> listAddressDTO = new ArrayList<>(setAddressDTO);
+		return new ResponseMapPOJO(listAddressDTO,origin,placeAvgPrice);
+
 	}
 	
 	

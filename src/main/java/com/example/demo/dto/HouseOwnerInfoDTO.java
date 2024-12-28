@@ -4,17 +4,19 @@ import lombok.Data;
 
 @Data
 public class HouseOwnerInfoDTO {
+	private Long userId;
     private String name;
+    private byte[] picture; // 原始字节数组
     private String phone;
-    private String base64Picture;
 
-    public HouseOwnerInfoDTO(String name, String phone, String base64Picture) {
-        this.name = name;
+    public HouseOwnerInfoDTO(Long userId,String name, byte[] picture, String phone) {
+        this.userId =userId;
+    	this.name = name;
+        this.picture = picture;
         this.phone = phone;
-        this.base64Picture = base64Picture;
     }
 
-	public HouseOwnerInfoDTO() {
-		// TODO Auto-generated constructor stub
-	}
+    public HouseOwnerInfoDTO() {
+   
+    }
 }

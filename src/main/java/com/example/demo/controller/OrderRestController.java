@@ -2,105 +2,88 @@ package com.example.demo.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.OrderConfirmationResponseDTO;
+import com.example.demo.dto.OrderCreationRequestDTO;
 import com.example.demo.dto.OrderResponseDTO;
+import com.example.demo.helper.JwtUtil;
 import com.example.demo.service.OrderService;
-import com.example.demo.service.SerialOrderNoService;
 
 @RestController
 @RequestMapping("/api/orders")
 public class OrderRestController {
 
+	private Logger logger = Logger.getLogger(OrderResponseDTO.class.getName());
+	
 	private OrderService orderService;
-	private SerialOrderNoService serialNoService;
 	
-	@Autowired
-	public OrderRestController(OrderService orderService, SerialOrderNoService serialNoService) {
+	public OrderRestController(OrderService orderService) {
 		this.orderService = orderService;
-		this.serialNoService = serialNoService;
 	}
-	
-//	// get orders by userId and pageNumber 測OK
-//	@GetMapping("/list/{pageNumber}")
-//	public ResponseEntity<?> findOrdersByUserIdAndPageNumber(
-//			@PathVariable("pageNumber") Integer pageNumber){
-//		
-//		// 測試資料
-//		Long userId = 1L;
-//		
-//		if(pageNumber == null) pageNumber = 1;
-//		List<OrderBean> orders = orderService.findOrdersByUserIdAndPageNumber(userId, pageNumber);
-//		
-//		for(OrderBean order : orders) {
-//			System.out.println(order.getMerchantTradNo());
-//		}
-//		return ResponseEntity.ok(orders);
-//		
-//		/*
-//		 * verify => 之後要修改 
-//		 * 1. 新增session驗證, 參數加上 HttpSession session 
-//		 * 2.新增錯誤訊息 
-//		 * 3. ResponseEntity導回登入畫面 
-//		 *
-//		 * String userId = (String)session.getAttribute("userId");
-//		 * if(userId == null) {
-//		 * // 之後製作禁止修改訂單的錯誤訊息頁面 + 前端網頁控管
-//		 * return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("您沒有瀏覽權限");
-//		 * }
-//		*/
-//		
-//		/* 
-//		 * 3. 重新導向 
-//		 * HttpHeaders headers = new HttpHeaders();
-//		 * headers/add("Location", "/users/login"); 登入頁面的路徑
-//		 * new ResponseEntity<>(headers, HttpSession.FOUND);
-//		 * 
-//		 */
-//	}
-	
-	
-	// 要加上 user id
+
+	/**
+	 * 接收使用者端傳來的篩選條件 conditions:
+	 * String page
+	 * String status(all/cancelling/active/cancelled)
+	 * String daterange(all/week/month/year)
+	 * String inputcondition(none/housetitle/merchantTradNo)
+	 * String input
+	 * 
+	 * @param conditions
+	 * @param authorizationHeader
+	 * @return
+	 */
 	@PostMapping("/filter")
-	public Page<OrderResponseDTO> filterOrders(@RequestBody Map<String, String> conditions){
-		//conditions: {page=, status=, dateRange=, inputcondition=, userInput=}
-		return orderService.findOrdersByConditions(conditions);
+	public Page<OrderResponseDTO> filterOrders(
+			@RequestBody Map<String, String> conditions, @RequestHeader("authorization") String authorizationHeader){
+
+		String[] userInfo = JwtUtil.verify(authorizationHeader);
+		Long userId = Long.parseLong(userInfo[1]);
+		
+		return orderService.findOrdersByConditions(userId, conditions);
 	}
 	
-	
-	@GetMapping("/test/generateOrderId")
-	public String generateOrderId() {
-		String orderId = serialNoService.generateSerialNumber(); // 要送到資料庫
-		return orderId;
-	}
-	
-	@PostMapping("/create")
 	@Transactional
-	public OrderResponseDTO createOrder(@RequestBody Map<String, String> param) {
-		Integer cartId = Integer.parseInt(param.get("cartId"));
-		String paymentMethod = param.get("paymentMethod");
-		return orderService.createOrder(cartId, paymentMethod);
+	@PostMapping("/create")
+	public OrderResponseDTO createOrder(
+			@RequestBody OrderCreationRequestDTO requestDTO, @RequestHeader("authorization") String authorizationHeader) {
+		
+		String[] userInfo = JwtUtil.verify(authorizationHeader);
+		Long userId = Long.parseLong(userInfo[1]);
+		
+		OrderResponseDTO newOrder = orderService.createOrder(userId, requestDTO);
+		
+		return newOrder;
 	}
 	
 	@PostMapping("/merchantTradNo")
-	public OrderResponseDTO findOrderByMerchantTradNo(@RequestBody String merchantTradNo) {
-		return orderService.findOrdersByMerchantTradNo(merchantTradNo);
+	public OrderResponseDTO findOrderByMerchantTradNo(
+			@RequestBody String merchantTradNo, @RequestHeader("authorization") String authorizationHeader) {
+		
+		String[] userInfo = JwtUtil.verify(authorizationHeader);
+		Long userId = Long.parseLong(userInfo[1]);
+		
+		return orderService.findOrdersByMerchantTradNo(userId, merchantTradNo);
 	}
 	
 	@PutMapping("/merchantTradNo")
-	public boolean cancelOrderByMerchantTradNo(@RequestBody String merchantTradNo) {
-		boolean result = orderService.cancelOrderByMerchantTradNo(merchantTradNo);
-		return result;
+	public boolean cancelOrderByMerchantTradNo(
+			@RequestBody String merchantTradNo, @RequestHeader("authorization") String authorizationHeader) {
+		
+		String[] userInfo = JwtUtil.verify(authorizationHeader);
+		Long userId = Long.parseLong(userInfo[1]);
+		
+		return orderService.cancelOrderByMerchantTradNo(userId, merchantTradNo);
 	}
 	
 	/**
@@ -110,9 +93,7 @@ public class OrderRestController {
 	 */
 	@PostMapping("/content/confirmation")
 	public List<OrderConfirmationResponseDTO> confirmOrderContent(@RequestBody Integer cartId) {
-		System.out.println("confirm page cart id: " + cartId);
 		return orderService.getOrderConfirmationResponseDTOsByCartId(cartId);
 	}
-	
 	
 }

@@ -1,7 +1,8 @@
 package com.example.demo.dto;
 
-import java.time.LocalDateTime;
+import lombok.ToString;
 
+@ToString
 public class OrderSearchRequestDTO {
 
 	// 搜尋條件
@@ -79,10 +80,4 @@ public class OrderSearchRequestDTO {
 		this.houseTitle = houseTitle;
 	}
 
-	@Override
-	public String toString() {
-		return "OrderSearchRequestDTO [orderStatus=" + orderStatus + ", merchantTradNo=" + merchantTradNo + ", startDate="
-				+ startDate + ", endDate=" + endDate + ", houseTitle=" + houseTitle + "]";
-	}
-	
 }
