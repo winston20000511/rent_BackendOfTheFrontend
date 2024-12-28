@@ -23,7 +23,7 @@ public class OrderResponseDTO {
 	
 	// 詳細內容用
 	private List<Long> adIds;
-	private List<Integer> coupons; // 有coupon的ad
+	private List<Long> coupons; // 有coupon的ad
  	private List<String> adtypes;
  	private List<Integer> adtypesPrices;
  	private List<Integer> prices;

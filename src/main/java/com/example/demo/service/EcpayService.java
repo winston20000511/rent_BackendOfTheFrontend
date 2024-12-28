@@ -62,6 +62,8 @@ public class EcpayService {
 	 */
 	public boolean verifyEcpayCheckValue(String returnValue) {
 		
+		logger.info("verifyEcpayCheckValue 中的 return value: " + returnValue);
+		
 		try {
 			
 			String hashKey = ecpayApiConfig.getHashKey(); 
@@ -73,7 +75,6 @@ public class EcpayService {
 			// 正式生產環境中，需要自己生成驗證碼並送給綠界，再和綠界回傳的驗證碼進行核對
 			// String returnedCheckMacValue = (String) queryStringToJson.get("CheckMacValue");
 			
-			// 與資料庫資料比對
 			OrderBean order = orderRepository.findByMerchantTradNo(merchantTradNo);
 			
 			order.setReturnValue(returnValue);

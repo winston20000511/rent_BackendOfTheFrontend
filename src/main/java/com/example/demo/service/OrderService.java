@@ -98,16 +98,16 @@ public class OrderService {
 			return null;
 		}
 		
-		OrderResponseDTO dto = new OrderResponseDTO();
+		OrderResponseDTO responseDTO = new OrderResponseDTO();
 
-		dto.setMerchantTradNo(merchantTradNo);
+		responseDTO.setMerchantTradNo(merchantTradNo);
 		List<AdBean> ads = order.getAds(); // 物件內容（複數）
 		List<String> houseTitles = new ArrayList<>(); // 廣告種類（複數）
 		List<String> adtypes = new ArrayList<>();
 		List<Integer> prices = new ArrayList<>();
 		List<Long> adIds = new ArrayList<>();
 		List<Integer> adtypesPrices = new ArrayList<>();
-		List<Integer> coupons = new ArrayList<>();
+		List<Long> coupons = new ArrayList<>();
 		
 		for (AdBean ad : ads) {
 			houseTitles.add(ad.getHouse().getTitle());
@@ -116,23 +116,23 @@ public class OrderService {
 			prices.add(ad.getAdPrice());
 			adIds.add(ad.getAdId());
 			if(ad.getIsCouponUsed() == 1) {
-				coupons.add(ad.getAdId().intValue());
+				coupons.add(ad.getAdId());
 			}
 		}
 
-		dto.setCoupons(coupons);
-		dto.setHouseTitles(houseTitles);
-		dto.setAdtypes(adtypes);
-		dto.setPrices(prices);
-		dto.setAdIds(adIds);
-		dto.setAdtypesPrices(adtypesPrices);
+		responseDTO.setCoupons(coupons);
+		responseDTO.setHouseTitles(houseTitles);
+		responseDTO.setAdtypes(adtypes);
+		responseDTO.setPrices(prices);
+		responseDTO.setAdIds(adIds);
+		responseDTO.setAdtypesPrices(adtypesPrices);
 
-		dto.setTotalAmount(order.getTotalAmount());
-		dto.setMerchantTradDate(order.getMerchantTradDate());
-		dto.setOrderStatus(order.getOrderStatus());
-		dto.setChoosePayment(order.getChoosePayment());
+		responseDTO.setTotalAmount(order.getTotalAmount());
+		responseDTO.setMerchantTradDate(order.getMerchantTradDate());
+		responseDTO.setOrderStatus(order.getOrderStatus());
+		responseDTO.setChoosePayment(order.getChoosePayment());
 		
-		return dto;
+		return responseDTO;
 	}
 
 	/**
@@ -300,14 +300,21 @@ public class OrderService {
 			List<Long> houseIds = new ArrayList<>();
 			List<String> adtypes = new ArrayList<>();
 			List<String> houseTitles = new ArrayList<>();
+			List<Long> coupons = new ArrayList<>(); // 紀錄有使用 coupon 的 ad id
+			
 			for (AdBean ad : ads) {
 				adIds.add(ad.getAdId());
 				adtypes.add(ad.getAdtype().getAdName());
 				houseIds.add(ad.getHouse().getHouseId());
 				houseTitles.add(ad.getHouse().getTitle());
+				if(ad.getIsCouponUsed()==1) {
+					logger.info("有使用優惠券的ad: " + ad.getAdId());
+					coupons.add(ad.getAdId());
+				}
 			}
 
 			responseDTO.setAdIds(adIds);
+			responseDTO.setCoupons(coupons);
 			responseDTO.setAdtypes(adtypes);
 			responseDTO.setHouseIds(houseIds);
 			responseDTO.setHouseTitles(houseTitles);

@@ -49,8 +49,10 @@ public class OrderRestController {
 
 		String[] userInfo = JwtUtil.verify(authorizationHeader);
 		Long userId = Long.parseLong(userInfo[1]);
-		
-		return orderService.findOrdersByConditions(userId, conditions);
+	
+		Page<OrderResponseDTO> orders = orderService.findOrdersByConditions(userId, conditions);
+		logger.info("取得的訂單資料" + orders.getContent());
+		return orders;
 	}
 	
 	@Transactional
