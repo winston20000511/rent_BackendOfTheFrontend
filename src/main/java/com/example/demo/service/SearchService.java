@@ -40,6 +40,7 @@ public class SearchService {
 	
 	@Autowired
 	private SearchHelper searchHelp;
+
 	
 	public List<HouseTableBean> findAll() {
 		return searchRepo.findAll();
@@ -53,7 +54,7 @@ public class SearchService {
 
 		List<AddressDTO> newListAddressDTO = new ArrayList<>();
 		for(AddressDTO item : listAddressDTO ){
-
+			log.info(item.getPrice().toString());
 			item.setMinPrice(item.getPrice());
 			item.setMaxPrice(item.getPrice());
 			item.setPriority(userKey.getPriority());
@@ -67,9 +68,12 @@ public class SearchService {
 	public ResponseMapPOJO findByCityAndTownship(AddressDTO origin , AddressDTO userKey){
 		String[] Parts = searchHelp.splitCityTown(origin.getAddress());
 		HashSet<AddressDTO> setAddressDTO = searchRepo.findByCityAndTownship(Parts[0]);
-		origin = searchRepo.findByCityAndTownshipSingle(origin.getAddress());
+//		if (searchHelp.containsByAddress(setAddressDTO,origin)){
+//			setAddressDTO.add(origin);
+//		}
+//		origin.setPrice(searchHelp.getRandomHousePrice(Parts[0]));
 		Integer placeAvgPrice = searchHelp.getPlaceAvgPrice(setAddressDTO);
-		setAddressDTO.add(origin);
+
 		List<AddressDTO> listAddressDTO = new ArrayList<>(setAddressDTO);
 		listAddressDTO = caseFilter(listAddressDTO,userKey);
 		listAddressDTO = caseSort(listAddressDTO,userKey.getPriority(),userKey.getSort());
@@ -227,7 +231,7 @@ public class SearchService {
 			
 			Double distance = searchHelp.getDistance(origin, addressDtoList.get(i));
 			BigDecimal roundedValue = new BigDecimal(distance).setScale(5, RoundingMode.HALF_UP);
-			if (roundedValue.compareTo(BigDecimal.valueOf(spec))< 0 && origin.getAddress() != addressDtoList.get(i).getAddress()) {
+			if (roundedValue.compareTo(BigDecimal.valueOf(spec))< 0) {
 				newAddressDtoList.add(addressDtoList.get(i));
 			}
 		}
@@ -243,8 +247,7 @@ public class SearchService {
 		for(int i = 0 ; i < addressDtoList.size() ; i++) {
 
 			if (searchHelp.isPointInPolygon(addressDtoList.get(i).getLat()
-					,addressDtoList.get(i).getLng(), drawDtoList) &&
-					!origin.getAddress().equals(addressDtoList.get(i).getAddress())){
+					,addressDtoList.get(i).getLng(), drawDtoList)){
 				newAddressDtoList.add(addressDtoList.get(i));
 
 			}

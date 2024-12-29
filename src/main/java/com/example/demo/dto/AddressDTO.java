@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 
 @NoArgsConstructor
@@ -124,4 +125,8 @@ public class AddressDTO {
 		return result;
 	}
 
+	public boolean isSameAddress(AddressDTO other){
+		if(other == null) return false;
+		return Objects.equals(this.address,other.address);
+	}
 }
