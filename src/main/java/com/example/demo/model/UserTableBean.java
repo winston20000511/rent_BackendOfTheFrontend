@@ -6,15 +6,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -44,6 +36,7 @@ public class UserTableBean {
     @Column(name = "phone", length = 20) // 手機號碼，非必填，長度限制 20 字
     private String phone;
 
+    @Lob
     @Column(name = "picture") // 使用者圖片，以二進制格式儲存
     private byte[] picture;
 

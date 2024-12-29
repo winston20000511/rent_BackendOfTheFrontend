@@ -67,8 +67,9 @@ public class SearchService {
 	public ResponseMapPOJO findByCityAndTownship(AddressDTO origin , AddressDTO userKey){
 		String[] Parts = searchHelp.splitCityTown(origin.getAddress());
 		HashSet<AddressDTO> setAddressDTO = searchRepo.findByCityAndTownship(Parts[0]);
+		origin = searchRepo.findByCityAndTownshipSingle(origin.getAddress());
 		Integer placeAvgPrice = searchHelp.getPlaceAvgPrice(setAddressDTO);
-//		setAddressDTO.add(origin);
+		setAddressDTO.add(origin);
 		List<AddressDTO> listAddressDTO = new ArrayList<>(setAddressDTO);
 		listAddressDTO = caseFilter(listAddressDTO,userKey);
 		listAddressDTO = caseSort(listAddressDTO,userKey.getPriority(),userKey.getSort());
@@ -105,19 +106,19 @@ public class SearchService {
 	public List<HouseTableBean> houseUpdateAll(List<HouseTableBean> houseList) {
 		return searchRepo.saveAll(houseList);
 	}
-	
+
 	public List<HouseTableBean> updateFakeAddress(String filePath,List<HouseTableBean> houseList){
-		
+
 		List<String> lists = searchHelp.openfileRead(filePath);
-		
+
 		for (int i = 0; i < houseList.size(); i++) {
-			
+
 			houseList.get(i).setAddress(lists.get(i));
 		}
-		
+
 		return houseList;
 	}
-	
+
 	public double[] placeToLagLngForRegister(String registerAddress) {
 		double[] location = new double[2];
 		
@@ -279,6 +280,8 @@ public class SearchService {
 		return new ResponseMapPOJO(listAddressDTO,origin,placeAvgPrice);
 
 	}
-	
-	
+
+	public List<AddressDTO> getAdsMarker(){
+		return searchRepo.findByCityAndTownshipAds(true);
+	}
 }

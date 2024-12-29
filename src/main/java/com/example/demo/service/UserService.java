@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import java.util.Base64;
 
 import java.time.LocalDateTime;
 import java.util.Base64;
@@ -285,6 +286,7 @@ public class UserService {
         return userSimpleInfoDTO;
     }
 
+
     @Transactional
     public UserCenterDTO updateUserProfile(String token, UserUpdateDTO updateRequest) {
         // 驗證 JWT 並解析 Email
@@ -330,7 +332,7 @@ public class UserService {
         }
         // 更新照片
         if (updateRequest.getPicture() != null) {
-            user.setPicture(updateRequest.getPicture());
+            user.setPicture(imageBytes);
         }
 
         // 保存更新後的用戶資料

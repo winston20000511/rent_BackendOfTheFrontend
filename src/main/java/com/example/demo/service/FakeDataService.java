@@ -215,11 +215,11 @@ public class FakeDataService {
     }
 
     public void messageFakeData(){
-        for (int i = 0; i < 7046; i++) {
+        for (int i = 1133; i < 7046; i++) {
             MessageBean message = new MessageBean();
-            UserTableBean user = getRandomUser(7046);
-
-            message.setSenderId((long)52);
+            //UserTableBean user = getRandomUser(7046);
+            UserTableBean user = getUser(i);
+            message.setSenderId((long)3);
             message.setReceiverId(user.getUserId());
             message.setMessage(String.join("" ,
                     "歡迎光臨 ",user.getName()," 來到我們網站,有送3張折價卷到你的帳戶"));
@@ -230,7 +230,7 @@ public class FakeDataService {
     }
 
     public void houseFakeData() throws InterruptedException {
-        for (int i = 0; i < 7046; i++) {
+        for (int i = 1; i < 7046; i++) {
             HouseTableBean house = new HouseTableBean();
             UserTableBean user = getRandomUser(7046);
             List<String> lists = openfileRead("C:\\Users\\User\\Desktop\\Rent_index\\address.csv");
@@ -261,9 +261,9 @@ public class FakeDataService {
     public void imageFakeData() throws IOException {
 
         UserTableBean user = getRandomUser(7046);
-        for(int i = 0 ; i < 7046; i++) {
+        for(int i = 148 ; i < 7046; i++) {
 
-            HouseTableBean house = getRandomHouse(7046);
+            HouseTableBean house = getHouse(i);
 
             if ( i % 3 == 0){
                 user = getRandomUser(7046);
@@ -375,6 +375,14 @@ public class FakeDataService {
         int randomValue = random.nextInt(max);
         HouseTableBean house = new HouseTableBean();
         Optional<HouseTableBean> op = houseRepo.findById((long)randomValue);
+        if (op.isPresent()){
+            house = op.get();
+        }
+        return house;
+    }
+    private HouseTableBean getHouse(int id){
+        HouseTableBean house = new HouseTableBean();
+        Optional<HouseTableBean> op = houseRepo.findById((long)id);
         if (op.isPresent()){
             house = op.get();
         }
