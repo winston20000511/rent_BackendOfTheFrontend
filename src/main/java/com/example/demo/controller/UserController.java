@@ -16,11 +16,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
+
 
 /**
  * RESTful API 控制層，處理使用者相關的 HTTP 請求
@@ -42,6 +44,9 @@ public class UserController {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     /**
      * 登入邏輯，檢查會員是否已停權
      *
@@ -56,7 +61,8 @@ public class UserController {
         
         // 驗證 reCAPTCHA token
         boolean isCaptchaValid = recaptchaService.verifyRecaptcha(recaptchaToken);
-        
+
+
         if(!isCaptchaValid) {
         	return ResponseEntity.status(400).body("reCAPTCHA 驗證失敗");
         }
@@ -69,6 +75,7 @@ public class UserController {
             if (user != null) {
                 // 驗證密碼是否匹配
                 boolean isPasswordValid = userService.verifyPassword(password, user.getPassword());
+
                 if (isPasswordValid) {
                     // 檢查帳號狀態
                     if (user.getStatus() == 6) {
