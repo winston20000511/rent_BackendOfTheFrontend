@@ -111,15 +111,23 @@ public class UserController {
      * @return 註冊結果
      */
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody UserRegisterDTO userRegisterDTO) {
+    public ResponseEntity<Map<String, Object>> registerUser(@RequestBody UserRegisterDTO userRegisterDTO) {
         log.info("收到註冊請求：{}", userRegisterDTO);
         String result = userService.registerUser(userRegisterDTO);
+
+        // 構建響應對象
+        Map<String, Object> response = new HashMap<>();
         if ("註冊成功".equals(result)) {
-            return ResponseEntity.ok(result);
+            response.put("status", "success");
+            response.put("message", result);
+            return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.badRequest().body(result);
+            response.put("status", "error");
+            response.put("message", result);
+            return ResponseEntity.badRequest().body(response);
         }
     }
+
 
     /**
      * 獲取會員中心資料
