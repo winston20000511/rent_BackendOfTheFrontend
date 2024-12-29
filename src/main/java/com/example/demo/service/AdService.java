@@ -188,6 +188,7 @@ public class AdService {
 			AdDetailsResponseDTO responseDTO = new AdDetailsResponseDTO();
 			responseDTO.setAdId(ad.getAdId());
 			responseDTO.setUserId(ad.getUserId());
+			responseDTO.setHouseId(ad.getHouseId());
 			responseDTO.setHouseTitle(ad.getHouse().getTitle());
 			responseDTO.setAdName(ad.getAdtype().getAdName());
 			responseDTO.setAdPrice(ad.getAdPrice());

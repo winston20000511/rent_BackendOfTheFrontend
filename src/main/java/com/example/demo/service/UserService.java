@@ -78,8 +78,8 @@ public class UserService {
         UserTableBean user = new UserTableBean();
         user.setName(userRegisterDTO.getName());
         user.setEmail(userRegisterDTO.getEmail());
-        // 將密碼加密後存入資料庫
         user.setPassword(passwordEncoder.encode(userRegisterDTO.getPassword()));
+        user.setPassword(userRegisterDTO.getPassword());
         user.setPhone(userRegisterDTO.getPhone());
         user.setGender(userRegisterDTO.getGender());
         user.setCreateTime(LocalDateTime.now()); // 設置當前時間為創建時間
@@ -149,8 +149,8 @@ public class UserService {
      * @return 是否匹配
      */
     public boolean verifyPassword(String rawPassword, String encodedPassword) {
-        log.info("rawPassword{}", rawPassword);
-        log.info("encodedPassword{}", encodedPassword);
+        log.info("rawPassword{}",rawPassword);
+        log.info("encodedPassword{}",encodedPassword);
         return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 
