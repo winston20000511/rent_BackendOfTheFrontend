@@ -1,20 +1,23 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.*;
-import com.example.demo.helper.JwtUtil;
-import com.example.demo.model.UserTableBean;
-import com.example.demo.repository.UserRepository;
-import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import java.util.Base64;
-
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Optional;
-import java.util.regex.Pattern;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.example.demo.dto.UserCenterDTO;
+import com.example.demo.dto.UserRegisterDTO;
+import com.example.demo.dto.UserSimpleInfoDTO;
+import com.example.demo.dto.UserUpdateDTO;
+import com.example.demo.helper.JwtUtil;
+import com.example.demo.model.UserTableBean;
+import com.example.demo.repository.UserRepository;
+
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 業務邏輯層，負責處理會員相關邏輯
@@ -332,7 +335,7 @@ public class UserService {
         }
         // 更新照片
         if (updateRequest.getPicture() != null) {
-            user.setPicture(imageBytes);
+            user.setPicture(updateRequest.getPicture());
         }
 
         // 保存更新後的用戶資料
@@ -398,6 +401,6 @@ public class UserService {
         }
 
         log.info("Google 登入成功，用戶 ID：{}", user.getUserId());
-        return JwtUtil.sign(user.getEmail(), user.getUserId());
+        return JwtUtil.sign(user.getEmail(), user.getUserId(),user.getName());
     }
 }
