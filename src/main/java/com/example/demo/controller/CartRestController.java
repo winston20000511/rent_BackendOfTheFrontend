@@ -40,7 +40,7 @@ public class CartRestController {
 		List<CartItemResponseDTO> responseDTOs = new ArrayList<>();
 		for(CartItemBean cartItem : cartItems) {
 			CartItemResponseDTO responseDTO = new CartItemResponseDTO();
-			responseDTO.setAdId(userId);
+			responseDTO.setAdId(cartItem.getAdId());
 			responseDTO.setCartId(cartItem.getCartId());
 			responseDTO.setHouseTitle(cartItem.getAd().getHouse().getTitle());
 			responseDTO.setAdName(cartItem.getAdtype().getAdName());
