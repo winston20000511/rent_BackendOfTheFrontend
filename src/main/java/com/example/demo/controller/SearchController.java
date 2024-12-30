@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.example.demo.dto.KeyWordDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.json.JSONException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,7 +35,6 @@ public class SearchController {
 		return houseList;
 	}
 
-	@CrossOrigin(origins="*")
 	@PostMapping("/api/map")
 	public ResponseMapPOJO searchShowMap(@RequestBody AddressDTO key) {
 		AddressDTO origin = searchService.placeConvertToAdress(key.getAddress());
@@ -47,7 +46,6 @@ public class SearchController {
 		return mapPOJO;
 	}
 
-	@CrossOrigin(origins="*")
 	@PostMapping("/api/keyword")
 	public List<AddressDTO> searchShowkeyword(@RequestBody AddressDTO key){
 		List<AddressDTO> addressDtoList = searchService.findByKeyWord(key.getAddress());
@@ -64,7 +62,6 @@ public class SearchController {
 		}
 	}
 
-	@CrossOrigin(origins="*")
 	@PostMapping("/api/draw")
 	public ResponseMapPOJO drawShowMap(@RequestBody List<DrawLatLngDTO> drawDtoList) {
 		ResponseMapPOJO mapPOJO = null;
