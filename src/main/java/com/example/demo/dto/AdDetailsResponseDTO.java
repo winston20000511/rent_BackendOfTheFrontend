@@ -19,19 +19,21 @@ public class AdDetailsResponseDTO {
 	private String houseTitle;
 	private String adName;
 	private Integer adPrice;
+	private Integer isCounponApplied;
 	private String isPaid;
 	private String orderId;
 	private String paidDate;
 	private Long remainingDays;
 
 	public AdDetailsResponseDTO(Long adId, Long userId, Long houseId, String houseTitle, String adName, Integer adPrice,
-			String isPaid, String orderId, String paidDate) {
+			Integer isCounponApplied, String isPaid, String orderId, String paidDate) {
 		this.adId = adId;
 		this.userId = userId;
 		this.houseId = houseId;
 		this.houseTitle = houseTitle;
 		this.adName = adName;
 		this.adPrice = adPrice;
+		this.isCounponApplied = isCounponApplied;
 		this.isPaid = isPaid;
 		this.orderId = orderId;
 		this.paidDate = paidDate;
