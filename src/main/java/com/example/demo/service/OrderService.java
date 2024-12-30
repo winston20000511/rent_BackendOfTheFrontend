@@ -98,41 +98,7 @@ public class OrderService {
 			return null;
 		}
 		
-		OrderResponseDTO responseDTO = new OrderResponseDTO();
-
-		responseDTO.setMerchantTradNo(merchantTradNo);
-		List<AdBean> ads = order.getAds(); // 物件內容（複數）
-		List<String> houseTitles = new ArrayList<>(); // 廣告種類（複數）
-		List<String> adtypes = new ArrayList<>();
-		List<Integer> prices = new ArrayList<>();
-		List<Long> adIds = new ArrayList<>();
-		List<Integer> adtypesPrices = new ArrayList<>();
-		List<Long> coupons = new ArrayList<>();
-		
-		for (AdBean ad : ads) {
-			houseTitles.add(ad.getHouse().getTitle());
-			adtypes.add(ad.getAdtype().getAdName());
-			adtypesPrices.add(ad.getAdtype().getAdPrice());
-			prices.add(ad.getAdPrice());
-			adIds.add(ad.getAdId());
-			if(ad.getIsCouponUsed() == 1) {
-				coupons.add(ad.getAdId());
-			}
-		}
-
-		responseDTO.setCoupons(coupons);
-		responseDTO.setHouseTitles(houseTitles);
-		responseDTO.setAdtypes(adtypes);
-		responseDTO.setPrices(prices);
-		responseDTO.setAdIds(adIds);
-		responseDTO.setAdtypesPrices(adtypesPrices);
-
-		responseDTO.setTotalAmount(order.getTotalAmount());
-		responseDTO.setMerchantTradDate(order.getMerchantTradDate());
-		responseDTO.setOrderStatus(order.getOrderStatus());
-		responseDTO.setChoosePayment(order.getChoosePayment());
-		
-		return responseDTO;
+		return setOrderDetailsResponseDTO(order);
 	}
 
 	/**
@@ -175,24 +141,28 @@ public class OrderService {
 	    
 	    List<AdBean> ads = adRepository.findAllById(adIds);
 
-	    // 更新商品價格並計算總金額
-	    Long totalAmount = 0L;
+	    // 更新商品優惠券紀錄
+	    BigDecimal totalAmount = new BigDecimal("0");
 	    for (AdBean ad : ads) {
 	        boolean isCouponApplied = appliedAdIds.contains(ad.getAdId());
-	        logger.info("訂單的ad: " + ad.getAdId() +" 是否有優惠: " + isCouponApplied);
-	        int discount = isCouponApplied ? calculateDiscount(ad.getAdPrice()) : 0;
-	        logger.info("計算出來的折扣: " + discount);
-	        totalAmount += (ad.getAdPrice() - discount);
+	        logger.info("訂單的ad: " + ad.getAdId() + " 原價: " + ad.getAdPrice() + " 是否有優惠: " + isCouponApplied);
+	        BigDecimal originalAdPrice = new BigDecimal(ad.getAdPrice().toString());
+	        BigDecimal discountedPrice = new BigDecimal("0");
+	        if(isCouponApplied) {
+	        	discountedPrice = originalAdPrice.multiply(new BigDecimal("0.9"));
+	        	totalAmount = totalAmount.add(discountedPrice);
+	        }else {
+	        	totalAmount = totalAmount.add(discountedPrice);        	
+	        }
 	        logger.info("最後的總價格: " + totalAmount);
 
 	        ad.setIsCouponUsed(isCouponApplied ? 1 : 0);
 	        ad.setOrderId(newOrder.getMerchantTradNo());
 
 	        if (isCouponApplied) {
-	            ad.setAdPrice(ad.getAdPrice() - discount);
-	            logger.info("有折價的AD: " + ad.getAdId() + " 折扣: " + discount + " 折價後的金額: " + ad.getAdPrice());
+	            logger.info("再次確認有折價的AD: " + ad.getAdId());
 	            int result = userRepository.removeOneCoupon(userId);
-	    	    if(result > 0) logger.info("成功刪除優惠券");
+	    	    if(result > 0) logger.info("成功刪除" + ad.getUserId() +"的優惠券" + result + "張");
 	    	    else logger.info("沒有刪除優惠券");
 	        }
 
@@ -201,7 +171,9 @@ public class OrderService {
 	    
 	    adRepository.saveAll(ads);
 	    
-	    newOrder.setTotalAmount(totalAmount);
+	    BigDecimal roundedValue = totalAmount.setScale(0, RoundingMode.CEILING);
+	    newOrder.setTotalAmount(roundedValue.longValueExact());
+	    logger.info("無條件進位後的結果: " + roundedValue.longValueExact());
 	    newOrder.setUserId(userId);
 	    Optional<UserTableBean> optional = userRepository.findById(userId);
 	    UserTableBean user = optional.get();
@@ -216,12 +188,6 @@ public class OrderService {
 	    return responseDTO;
 	}
 	
-	private int calculateDiscount(int adPrice) {
-	    BigDecimal discount = new BigDecimal(adPrice * 0.1);
-	    BigDecimal discountInt = discount.setScale(0, RoundingMode.DOWN);  // 無條件捨去
-	    return discountInt.intValue();
-	}
-
 	/**
 	 * 申請取消訂單: 將資料庫中order status設為2
 	 * 
@@ -292,36 +258,7 @@ public class OrderService {
 		List<OrderResponseDTO> responseDTOs = new ArrayList<>();
 
 		for (OrderBean order : orders) {
-			OrderResponseDTO responseDTO = new OrderResponseDTO();
-
-			List<AdBean> ads = order.getAds();
-			List<Long> adIds = new ArrayList<>();
-			List<Long> houseIds = new ArrayList<>();
-			List<String> adtypes = new ArrayList<>();
-			List<String> houseTitles = new ArrayList<>();
-			List<Long> coupons = new ArrayList<>(); // 紀錄有使用 coupon 的 ad id
-			
-			for (AdBean ad : ads) {
-				adIds.add(ad.getAdId());
-				adtypes.add(ad.getAdtype().getAdName());
-				houseIds.add(ad.getHouse().getHouseId());
-				houseTitles.add(ad.getHouse().getTitle());
-				if(ad.getIsCouponUsed()==1) {
-					logger.info("有使用優惠券的ad: " + ad.getAdId());
-					coupons.add(ad.getAdId());
-				}
-			}
-
-			responseDTO.setAdIds(adIds);
-			responseDTO.setCoupons(coupons);
-			responseDTO.setAdtypes(adtypes);
-			responseDTO.setHouseIds(houseIds);
-			responseDTO.setHouseTitles(houseTitles);
-			responseDTO.setMerchantTradDate(order.getMerchantTradDate());
-			responseDTO.setMerchantTradNo(order.getMerchantTradNo());
-			responseDTO.setOrderStatus(order.getOrderStatus());
-			responseDTO.setTotalAmount(order.getTotalAmount());
-
+			OrderResponseDTO responseDTO = setOrderDetailsResponseDTO(order);
 			responseDTOs.add(responseDTO);
 		}
 
@@ -339,26 +276,35 @@ public class OrderService {
 		OrderResponseDTO responseDTO = new OrderResponseDTO();
 
 		List<AdBean> ads = order.getAds();
-		List<Long> adIds = new ArrayList<>();
-		List<String> adtypes = new ArrayList<>();
 		List<String> houseTitles = new ArrayList<>();
+		List<Long> houseIds = new ArrayList<>();
+		List<Long> adIds = new ArrayList<>();
+		List<Long> coupons = new ArrayList<>();
+		List<String> adtypes = new ArrayList<>();
 		List<Integer> adPrices = new ArrayList<>();
+		
 		for (AdBean ad : ads) {
-			adIds.add(ad.getAdId());
-			adtypes.add(ad.getAdtype().getAdName());
-			adPrices.add(ad.getAdPrice());
 			houseTitles.add(ad.getHouse().getTitle());
+			houseIds.add(ad.getHouseId());
+			adtypes.add(ad.getAdtype().getAdName());
+			adPrices.add(ad.getAdPrice()); // 抓廣告的原價
+			adIds.add(ad.getAdId());
+			if(ad.getIsCouponUsed() == 1) {
+				coupons.add(ad.getAdId());
+			}
 		}
 
-		responseDTO.setAdIds(adIds);
-		responseDTO.setAdtypes(adtypes);
-		responseDTO.setPrices(adPrices);
-		responseDTO.setHouseTitles(houseTitles);
-		responseDTO.setChoosePayment(order.getChoosePayment());
-		responseDTO.setMerchantTradDate(order.getMerchantTradDate());
 		responseDTO.setMerchantTradNo(order.getMerchantTradNo());
+		responseDTO.setHouseTitles(houseTitles);
+		responseDTO.setHouseIds(houseIds);
+		responseDTO.setMerchantTradDate(order.getMerchantTradDate());
 		responseDTO.setOrderStatus(order.getOrderStatus());
+		responseDTO.setAdIds(adIds);
+		responseDTO.setCoupons(coupons);
+		responseDTO.setAdtypes(adtypes);
+		responseDTO.setAdPrices(adPrices);
 		responseDTO.setTotalAmount(order.getTotalAmount());
+		responseDTO.setChoosePayment(order.getChoosePayment());
 
 		return responseDTO;
 	}

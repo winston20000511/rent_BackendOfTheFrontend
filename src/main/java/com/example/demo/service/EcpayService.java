@@ -124,7 +124,6 @@ public class EcpayService {
 		String dateTimeStr = order.getMerchantTradDate().format(formatter);
 		obj.setMerchantTradeDate(dateTimeStr);
 
-		// 抓cartItem計算出來的價格總計
 		obj.setTotalAmount(order.getTotalAmount().toString());
 
 		// 其他需要的資料設定

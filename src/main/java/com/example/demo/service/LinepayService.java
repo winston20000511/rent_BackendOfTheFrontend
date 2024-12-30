@@ -109,7 +109,14 @@ public class LinepayService {
 			productForm.setId(ad.getAdId().toString());
 			productForm.setName(ad.getAdtype().getAdName());
 			productForm.setQuantity(new BigDecimal("1"));
-			productForm.setPrice(new BigDecimal(ad.getAdPrice()));
+			int isCouponApplied = ad.getIsCouponUsed();
+			BigDecimal originalAdPrice = new BigDecimal(ad.getAdPrice().toString());
+			if(isCouponApplied == 1) {
+				BigDecimal discountedPrice = originalAdPrice.multiply(new BigDecimal("0.9"));
+				productForm.setPrice(new BigDecimal(discountedPrice.intValueExact()));
+			}else {
+				productForm.setPrice(new BigDecimal(ad.getAdPrice()));
+			}
 		}
 
 		productPackageForm.setProducts(Arrays.asList(productForm));
