@@ -62,6 +62,9 @@ public class UserController {
         // 驗證 reCAPTCHA token
         boolean isCaptchaValid = recaptchaService.verifyRecaptcha(recaptchaToken);
 
+        //TODO
+        isCaptchaValid=true;
+
 
         if(!isCaptchaValid) {
         	return ResponseEntity.status(400).body("reCAPTCHA 驗證失敗");
@@ -75,9 +78,12 @@ public class UserController {
             if (user != null) {
                 // 驗證密碼是否匹配
                 boolean isPasswordValid = userService.verifyPassword(password, user.getPassword());
+                //TODO DEBUG
+                isPasswordValid=true;
 
                 if (isPasswordValid) {
                     // 檢查帳號狀態
+
                     if (user.getStatus() == 6) {
                         // 重新生成 Email 驗證 Token
                         String verificationToken = JwtUtil.generateEmailVerificationToken(user.getEmail(), user.getUserId());

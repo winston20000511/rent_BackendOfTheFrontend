@@ -69,7 +69,10 @@ public class SearchController {
 	public ResponseMapPOJO drawShowMap(@RequestBody List<DrawLatLngDTO> drawDtoList) {
 		ResponseMapPOJO mapPOJO = null;
 		try {
+			long startTime = System.currentTimeMillis();
 			mapPOJO = searchService.getPlaceGoogleAPI(drawDtoList);
+			long endTime = System.currentTimeMillis();
+			System.out.println("執行時間：" + (endTime - startTime) + " 毫秒");
 		} catch (JSONException e) {
 			throw new RuntimeException(e);
 		} catch (IOException e) {
@@ -77,6 +80,8 @@ public class SearchController {
 		}
 		long startTime = System.currentTimeMillis();
 		mapPOJO.setSearchList(searchService.getDrawDistance(mapPOJO.getSearchList(), mapPOJO.getSearchOrigin(),drawDtoList));
+		long endTime = System.currentTimeMillis();
+		System.out.println("執行時間：" + (endTime - startTime) + " 毫秒");
 		return mapPOJO;
 	}
 

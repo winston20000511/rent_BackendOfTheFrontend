@@ -54,7 +54,6 @@ public class SearchService {
 
 		List<AddressDTO> newListAddressDTO = new ArrayList<>();
 		for(AddressDTO item : listAddressDTO ){
-			log.info(item.getPrice().toString());
 			item.setMinPrice(item.getPrice());
 			item.setMaxPrice(item.getPrice());
 			item.setPriority(userKey.getPriority());
