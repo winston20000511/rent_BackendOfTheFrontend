@@ -11,11 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
-import com.example.demo.dto.KeyWordDTO;
-import com.example.demo.model.ConditionTableBean;
-import com.example.demo.model.FurnitureTableBean;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -23,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.AddressDTO;
 import com.example.demo.dto.DrawLatLngDTO;
-import com.example.demo.helper.GoogleApiConfig;
 import com.example.demo.helper.SearchHelper;
 import com.example.demo.model.HouseTableBean;
 import com.example.demo.pojo.ResponseMapPOJO;

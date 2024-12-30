@@ -1,7 +1,6 @@
 package com.example.demo.service;
 
 
-import com.example.demo.dto.MessageDTO;
 import com.example.demo.helper.SearchHelper;
 import com.example.demo.model.HouseImageTableBean;
 import com.example.demo.model.HouseTableBean;
@@ -14,10 +13,13 @@ import com.example.demo.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import net.andreinc.mockneat.MockNeat;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.*;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,7 +36,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class FakeDataService {
 
     @Autowired
-    private SearchService searchService;
+    private SearchHelper searchHelp;
 
     @Autowired
     private UserRepository userRepo;
@@ -234,7 +236,7 @@ public class FakeDataService {
             HouseTableBean house = new HouseTableBean();
             UserTableBean user = getRandomUser(7046);
             List<String> lists = openfileRead("C:\\Users\\User\\Desktop\\Rent_index\\address.csv");
-            double[] latlng = searchService.placeToLagLngForRegister(lists.get(i));
+            double[] latlng = placeToLagLngForRegister(lists.get(i));
 
             house.setUser(user);
             house.setTitle(getRandomHouseTitle());
@@ -261,7 +263,7 @@ public class FakeDataService {
     public void imageFakeData() throws IOException {
 
         UserTableBean user = getRandomUser(7046);
-        for(int i = 148 ; i < 7046; i++) {
+        for(int i = 801 ; i < 7046; i++) {
 
             HouseTableBean house = getHouse(i);
 
@@ -270,7 +272,7 @@ public class FakeDataService {
             }
 
             int type = 1+random.nextInt(8);
-            for(int j = 1 ; j < 6 ; j++ ){
+            for(int j = 1 ; j < 3 ; j++ ){
                 HouseImageTableBean houseImage = new HouseImageTableBean();
                 houseImage.setHouse(house);
                 houseImage.setUser(user);
@@ -414,6 +416,29 @@ public class FakeDataService {
         }
 
         return lists;
+    }
+    public double[] placeToLagLngForRegister(String registerAddress) {
+        double[] location = new double[2];
+
+        try {
+            JSONObject json = searchHelp.fetchGeocodeFromAPI(registerAddress);
+            searchHelp.parseLatLng(json).ifPresent(latlng ->{
+                location[0] = latlng[0];
+                location[1] = latlng[1];
+            });
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return location;
+
     }
 
 }
