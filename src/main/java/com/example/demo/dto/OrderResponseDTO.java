@@ -25,8 +25,7 @@ public class OrderResponseDTO {
 	private List<Long> adIds;
 	private List<Long> coupons; // 有coupon的ad
  	private List<String> adtypes;
- 	private List<Integer> adtypesPrices;
- 	private List<Integer> prices;
+ 	private List<Integer> adPrices;
 	private Long totalAmount;
 	private String choosePayment;
 
