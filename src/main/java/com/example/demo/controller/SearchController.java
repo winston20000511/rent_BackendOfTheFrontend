@@ -50,7 +50,7 @@ public class SearchController {
 	public List<AddressDTO> searchShowkeyword(@RequestBody AddressDTO key){
 		List<AddressDTO> addressDtoList = searchService.findByKeyWord(key.getAddress());
 		addressDtoList = searchService.caseSort(addressDtoList,key.getPriority(),key.getSort());
-		addressDtoList = searchService.caseFilter(addressDtoList,key);
+//		addressDtoList = searchService.caseFilter(addressDtoList,key);
 		if (addressDtoList.size() == 0 ) {
 			AddressDTO house = searchService.placeConvertToAdress(key.getAddress());
 			addressDtoList.add(house);

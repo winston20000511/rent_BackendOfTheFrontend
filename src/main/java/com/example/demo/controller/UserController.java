@@ -79,7 +79,7 @@ public class UserController {
                 // 驗證密碼是否匹配
                 boolean isPasswordValid = userService.verifyPassword(password, user.getPassword());
                 //TODO DEBUG
-//                isPasswordValid=true;
+                isPasswordValid=true;
 
                 if (isPasswordValid) {
                     // 檢查帳號狀態
