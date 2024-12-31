@@ -181,7 +181,6 @@ public class SearchService {
 	}
 
 	public List<HouseTableBean> getLatAndLngGoogleAPI(List<HouseTableBean> houseList) {
-
 		houseList.forEach(p->{
 			if (p.getLat() == null) {
 

@@ -285,7 +285,6 @@ public class UserService {
         userSimpleInfoDTO.setPhone(user.getPhone());
         String base64Picture = Base64.getEncoder().encodeToString(user.getPicture());
         userSimpleInfoDTO.setPicture(base64Picture);
-
         return userSimpleInfoDTO;
     }
 

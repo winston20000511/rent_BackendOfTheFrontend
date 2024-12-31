@@ -9,9 +9,12 @@ import org.springframework.data.jpa.domain.Specification;
 
 import com.example.demo.model.AdBean;
 
+
+
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
+
 
 public class AdSpecification {
 
