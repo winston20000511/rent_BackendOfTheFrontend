@@ -119,7 +119,7 @@ public class BookingService {
 			             "<h2 style='text-align: left ;'>您在 <span style='color:red;'>" + 
 			             bookingDetail.getBookingDate() + " " + bookingDetail.getBookingTime() + "</span> 有新的預約</h2>" +
 			             "<span style='text-align: center;'>立即查看： </span>" +
-			             "<span style='text-align: center;'><a href='"+ url +"/homeowner' style='color: blue;'>"+url+"</a></span>" +
+			             "<span style='text-align: center;'><a href='"+ url +"/homeowner' style='color: blue;'>"+url+"/homeowner</a></span>" +
 			             "<h3 style='text-align: start;'>給您的留言:</h3>" +
 			             "<div style='border: 1px solid #ccc; padding: 10px; margin-top: 15px;'>" +
 			             "<p style='text-align: start;'>" + formattedMessage + "</p>" +
@@ -191,7 +191,7 @@ public class BookingService {
 		             "<hr style='border-top: 1px solid #ccc;'>" +
 		             "<footer style='text-align: center; font-size: small; color: gray;'><p>© 2024 189租屋網 版權所有</p></footer>" +
 		             "</div>";
-			sendSimpleEmail(b.getHouse().getUser().getEmail(), "《通知》預約已"+text, sendMailMSG);
+			sendSimpleEmail(bookingDetail.getUserEmail(), "《通知》預約已"+text, sendMailMSG);
 			
 			// 發站內訊息
 			String sendChatRoomMSG = "預約時間: "+bookingDetail.getBookingDate()+" "+bookingDetail.getBookingTime()+"，此次預約已"+text+"!。敬請留意。";
@@ -227,7 +227,7 @@ public class BookingService {
 		             "<hr style='border-top: 1px solid #ccc;'>" +
 		             "<footer style='text-align: center; font-size: small; color: gray;'><p>如有任何問題，請聯絡客服：rent189.customer.service@gmail.com</p><p>© 2024 189租屋網 版權所有</p></footer>" +
 		             "</div>";
-			sendSimpleEmail(b.getHouse().getUser().getEmail(), "《通知》預約已取消", sendMailMSG);
+			sendSimpleEmail(bookingDetail.getHouseOwnerEmail(), "《通知》預約已取消", sendMailMSG);
 			
 			// 發站內訊息
 			String sendChatRoomMSG = "預約時間: "+bookingDetail.getBookingDate()+" "+bookingDetail.getBookingTime()+"，此次預約已取消!。敬請留意。";
