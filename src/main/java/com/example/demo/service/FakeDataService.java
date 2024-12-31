@@ -261,7 +261,7 @@ public class FakeDataService {
     public void imageFakeData() throws IOException {
 
         UserTableBean user = getRandomUser(7046);
-        for(int i = 773 ; i < 7046; i++) {
+        for(int i = 148 ; i < 7046; i++) {
 
             HouseTableBean house = getHouse(i);
 
@@ -270,7 +270,7 @@ public class FakeDataService {
             }
 
             int type = 1+random.nextInt(8);
-            for(int j = 1 ; j < 3 ; j++ ){
+            for(int j = 1 ; j < 6 ; j++ ){
                 HouseImageTableBean houseImage = new HouseImageTableBean();
                 houseImage.setHouse(house);
                 houseImage.setUser(user);

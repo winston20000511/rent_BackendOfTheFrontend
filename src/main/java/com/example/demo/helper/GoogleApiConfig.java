@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-//@PropertySource("googleapikey.properties")
 public class GoogleApiConfig {
 	
 	@Value("${googleapikey}")

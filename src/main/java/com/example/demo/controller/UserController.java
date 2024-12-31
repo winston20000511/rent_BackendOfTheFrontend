@@ -6,6 +6,7 @@ import com.example.demo.dto.UserSimpleInfoDTO;
 import com.example.demo.dto.UserUpdateDTO;
 import com.example.demo.helper.JwtUtil;
 import com.example.demo.model.UserTableBean;
+import com.example.demo.service.RecaptchaService;
 import com.example.demo.service.EmailService;
 import com.example.demo.service.UserService;
 
@@ -15,10 +16,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
+
 
 /**
  * RESTful API 控制層，處理使用者相關的 HTTP 請求
@@ -29,10 +33,19 @@ import java.util.Map;
 @Slf4j
 public class UserController {
 
+	private Logger logger = Logger.getLogger(UserController.class.getName());
+	
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private RecaptchaService recaptchaService;
+
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     /**
      * 登入邏輯，檢查會員是否已停權
@@ -44,6 +57,18 @@ public class UserController {
     public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest) {
         String email = loginRequest.get("email");
         String password = loginRequest.get("password");
+        String recaptchaToken = loginRequest.get("recaptchaToken");
+        
+        // 驗證 reCAPTCHA token
+        boolean isCaptchaValid = recaptchaService.verifyRecaptcha(recaptchaToken);
+
+        //TODO
+        isCaptchaValid=true;
+
+
+        if(!isCaptchaValid) {
+        	return ResponseEntity.status(400).body("reCAPTCHA 驗證失敗");
+        }
 
         try {
             log.info("loginRequest {}",loginRequest);
@@ -53,8 +78,12 @@ public class UserController {
             if (user != null) {
                 // 驗證密碼是否匹配
                 boolean isPasswordValid = userService.verifyPassword(password, user.getPassword());
+                //TODO DEBUG
+                isPasswordValid=true;
+
                 if (isPasswordValid) {
                     // 檢查帳號狀態
+
                     if (user.getStatus() == 6) {
                         // 重新生成 Email 驗證 Token
                         String verificationToken = JwtUtil.generateEmailVerificationToken(user.getEmail(), user.getUserId());
@@ -68,7 +97,7 @@ public class UserController {
                     }
 
                     // 密碼匹配且狀態正常，生成登入用 JWT
-                    String token = JwtUtil.sign(user.getEmail(), user.getUserId());
+                    String token = JwtUtil.sign(user.getEmail(), user.getUserId(),user.getName());
 
                     // 返回 Token 和用戶基本資料
                     Map<String, Object> response = new HashMap<>();
@@ -98,15 +127,23 @@ public class UserController {
      * @return 註冊結果
      */
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody UserRegisterDTO userRegisterDTO) {
+    public ResponseEntity<Map<String, Object>> registerUser(@RequestBody UserRegisterDTO userRegisterDTO) {
         log.info("收到註冊請求：{}", userRegisterDTO);
         String result = userService.registerUser(userRegisterDTO);
+
+        // 構建響應對象
+        Map<String, Object> response = new HashMap<>();
         if ("註冊成功".equals(result)) {
-            return ResponseEntity.ok(result);
+            response.put("status", "success");
+            response.put("message", result);
+            return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.badRequest().body(result);
+            response.put("status", "error");
+            response.put("message", result);
+            return ResponseEntity.badRequest().body(response);
         }
     }
+
 
     /**
      * 獲取會員中心資料

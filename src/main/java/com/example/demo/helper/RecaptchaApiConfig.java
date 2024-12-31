@@ -1,16 +1,18 @@
 package com.example.demo.helper;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties(prefix = "google.recaptcha.key")
 public class RecaptchaApiConfig {
 
+	@Value("${reCaptchaSiteKey}")
 	private String site;
 	
+	@Value("${reCaptchaSecretKey}")
 	private String secret;
 
+	@Value("${verifyurl}")
 	private String verifyurl;
 
 	public String getSite() {

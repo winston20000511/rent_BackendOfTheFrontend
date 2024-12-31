@@ -30,12 +30,8 @@ public class EcpayRestController {
 	@PostMapping("/ecpayCheckout")
 	public String ecpayCheckout(
 			@RequestBody String merchantTradNo, @RequestHeader("authorization") String authorizationHeader) {
-		
 		JwtUtil.verify(authorizationHeader);
-		
-		logger.info("訂單號碼: " + merchantTradNo);
-		String form =  ecpayService.ecpayCheckout(merchantTradNo);	
-		return form;
+		return  ecpayService.ecpayCheckout(merchantTradNo);	
 	}
 	
 	/**
@@ -45,19 +41,8 @@ public class EcpayRestController {
 	 */
 	@PostMapping("/verify/checkvalue")
 	public String verify(@RequestBody String response) {
-		
 		logger.info("綠界的回應: " + response);
-		
-		if(response != null) {
-			boolean result = ecpayService.verifyEcpayCheckValue(response);
-			
-			if(result) {
-				logger.info("驗證成功");
-			}else {
-				logger.info("驗證失敗");
-			}
-		}
-		
+		if(response != null) ecpayService.verifyEcpayCheckValue(response);
 		return "1|OK";
 	}
 	

@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.service.FakeDataService;
+//import com.example.demo.service.FakeDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,8 +18,8 @@ public class CommonController {
 	@Autowired
 	private GoogleApiConfig googleApiConfig;
 
-    @Autowired
-    private FakeDataService fakeDataService;
+//    @Autowired
+//    private FakeDataService fakeDataService;
 
 	@GetMapping("/")
 	public String home(Model model) {
@@ -39,11 +39,6 @@ public class CommonController {
 
     @GetMapping("/fake")
     public void fake() {
-        try {
-            fakeDataService.imageFakeData();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         System.out.println("ok");
     }
 

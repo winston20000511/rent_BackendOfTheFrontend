@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.example.demo.dto.KeyWordDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.json.JSONException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,10 +21,10 @@ import com.example.demo.service.SearchService;
 
 @RestController
 public class SearchController {
-	
+
 	@Autowired
 	private SearchService searchService;
-	
+
 	@GetMapping("/api/test")
 	public List<HouseTableBean> testupdate() {
 		List<HouseTableBean> houseList = searchService.findAll();
@@ -34,8 +34,7 @@ public class SearchController {
 
 		return houseList;
 	}
-	
-	@CrossOrigin(origins="*")
+
 	@PostMapping("/api/map")
 	public ResponseMapPOJO searchShowMap(@RequestBody AddressDTO key) {
 		AddressDTO origin = searchService.placeConvertToAdress(key.getAddress());
@@ -47,7 +46,6 @@ public class SearchController {
 		return mapPOJO;
 	}
 
-	@CrossOrigin(origins="*")
 	@PostMapping("/api/keyword")
 	public List<AddressDTO> searchShowkeyword(@RequestBody AddressDTO key){
 		List<AddressDTO> addressDtoList = searchService.findByKeyWord(key.getAddress());
@@ -63,20 +61,24 @@ public class SearchController {
 			return addressDtoList.subList(0, 10);
 		}
 	}
-	
-	@CrossOrigin(origins="*")
+
 	@PostMapping("/api/draw")
 	public ResponseMapPOJO drawShowMap(@RequestBody List<DrawLatLngDTO> drawDtoList) {
-        ResponseMapPOJO mapPOJO = null;
-        try {
-            mapPOJO = searchService.getPlaceGoogleAPI(drawDtoList);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        long startTime = System.currentTimeMillis();
+		ResponseMapPOJO mapPOJO = null;
+		try {
+			long startTime = System.currentTimeMillis();
+			mapPOJO = searchService.getPlaceGoogleAPI(drawDtoList);
+			long endTime = System.currentTimeMillis();
+			System.out.println("執行時間：" + (endTime - startTime) + " 毫秒");
+		} catch (JSONException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		long startTime = System.currentTimeMillis();
 		mapPOJO.setSearchList(searchService.getDrawDistance(mapPOJO.getSearchList(), mapPOJO.getSearchOrigin(),drawDtoList));
+		long endTime = System.currentTimeMillis();
+		System.out.println("執行時間：" + (endTime - startTime) + " 毫秒");
 		return mapPOJO;
 	}
 

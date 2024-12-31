@@ -13,7 +13,6 @@ import org.springframework.data.repository.query.Param;
 import com.example.demo.dto.HouseDetailsDTO;
 import com.example.demo.dto.HouseListByUserIdDTO;
 import com.example.demo.dto.HouseOwnerDetailDTO;
-import com.example.demo.dto.HouseOwnerInfoDTO;
 import com.example.demo.model.HouseImageTableBean;
 import com.example.demo.model.HouseTableBean;
 import com.example.demo.model.UserTableBean;
@@ -41,14 +40,16 @@ public interface HouseRepository extends JpaRepository<HouseTableBean, Long> {
 
 	@Query(value = "SELECT h.house_id, u.email FROM  house_table h JOIN user_table u ON h.user_id = u.user_id WHERE h.user_id = :houseId", nativeQuery = true)
 	HouseOwnerDetailDTO getOwnerDetailByHouseId(Long houseId);
-
-    @Modifying
-    @Transactional
-    @Query("UPDATE HouseTableBean h SET h.clickCount = h.clickCount + 1 WHERE h.houseId = :houseId")
-    int incrementClickCount(@Param("houseId") Long houseId);
 	
-    @Query("SELECT h.clickCount FROM HouseTableBean h WHERE h.houseId = :houseId")
-    Integer findClickCountByHouseId(@Param("houseId") Long houseId);
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE house_table SET clickCount =clickCount + 1 WHERE house_id = :houseId", nativeQuery = true)
+	int incrementClickCount(@Param("houseId") Long houseId);
+	@Query(value = "SELECT house_id, clickCount FROM house_table WHERE house_id IN (:houseIds)", nativeQuery = true)
+	List<Object[]> findClickCountsByHouseIds(@Param("houseIds") List<Long> houseIds);
+	// 獲取當前點擊數
+	@Query(value = "SELECT clickCount FROM house_table WHERE house_id = :houseId", nativeQuery = true)
+	Integer getClickCount(@Param("houseId") Long houseId);
 	/**
 	 * 篩選使用者當前擁有的物件中，無申請或無使用推播服務者
 	 * @param userId
@@ -58,7 +59,7 @@ public interface HouseRepository extends JpaRepository<HouseTableBean, Long> {
 	@Query(value = "SELECT h.house_id AS houseId, h.title AS houseTitle " +
             "FROM house_table h " +
             "LEFT JOIN ads_table a ON a.house_id = h.house_id " +
-            "WHERE h.status = 1 AND " +
+            "WHERE (h.status = 1 OR h.status = 0) AND " +
             "(a.ad_id IS NULL OR " +
             "(a.is_paid = 1 AND a.paid_date IS NOT NULL AND " +
             "DATEADD(DAY, CASE WHEN a.adtype_id = 1 THEN 30 " +
@@ -67,7 +68,7 @@ public interface HouseRepository extends JpaRepository<HouseTableBean, Long> {
     countQuery = "SELECT COUNT(*) " +
                  "FROM house_table h " +
                  "LEFT JOIN ads_table a ON a.house_id = h.house_id " +
-                 "WHERE h.status = 1 AND " +
+                 "WHERE (h.status = 1 OR h.status = 0) AND " +
                  "(a.ad_id IS NULL OR " +
                  "(a.is_paid = 1 AND a.paid_date IS NOT NULL AND " +
                  "DATEADD(DAY, CASE WHEN a.adtype_id = 1 THEN 30 " +

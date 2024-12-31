@@ -16,8 +16,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.dto.HouseDetailsDTO;
@@ -53,6 +54,8 @@ import com.example.demo.service.UserService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @RestController
 @RequestMapping("/api/houses")
 @CrossOrigin(origins = "http://localhost:5173")
@@ -66,9 +69,6 @@ public class HouseController {
 
 	@Autowired
 	private CollectService collectService;
-
-	@Autowired
-	private UserService userService;
 
 	@Autowired
 	private SearchHelper searchHelper;
@@ -399,23 +399,73 @@ public class HouseController {
 			return ResponseEntity.notFound().build();
 		}
 	}
-	@PutMapping("/{houseId}/incrementClick")
-    public ResponseEntity<String> incrementClickCount(@PathVariable Long houseId) {
-        try {
-            houseService.incrementClickCount(houseId);
-            return ResponseEntity.ok("Click count incremented successfully");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to increment click count");
-        }
-    }
 	
-	 @GetMapping("/{houseId}/clickCount")
+	
+	 @PutMapping("/{houseId}/incrementClick")
+	    public ResponseEntity<String> incrementClickCount(@PathVariable Long houseId) {
+	        try {
+	            houseService.incrementClickCount(houseId);
+	            return ResponseEntity.ok("Click count incremented successfully");
+	        } catch (EntityNotFoundException e) {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("House not found");
+	        } catch (Exception e) {
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to increment click count");
+	        }
+	    }
+
+	    // 獲取點擊數
+	    @GetMapping("/{houseId}/clickCount")
 	    public ResponseEntity<Integer> getClickCount(@PathVariable Long houseId) {
 	        try {
 	            Integer clickCount = houseService.getClickCount(houseId);
 	            return ResponseEntity.ok(clickCount);
+	        } catch (EntityNotFoundException e) {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 	        } catch (Exception e) {
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+	        }
+	    }
+	    
+	    @GetMapping("/clickCounts")
+	    public ResponseEntity<Map<Long, Integer>> getClickCounts(@RequestParam List<Long> houseIds) {
+	        try {
+	            Map<Long, Integer> clickCounts = houseService.getClickCounts(houseIds);
+	            return ResponseEntity.ok(clickCounts);
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+	        }
+	    }
+	    
+	    @GetMapping("/{houseId}/map-data")
+	    public ResponseEntity<?> getHouseMapData(@PathVariable Long houseId) {
+	        try {
+	            // 獲取房屋的經緯度
+	            Map<String, Double> location = houseService.getHouseLocation(houseId);
+	            if (location == null) {
+	                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("房屋位置未找到");
+	            }
+
+	            // 使用經緯度向 Google Maps API 發送請求
+	            String apiKey = System.getenv("GOOGLE_MAPS_API_KEY"); // 從環境變量讀取 API 密鑰
+	            String url = String.format(
+	                "https://maps.googleapis.com/maps/api/geocode/json?latlng=%f,%f&key=%s",
+	                location.get("latitude"),
+	                location.get("longitude"),
+	                apiKey
+	            );
+
+	            RestTemplate restTemplate = new RestTemplate();
+	            String googleMapsResponse = restTemplate.getForObject(url, String.class);
+
+	            // 將經緯度和地圖數據一起返回
+	            Map<String, Object> response = new HashMap<>();
+	            response.put("location", location);
+	            response.put("mapData", googleMapsResponse);
+
+	            return ResponseEntity.ok(response);
+	        } catch (Exception e) {
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("無法獲取地圖數據");
 	        }
 	    }
 }

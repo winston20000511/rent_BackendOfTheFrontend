@@ -19,6 +19,7 @@ target/
 *.iml
 *.ipr
 
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -85,5 +86,10 @@ recaptcha.properties
 googleoauth.properties
 src/main/resources/Azure.properties
 *.properties
+
+*.p12
+*.jks
+*.pem
+*.key
 
 

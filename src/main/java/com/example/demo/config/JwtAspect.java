@@ -27,6 +27,8 @@ public class JwtAspect {
         EXCLUDED_URIS.add("/api/user/login");    // 登入頁面
         EXCLUDED_URIS.add("/api/user/register"); // 註冊頁面
         EXCLUDED_URIS.add("/api/user/verifyEmail"); // 註冊認證
+        EXCLUDED_URIS.add("/api/user/google/login"); // 第三方登入
+        EXCLUDED_URIS.add("/api/user/google/callback"); // 第三方登入
         EXCLUDED_URIS.add("/"); // 首頁
         EXCLUDED_URIS.add("/public/api");        // 未來新增的公共頁面
         EXCLUDED_URIS.add("/api/test"); //SearchController
@@ -35,8 +37,12 @@ public class JwtAspect {
         EXCLUDED_URIS.add("/api/draw"); //SearchController
         EXCLUDED_URIS.add("/fake"); //SearchController
         EXCLUDED_URIS.add("/api/keyword"); //SearchController
+        EXCLUDED_URIS.add("/api/ecpay/verify/checkvalue"); //EcpayController
+        EXCLUDED_URIS.add("/api/linepay/request"); //LinepayController
+        EXCLUDED_URIS.add("/api/houses/getPhotos/{houseId}"); //houseController
     }
 
+    
 
     //  除了排除在外的controller，其餘controller都需要進到JWT驗證
     @Pointcut("execution(public * com.example.demo.controller..*(..))")
@@ -77,13 +83,14 @@ public class JwtAspect {
             String[] jwt = JwtUtil.verify(token);
             String userEmail = jwt[0];
             Long userId = Long.parseLong(jwt[1]);
+            String name = jwt[2];
 
             if (userEmail == null) {
                 throw new UnTokenException("無效的 Token，請重新登入。");
             }
             // 檢查 Token 是否需要更新
             if (JwtUtil.isNeedUpdate(token)) {
-                String newToken = JwtUtil.sign(userEmail,userId);
+                String newToken = JwtUtil.sign(userEmail,userId,name);
                 attributes.getResponse().setHeader(JwtUtil.TOKEN, newToken);
             }
         } else {

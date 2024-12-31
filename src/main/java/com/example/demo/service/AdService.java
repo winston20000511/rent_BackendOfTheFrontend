@@ -120,22 +120,6 @@ public class AdService {
 	}
 
 	/**
-	 * 以使用者ID及頁碼取得使用者擁有的所有AD資料
-	 * 
-	 * @param pageNumber
-	 * @return
-	 */
-	// 之後要加 userId
-	public Page<AdDetailsResponseDTO> findAllAds(Integer pageNumber) {
-		Pageable pageable = PageRequest.of(pageNumber - 1, 10, Sort.Direction.DESC, "adId");
-		Page<AdBean> adPages = adRepository.findAll(pageable);
-		List<AdBean> ads = adPages.getContent();
-		List<AdDetailsResponseDTO> responseDTOs = setAdDetailsResponseDTO(ads);
-
-		return new PageImpl<>(responseDTOs, pageable, adPages.getTotalElements());
-	}
-
-	/**
 	 * 取得推播服務詳細內容，並驗證是否為該用戶所有
 	 * 
 	 * @param adId
@@ -163,9 +147,11 @@ public class AdService {
 		
 		Pageable pageable = PageRequest.of(pageNumber - 1, 10, Sort.Direction.DESC, "adId");
 		Page<AdBean> page = adRepository.findAll(spec, pageable);
+		logger.info("find all 找到的資料: " + page.getContent().toString());
 
 		List<AdDetailsResponseDTO> responseDTOs = setAdDetailsResponseDTO(page.getContent());
 
+		logger.info("取到的廣告資料: " + responseDTOs);
 		return new PageImpl<>(responseDTOs, pageable, page.getTotalElements());
 	}
 
@@ -202,6 +188,7 @@ public class AdService {
 			AdDetailsResponseDTO responseDTO = new AdDetailsResponseDTO();
 			responseDTO.setAdId(ad.getAdId());
 			responseDTO.setUserId(ad.getUserId());
+			responseDTO.setHouseId(ad.getHouseId());
 			responseDTO.setHouseTitle(ad.getHouse().getTitle());
 			responseDTO.setAdName(ad.getAdtype().getAdName());
 			responseDTO.setAdPrice(ad.getAdPrice());

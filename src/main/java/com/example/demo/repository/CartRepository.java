@@ -15,12 +15,12 @@ import com.example.demo.model.CartBean;
 public interface CartRepository extends JpaRepository<CartBean, Integer>{
 
 	@Query("From CartBean where userId = :userId")
-	public CartBean findCartByUserId(Long userId);
+	CartBean findCartByUserId(Long userId);
 
 	@Query("From CartBean c where c.createdAt < :threeDaysAgo")
-	public List<CartBean> findCartLeftOverThreeDays(LocalDateTime threeDaysAgo);
+	List<CartBean> findCartLeftOverThreeDays(LocalDateTime threeDaysAgo);
 	
 	@Modifying
 	@Query("Delete from CartBean c where c.cartId = :cartId")
-	public void deleteByCartId(@Param("cartId") Integer cartId);
+	void deleteByCartId(@Param("cartId") Integer cartId);
 }

@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -212,6 +213,7 @@ public class HouseService {
 	public HouseOwnerInfoDTO getOwnerInfoByHouseId(Long houseId) {
 		UserTableBean user = houseRepository.findOwnerByHouseId(houseId);
 	    if (user != null) {
+	    	
 	        return new HouseOwnerInfoDTO(
 	            user.getUserId(),
 	            user.getName(),
@@ -221,14 +223,40 @@ public class HouseService {
 	    }
 	    return null; 
 	}
-//	COUNT function
-	  public void incrementClickCount(Long HouseId) {
-	        int updatedRows = houseRepository.incrementClickCount(HouseId);
-	        if (updatedRows == 0) {
-	            throw new EntityNotFoundException("House not found with ID: " + HouseId);
+	 @Transactional
+	    public void incrementClickCount(Long houseId) {
+	        int rowsUpdated = houseRepository.incrementClickCount(houseId);
+	        if (rowsUpdated == 0) {
+	            throw new EntityNotFoundException("House not found with ID: " + houseId);
 	        }
 	    }
+
+	    // 獲取當前點擊數
 	    public Integer getClickCount(Long houseId) {
-	        return houseRepository.findClickCountByHouseId(houseId);
+	        Integer clickCount = houseRepository.getClickCount(houseId);
+	        if (clickCount == null) {
+	            throw new EntityNotFoundException("House not found with ID: " + houseId);
+	        }
+	        return clickCount;
+	    }
+	    public Map<Long, Integer> getClickCounts(List<Long> houseIds) {
+	        List<Object[]> results = houseRepository.findClickCountsByHouseIds(houseIds);
+
+	        // 將結果轉換為 Map<Long, Integer>
+	        return results.stream()
+	            .collect(Collectors.toMap(
+	                row -> (Long) row[0],    // houseId
+	                row -> (Integer) row[1] // clickCount
+	            ));
+	    }
+	    public Map<String, Double> getHouseLocation(Long houseId) {
+	        Optional<HouseTableBean> house = houseRepository.findById(houseId);
+	        if (house.isPresent()) {
+	            Map<String, Double> location = new HashMap<>();
+	            location.put("latitude", house.get().getLat());
+	            location.put("longitude", house.get().getLng());
+	            return location;
+	        }
+	        return null;
 	    }
 }

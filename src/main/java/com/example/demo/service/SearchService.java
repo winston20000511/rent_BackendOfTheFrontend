@@ -11,19 +11,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
-import com.example.demo.dto.KeyWordDTO;
-import com.example.demo.model.ConditionTableBean;
-import com.example.demo.model.FurnitureTableBean;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.AddressDTO;
 import com.example.demo.dto.DrawLatLngDTO;
-import com.example.demo.helper.GoogleApiConfig;
 import com.example.demo.helper.SearchHelper;
 import com.example.demo.model.HouseTableBean;
 import com.example.demo.pojo.ResponseMapPOJO;
@@ -33,15 +28,15 @@ import com.example.demo.repository.SearchRepository;
 @Slf4j
 @Service
 public class SearchService {
-	
+
 
 	@Autowired
 	private SearchRepository searchRepo;
-	
+
 	@Autowired
 	private SearchHelper searchHelp;
 
-	
+
 	public List<HouseTableBean> findAll() {
 		return searchRepo.findAll();
 	}
@@ -54,7 +49,6 @@ public class SearchService {
 
 		List<AddressDTO> newListAddressDTO = new ArrayList<>();
 		for(AddressDTO item : listAddressDTO ){
-			log.info(item.getPrice().toString());
 			item.setMinPrice(item.getPrice());
 			item.setMaxPrice(item.getPrice());
 			item.setPriority(userKey.getPriority());
@@ -79,7 +73,7 @@ public class SearchService {
 		listAddressDTO = caseSort(listAddressDTO,userKey.getPriority(),userKey.getSort());
 		return new ResponseMapPOJO(listAddressDTO,origin,placeAvgPrice);
 	}
-	
+
 	public List<AddressDTO> findByKeyWord(String name){
 		return searchRepo.findByKeyWord(name);
 	}
@@ -125,14 +119,14 @@ public class SearchService {
 
 	public double[] placeToLagLngForRegister(String registerAddress) {
 		double[] location = new double[2];
-		
+
 		try {
 			JSONObject json = searchHelp.fetchGeocodeFromAPI(registerAddress);
 			searchHelp.parseLatLng(json).ifPresent(latlng ->{
 				location[0] = latlng[0];
 				location[1] = latlng[1];
 			});
-			
+
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		} catch (MalformedURLException e) {
@@ -142,13 +136,13 @@ public class SearchService {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		
+
 		return location;
-		
+
 	}
-	
+
 	public AddressDTO placeConvertToAdress(String origin) {
-		
+
 		String address="";
 		AddressDTO addressDTO = new AddressDTO();
 		try {
@@ -166,12 +160,12 @@ public class SearchService {
 				address = address.split("台灣")[1];
 			}
 			addressDTO.setAddress(address);
-			
+
 			searchHelp.parseLatLng(json).ifPresent(latlng ->{
 				addressDTO.setLat(latlng[0]);
 				addressDTO.setLng(latlng[1]);
 			});
-			
+
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		} catch (MalformedURLException e) {
@@ -181,22 +175,22 @@ public class SearchService {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		
+
 		return addressDTO;
-		
+
 	}
-	
+
 	public List<HouseTableBean> getLatAndLngGoogleAPI(List<HouseTableBean> houseList) {
-		
+
 		houseList.forEach(p->{
 			if (p.getLat() == null) {
-				
+
 				try {
 					JSONObject json = searchHelp.fetchGeocodeFromAPI(p.getAddress());
-                    searchHelp.parseLatLng(json).ifPresent(latlng -> {
-                        p.setLat(latlng[0]);
-                        p.setLng(latlng[1]);
-                    });
+					searchHelp.parseLatLng(json).ifPresent(latlng -> {
+						p.setLat(latlng[0]);
+						p.setLng(latlng[1]);
+					});
 					Thread.sleep(100);
 				} catch (UnsupportedEncodingException e) {
 					// TODO Auto-generated catch block
@@ -213,29 +207,29 @@ public class SearchService {
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}	
-				
+				}
+
 			}
 
-			
+
 		});
-		
+
 		return houseList;
 	}
-	
+
 	public List<AddressDTO> getDurationAndDistance(List<AddressDTO> addressDtoList , AddressDTO origin , int spec) {
 
 		List<AddressDTO> newAddressDtoList = new ArrayList<>();
-		
+
 		for(int i = 0 ; i < addressDtoList.size() ; i++) {
-			
+
 			Double distance = searchHelp.getDistance(origin, addressDtoList.get(i));
 			BigDecimal roundedValue = new BigDecimal(distance).setScale(5, RoundingMode.HALF_UP);
 			if (roundedValue.compareTo(BigDecimal.valueOf(spec))< 0) {
 				newAddressDtoList.add(addressDtoList.get(i));
 			}
 		}
-		
+
 		return newAddressDtoList;
 
 	}
@@ -258,7 +252,7 @@ public class SearchService {
 	}
 
 	public ResponseMapPOJO getPlaceGoogleAPI(List<DrawLatLngDTO> drawDtoList) throws JSONException, IOException {
-		
+
 		String address="";
 		AddressDTO origin = new AddressDTO();
 

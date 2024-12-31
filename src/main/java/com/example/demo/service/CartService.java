@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.model.AdBean;
 import com.example.demo.model.CartBean;
@@ -18,7 +19,6 @@ import com.example.demo.repository.CartItemRepository;
 import com.example.demo.repository.CartRepository;
 import com.example.demo.repository.UserRepository;
 
-import jakarta.transaction.Transactional;
 
 @Service
 public class CartService {
@@ -30,11 +30,7 @@ public class CartService {
 	private AdRepository adRepository;
 	private UserRepository userRepository;
 	
-	public CartService() {
-    }
-	
-	@Autowired
-	private CartService(CartRepository cartRepository, CartItemRepository cartItemRepository, 
+	public CartService(CartRepository cartRepository, CartItemRepository cartItemRepository, 
 			AdRepository adRepository, UserRepository userRepository) {
 		this.cartRepository = cartRepository;
 		this.cartItemRepository = cartItemRepository;
@@ -64,7 +60,10 @@ public class CartService {
 		
 		// 判斷該用戶是否有該ad
 		AdBean ad = adRepository.findAdByAdIdAndUserId(adId, userId);
-		if(ad == null) return false;
+		if(ad == null) {
+			logger.info("使用者" + userId + "沒有這個廣告");
+			return false;
+		}
 		
 		// 有該ad的話，判斷該用戶是否已有購物車
 		CartBean cart = cartRepository.findCartByUserId(userId);
@@ -116,18 +115,22 @@ public class CartService {
 		}
 	}
 	
+	@Transactional
 	public boolean deleteCartItem(Long userId, Long adId) {
 		
+		logger.info("刪除中的使用者ID: " + userId);
 		// 查詢該用戶的購物車
 		CartBean cart = cartRepository.findCartByUserId(userId);
-		if (cart == null) return false;
-		logger.info("user id: " + userId + " get cart id: " + cart.getCartId());
+		if (cart == null) {
+			logger.info("沒有購物車");
+			return false;
+		}
 	    
 		// 查詢購物車中的項目
 	    Optional<CartItemBean> optional = cartItemRepository.findByAdIdAndCartId(adId, cart.getCartId());
 		if(optional.isEmpty()) return false;
 		
-	    cartItemRepository.deleteByAdId(adId);
+	    cartItemRepository.deleteCartItemsByAdId(adId);
 		
 		Optional<CartItemBean> deletedCartItem = cartItemRepository.findByAdIdAndCartId(adId, cart.getCartId());
 	    if (deletedCartItem.isEmpty()) return true;
@@ -136,14 +139,32 @@ public class CartService {
 	}
 	
 
+	@Transactional
 	public boolean deleteCartItems(Long userId) {
-		CartBean cart = cartRepository.findCartByUserId(userId);
-		if (cart == null) return false;
 		
-		List<CartItemBean> cartItems = cartItemRepository.findByCartId(cart.getCartId());
-	    if (cartItems.isEmpty()) return false;
+		logger.info("進到刪除userId");
+		CartBean cart = cartRepository.findCartByUserId(userId);
+		
+		if (cart == null) {
+		    logger.info("找不到用戶ID為 " + userId + " 的購物車");
+		    return false;
+		}
+		
+		Integer cartId = cart.getCartId();
+		logger.info("找到購物車ID: " + cartId + "，用戶ID: " + userId);
+		
+		if(cartItemRepository.findByCartId(cartId) == null) {
+			logger.info("購物車ID: " + cart.getCartId() + " 沒有商品");
+			return false;
+		}
 	    
-	    cartItemRepository.deleteAll(cartItems);
+		try {
+		    cartItemRepository.deleteCartItemsByCartId(cartId);
+		    logger.info("linepay 成功刪除購物車");
+		} catch (Exception e) {
+		    logger.severe("刪除購物車商品時出錯: " + e);
+		    throw e;
+		}
 	    
 	    // 驗證
 	    List<CartItemBean> deletedCartItems = cartItemRepository.findByCartId(cart.getCartId());
@@ -152,7 +173,7 @@ public class CartService {
 	    return false;
 	}
 	
-	
+	@Transactional
 	public boolean deleteCartItems(Integer cartId) {
 		Optional<CartBean> optional = cartRepository.findById(cartId);
 		if (optional.isEmpty()) return false;

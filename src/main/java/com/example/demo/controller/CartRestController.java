@@ -1,9 +1,9 @@
 package com.example.demo.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dto.CartItemResponseDTO;
 import com.example.demo.helper.JwtUtil;
 import com.example.demo.model.CartItemBean;
 import com.example.demo.service.CartService;
@@ -28,20 +29,28 @@ public class CartRestController {
 	}
 	
 	@PostMapping("/list")
-	public List<CartItemBean> getCartItems(@RequestHeader("authorization") String authorizationHeader){
+	public List<CartItemResponseDTO> getCartItems(@RequestHeader("authorization") String authorizationHeader){
 		
 		String[] userInfo = JwtUtil.verify(authorizationHeader);
 		Long userId = Long.parseLong(userInfo[1]);
-
-		List<CartItemBean> cartItems = cartService.findCartItemsByUserId(userId);
-		logger.severe("購物車內容: " + cartItems);
-		if(cartItems == null) return null;
 		
+		List<CartItemBean> cartItems = cartService.findCartItemsByUserId(userId);
+		if(cartItems == null) return null;
+
+		List<CartItemResponseDTO> responseDTOs = new ArrayList<>();
 		for(CartItemBean cartItem : cartItems) {
-			logger.severe("購物車編號: " + cartItem.getCartId().toString());
+			CartItemResponseDTO responseDTO = new CartItemResponseDTO();
+			responseDTO.setAdId(cartItem.getAdId());
+			responseDTO.setCartId(cartItem.getCartId());
+			responseDTO.setHouseTitle(cartItem.getAd().getHouse().getTitle());
+			responseDTO.setAdName(cartItem.getAdtype().getAdName());
+			responseDTO.setAdPrice(cartItem.getAdPrice());
+			responseDTO.setAddedDate(cartItem.getAddedDate());
+			
+			responseDTOs.add(responseDTO);
 		}
 		
-		return cartItems;
+		return responseDTOs;
 	}
 	
 	@PostMapping("/add/item")
@@ -54,7 +63,6 @@ public class CartRestController {
 		return cartService.addToCart(userId, adId);
 	}
 	
-	@Transactional
 	@DeleteMapping("/delete/item")
 	public boolean deleteCartItem(
 			@RequestBody Long adId, @RequestHeader("authorization") String authorizationHeader) {
