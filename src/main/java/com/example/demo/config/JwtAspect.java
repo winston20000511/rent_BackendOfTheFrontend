@@ -40,6 +40,7 @@ public class JwtAspect {
         EXCLUDED_URIS.add("/api/ecpay/verify/checkvalue"); //EcpayController
         EXCLUDED_URIS.add("/api/linepay/request"); //LinepayController
         EXCLUDED_URIS.add("/api/houses/getPhotos"); //houseController
+        EXCLUDED_URIS.add("/api/forgot/forgotPassword"); //ForgotPasswordController
     }
 
 

@@ -51,6 +51,9 @@ public class UserTableBean {
 
     @Column(name = "status", nullable = false) // 使用者狀態，1 表示啟用，0 表示停用
     private Byte status;
+    
+    @Column(name = "resetToken") // 密碼重置 token
+    private String resetToken;
 
     // 與 HouseTableBean 的一對多關聯
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
