@@ -42,6 +42,7 @@ public class JwtAspect {
         EXCLUDED_URIS.add("/api/houses/getPhotos/{houseId}"); //houseController
     }
 
+    
 
     //  除了排除在外的controller，其餘controller都需要進到JWT驗證
     @Pointcut("execution(public * com.example.demo.controller..*(..))")
