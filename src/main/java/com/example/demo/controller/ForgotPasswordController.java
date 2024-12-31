@@ -48,13 +48,8 @@ public class ForgotPasswordController {
     // 驗證重設連結的 token
     @PutMapping("/resetPassword")
     public ResponseEntity<String> validateResetToken(@RequestBody Map<String, String> request) {
-    	System.out.println(request.get("token"));
-    	System.out.println(request.get("newPassword"));
     	log.info(request.get("token"));
-    	
-    	
-    	
-    	
+
 //        if (forgotPasswordService.validateToken(token)) {
 //            // 驗證成功，重導向到 Vue 的 ResetPassword 頁面
 //            return ResponseEntity.status(302)
