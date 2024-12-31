@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -45,14 +47,22 @@ public class ForgotPasswordController {
 
     // 驗證重設連結的 token
     @PutMapping("/resetPassword")
-    public ResponseEntity<Void> validateResetToken(@RequestParam("token") String token) {
-        if (forgotPasswordService.validateToken(token)) {
-            // 驗證成功，重導向到 Vue 的 ResetPassword 頁面
-            return ResponseEntity.status(302)
-                    .header("Location", "http://localhost:8080/#/reset-password?token=" + token)
-                    .build();
-        } else {
-            return ResponseEntity.badRequest().build(); // 返回錯誤
-        }
+    public ResponseEntity<String> validateResetToken(@RequestBody Map<String, String> request) {
+    	System.out.println(request.get("token"));
+    	System.out.println(request.get("newPassword"));
+    	log.info(request.get("token"));
+    	
+    	
+    	
+    	
+//        if (forgotPasswordService.validateToken(token)) {
+//            // 驗證成功，重導向到 Vue 的 ResetPassword 頁面
+//            return ResponseEntity.status(302)
+//                    .header("Location", "http://localhost:8080/#/reset-password?token=" + token)
+//                    .build();
+//        } else {
+//            return ResponseEntity.badRequest().build(); // 返回錯誤
+//        }
+    	return ResponseEntity.ok("重設密碼結束");
     }
 }
