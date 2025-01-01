@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - dev-cicd
+  workflow_dispatch: # 手動觸發 CI/CD 流程
 
 jobs:
   deploy:
