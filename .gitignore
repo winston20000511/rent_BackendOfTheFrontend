@@ -93,3 +93,4 @@ src/main/resources/Azure.properties
 *.key
 
 
+Azure.properties

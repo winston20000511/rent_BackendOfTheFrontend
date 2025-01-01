@@ -39,7 +39,7 @@ public class JwtUtil {
             JWTVerifier verifier = JWT.require(Algorithm.HMAC256(TOKEN_SECRET)).build();
             // 驗證token並解碼
             DecodedJWT jwt = verifier.verify(token);
-            String userEmail = jwt.getSubject();
+            String userEmail = jwt.getSubject() ;
             Integer userId = jwt.getClaim("userId").asInt();
             String username = jwt.getClaim("username").asString();
             // 返回主題（用戶名），如果jwt為null則返回null
