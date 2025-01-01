@@ -17,10 +17,12 @@ public class EmailService {
      * 發送密碼重設郵件
      *
      * @param to 收件者郵箱
-     * @param resetLink 密碼重設連結
+     * @param token 密碼重設連結
      * @param userName 使用者名稱
      */
-    public void sendPasswordResetEmail(String to, String resetLink, String userName) {
+    public void sendPasswordResetEmail(String to, String token, String userName) {
+        String baseUrl = "http://localhost:8080/api/user/resetPassword"; // 前端的重設密碼頁面 URL
+        String resetLink = baseUrl + "?token=" + token; // 拼接完整連結
         String subject = "密碼重設通知";
         String text = "親愛的 " + userName + "，\n\n"
                 + "我們收到您重設密碼的請求。\n"
