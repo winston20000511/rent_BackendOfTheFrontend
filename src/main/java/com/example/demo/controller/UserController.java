@@ -1,5 +1,19 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.UserCenterDTO;
+import com.example.demo.dto.UserRegisterDTO;
+import com.example.demo.dto.UserUpdateDTO;
+import com.example.demo.helper.JwtUtil;
+import com.example.demo.model.UserTableBean;
+import com.example.demo.service.RecaptchaService;
+import com.example.demo.service.EmailService;
+import com.example.demo.service.UserService;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -188,15 +202,17 @@ public class UserController {
 		}
 	}
 
-//    @PostMapping("/userPicture")
-//    public ResponseEntity<byte[]> downloadPhotos(@RequestHeader("Authorization") String authorization) {
-//
-//        UserSimpleInfoDTO userSimpleInfo = userService.getUserSimpleInfo(authorization);
-//        byte[] photoByte = userSimpleInfo.getPicture();
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.IMAGE_JPEG);
-//        return new ResponseEntity<byte[]>(HttpStatus.NOT_FOUND);
-//    }
+	// @PostMapping("/userPicture")
+	// public ResponseEntity<byte[]> downloadPhotos(@RequestHeader("Authorization")
+	// String authorization) {
+	//
+	// UserSimpleInfoDTO userSimpleInfo =
+	// userService.getUserSimpleInfo(authorization);
+	// byte[] photoByte = userSimpleInfo.getPicture();
+	// HttpHeaders headers = new HttpHeaders();
+	// headers.setContentType(MediaType.IMAGE_JPEG);
+	// return new ResponseEntity<byte[]>(HttpStatus.NOT_FOUND);
+	// }
 
 	/**
 	 * 更新會員資料的 API
@@ -207,19 +223,18 @@ public class UserController {
 	 */
 	@PutMapping("/update")
 	public ResponseEntity<String> updateProfile(
-	        @RequestHeader("Authorization") String authorization,
-	        @RequestBody UserTableBean updateRequest) {
-	    try {
-	        System.out.println("收到更新請求：" + updateRequest);
-	        userService.updateUserProfile(authorization, updateRequest);
-	        System.out.println("會員資料更新成功，圖片更新成功：" + (updateRequest.getPicture() != null));
-	        return ResponseEntity.ok("會員資料更新成功");
-	    } catch (RuntimeException e) {
-	        System.err.println("會員資料更新失敗：" + e.getMessage());
-	        return ResponseEntity.badRequest().body("會員資料更新失敗：" + e.getMessage());
-	    }
+			@RequestHeader("Authorization") String authorization,
+			@RequestBody UserTableBean updateRequest) {
+		try {
+			System.out.println("收到更新請求：" + updateRequest);
+			userService.updateUserProfile(authorization, updateRequest);
+			System.out.println("會員資料更新成功，圖片更新成功：" + (updateRequest.getPicture() != null));
+			return ResponseEntity.ok("會員資料更新成功");
+		} catch (RuntimeException e) {
+			System.err.println("會員資料更新失敗：" + e.getMessage());
+			return ResponseEntity.badRequest().body("會員資料更新失敗：" + e.getMessage());
+		}
 	}
-
 
 	/**
 	 * 停用帳號（會員自行停權）的 API
@@ -265,12 +280,40 @@ public class UserController {
 		String email = decodedToken[0];
 		String oldPassword = request.get("oldPassword");
 		String newPassword = request.get("newPassword");
-
 		boolean success = userService.updatePassword(email, oldPassword, newPassword);
 		if (success) {
 			return ResponseEntity.ok("Password updated successfully.");
 		} else {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid email or old password.");
+		}
+	}
+
+	/**
+	 * 會員簡歷查詢 API (POST 方法)
+	 *
+	 * @param authorization HTTP 標頭中的 JWT Token
+	 * @return 會員基本資料的 JSON 格式
+	 */
+
+	/**
+	 * 更新會員資料的 API
+	 *
+	 * @param authorization JWT Token 用於驗證身份
+	 * @param updateRequest 更新資料的 JSON 格式
+	 * @return 更新後的會員中心資料
+	 */
+	@PostMapping("/update")
+	public ResponseEntity<String> updateUserProfile(
+			@RequestHeader("Authorization") String authorization,
+			@RequestBody UserUpdateDTO updateRequest) {
+		log.info("收到會員資料更新請求：{}", updateRequest);
+
+		try {
+			userService.updateUserProfile(authorization, updateRequest);
+			return ResponseEntity.ok("會員資料更新成功！");
+		} catch (RuntimeException e) {
+			log.error("會員資料更新失敗，原因：{}", e.getMessage());
+			return ResponseEntity.badRequest().body(e.getMessage());
 		}
 	}
 

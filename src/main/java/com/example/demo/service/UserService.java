@@ -88,6 +88,17 @@ public class UserService {
 			log.warn("電子郵件已被註冊：{}", userRegisterDTO.getEmail());
 			return "電子郵件已被註冊";
 		}
+		// 新增用戶資料，設置 status 為 6
+		UserTableBean user = new UserTableBean();
+		user.setName(userRegisterDTO.getName());
+		user.setEmail(userRegisterDTO.getEmail());
+		// 將密碼加密後存入資料庫
+		user.setPassword(passwordEncoder.encode(userRegisterDTO.getPassword()));
+		log.info(passwordEncoder.encode(userRegisterDTO.getPassword()));
+		user.setPhone(userRegisterDTO.getPhone());
+		user.setGender(userRegisterDTO.getGender());
+		user.setCreateTime(LocalDateTime.now()); // 設置當前時間為創建時間
+		user.setStatus((byte) 6); // 未驗證狀態
 
 		// 檢查手機號碼是否已存在
 		if (userRepository.existsByPhone(userRegisterDTO.getPhone())) {
@@ -106,17 +117,6 @@ public class UserService {
 			log.error("密碼格式不正確：{}", userRegisterDTO.getPassword());
 			return "密碼格式不正確，需至少 8 位且包含英文與數字";
 		}
-
-		// 新增用戶資料，設置 status 為 6
-		UserTableBean user = new UserTableBean();
-		user.setName(userRegisterDTO.getName());
-		user.setEmail(userRegisterDTO.getEmail());
-		user.setPassword(passwordEncoder.encode(userRegisterDTO.getPassword()));
-		user.setPassword(userRegisterDTO.getPassword());
-		user.setPhone(userRegisterDTO.getPhone());
-		user.setGender(userRegisterDTO.getGender());
-		user.setCreateTime(LocalDateTime.now()); // 設置當前時間為創建時間
-		user.setStatus((byte) 6); // 未驗證狀態
 
 		// 儲存資料到資料庫
 		userRepository.save(user);
@@ -149,7 +149,7 @@ public class UserService {
 		userRepository.save(user);
 
 		log.info("Email 驗證成功，Email：{}", email);
-	}
+	};
 
 	/**
 	 * 驗證手機號碼格式
@@ -159,7 +159,7 @@ public class UserService {
 	 */
 	private boolean isValidPhone(String phone) {
 		return phone != null && phone.matches("^\\d{10}$");
-	}
+	};
 
 	/**
 	 * 驗證密碼格式
@@ -170,7 +170,7 @@ public class UserService {
 	private boolean isValidPassword(String password) {
 		String passwordPattern = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$";
 		return password != null && password.matches(passwordPattern);
-	}
+	};
 
 	/**
 	 * 驗證密碼是否匹配
@@ -304,9 +304,11 @@ public class UserService {
 
 			int rowsUpdated = userRepository.updatePictureByEmail(updateRequest.getPicture(), email);
 			System.out.println("圖片更新成功：" + (rowsUpdated > 0));
-		
-	}userRepository.save(user);
-	System.out.println("會員資料更新成功："+user);return user;
+
+		}
+		userRepository.save(user);
+		System.out.println("會員資料更新成功：" + user);
+		return user;
 
 	}
 
@@ -317,41 +319,8 @@ public class UserService {
 	 */
 	@Transactional
 	public void deactivateAccount(String token) {
-		String email = JwtUtil.verify(token)[0];
 		if (email == null) {
 			throw new RuntimeException("無效的 Token");
 		}
-
-		log.info("解析 Token 成功，email: {}", email);
-
-		UserTableBean user = userRepository.findByEmail(email);
-		if (user == null) {
-			throw new RuntimeException("會員資料未找到");
-		}
-
-		if (user.getStatus() == 0) {
-			throw new RuntimeException("帳號已停權，無法重複停用");
-		}
-
-		user.setStatus((byte) 0); // 將狀態設為停權
-		userRepository.save(user);
-		log.info("會員帳號已自行停權，Email：{}", email);
-	}
-
-	/**
-	 * 處理 Google 登入邏輯
-	 *
-	 * @param email Google 提供的用戶 Email
-	 * @return JWT Token
-	 */
-	public String handleGoogleLogin(String email) {
-		UserTableBean user = userRepository.findByEmail(email);
-		if (user == null) {
-			log.warn("Google 登入失敗，Email 未註冊：{}", email);
-			throw new RuntimeException("帳號不存在，請先註冊");
-		}
-
-		log.info("Google 登入成功，用戶 ID：{}", user.getUserId());
-		return JwtUtil.sign(user.getEmail(), user.getUserId(), user.getName());
 	}
 }
