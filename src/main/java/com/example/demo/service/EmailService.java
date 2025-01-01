@@ -21,7 +21,7 @@ public class EmailService {
      * @param userName 使用者名稱
      */
     public void sendPasswordResetEmail(String to, String token, String userName) {
-        String baseUrl = "http://localhost:8080/api/user/resetPassword"; // 前端的重設密碼頁面 URL
+        String baseUrl = "http://localhost:5173/reset-password"; // 前端的重設密碼頁面 URL
         String resetLink = baseUrl + "?token=" + token; // 拼接完整連結
         String subject = "密碼重設通知";
         String text = "親愛的 " + userName + "，\n\n"
