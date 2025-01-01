@@ -4,41 +4,42 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class EmailService {
 
     @Autowired
     private JavaMailSender mailSender;
 
     /**
-     * 發送重設密碼連結
+     * 發送密碼重設郵件
      *
-     * @param to    收件人電子郵件
-     * @param token 重設密碼的唯一標誌 (Token)
+     * @param to 收件者郵箱
+     * @param resetLink 密碼重設連結
+     * @param userName 使用者名稱
      */
-    public void sendResetLink(String to, String token) {
-        // 使用前端頁面提供的固定路徑
-        String baseUrl = "http://localhost:8080/api/user/resetPassword"; // 前端的重設密碼頁面 URL
-        String resetLink = baseUrl + "?token=" + token; // 拼接完整連結
-
-        // 設定信件內容
-        String emailContent = "Rent189會員您好，\n\n"
-                + "我們收到您要求重設密碼的請求。\n\n"
-                + "請點擊以下連結來重設您的密碼：\n"
+    public void sendPasswordResetEmail(String to, String resetLink, String userName) {
+        String subject = "密碼重設通知";
+        String text = "親愛的 " + userName + "，\n\n"
+                + "我們收到您重設密碼的請求。\n"
+                + "請點擊以下連結重設您的密碼（連結將在 30 分鐘內失效）：\n\n"
                 + resetLink + "\n\n"
-                + "如果您未提出此請求，請忽略此郵件。\n\n"
-                + "此連結有效期限為24小時，逾期將無效。\n\n"
-                + "謝謝，祝您順心！\n\n"
-                + "Rent189網站團隊";
+                + "如果您未請求重設密碼，請忽略此郵件。\n\n"
+                + "感謝使用我們的服務！";
 
-        // 建立 SimpleMailMessage
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to); // 設定收件人
-        message.setSubject("Rent189 - 重設密碼"); // 設定信件標題
-        message.setText(emailContent); // 設定信件內容
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(to);
+            message.setSubject(subject);
+            message.setText(text);
+            mailSender.send(message);
 
-        // 發送郵件
-        mailSender.send(message);
+            log.info("密碼重設郵件已發送至：{}", to);
+        } catch (Exception e) {
+            log.error("發送密碼重設郵件失敗：{}", e.getMessage());
+            throw new RuntimeException("無法發送密碼重設郵件，請稍後再試");
+        }
     }
 }

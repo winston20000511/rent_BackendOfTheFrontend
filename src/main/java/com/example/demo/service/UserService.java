@@ -339,7 +339,7 @@ public class UserService {
     }
 
     /**
-     * 停用會員帳號，設置 `status` 為 0
+     * 停用會員帳號，設置 status 為 0
      *
      * @param token JWT Token
      */

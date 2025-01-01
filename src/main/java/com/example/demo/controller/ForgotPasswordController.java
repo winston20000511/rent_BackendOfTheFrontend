@@ -11,6 +11,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/forgot")
@@ -38,14 +40,20 @@ public class ForgotPasswordController {
     }
 
     // 驗證重設連結的 token
-    @PutMapping("/resetPassword")
-    public ResponseEntity<String> validateResetToken(@RequestParam("token") String token) {
+    @PostMapping("/resetPassword")
+    public ResponseEntity<String> validateResetToken(@RequestBody Map<String, String> resetData) {
+        String token = resetData.get("token");
+        String newPassword = resetData.get("newPassword");
+        log.info("resetData {} {}", token, newPassword);
+
         if (forgotPasswordService.validateToken(token)) {
-            return ResponseEntity.ok("Token 驗證成功，請繼續設定新密碼。");
+            if (forgotPasswordService.resetNewPassword(newPassword)){
+                return ResponseEntity.ok("修改成功");
+            }else {
+                return ResponseEntity.badRequest().body("密碼設定失敗：");
+            }
         } else {
-            return ResponseEntity.badRequest().body("Token 無效或已過期。");
+            return ResponseEntity.badRequest().body("token驗證失敗："); // 返回錯誤
         }
     }
 }
-
-
