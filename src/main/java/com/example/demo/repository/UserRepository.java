@@ -11,44 +11,54 @@ import org.springframework.data.repository.query.Param;
 
 import com.example.demo.model.UserTableBean;
 
+import jakarta.transaction.Transactional;
+
 import java.util.Optional;
 
 /**
  * 資料訪問層，用於操作 user_table 表
  */
 public interface UserRepository extends JpaRepository<UserTableBean, Long> {
-    
-   
-    // 根據 email 查詢使用者，登入功能需要用到
-    UserTableBean findByEmail(String email);
 
-    // 根據房屋ID查詢房東資訊（名稱、電話、照片）
-    @Query(value = "SELECT u.name, u.phone, u.picture " +
-                   "FROM user_table u " +
-                   "JOIN house_table h ON u.user_id = h.user_id " +
-                   "WHERE h.house_id = :houseId", nativeQuery = true)
-    Object[] getOwnerByHouseId(@Param("houseId") Long houseId);
+	// 根據 email 查詢使用者，登入功能需要用到
+	UserTableBean findByEmail(String email);
 
-    boolean existsByName(String name);   // 檢查名稱是否已存在
-    boolean existsByEmail(String email); // 檢查電子郵件是否已存在
-    boolean existsByPhone(String phone); // 檢查手機號碼是否已存在
+	// 根據房屋ID查詢房東資訊（名稱、電話、照片）
+	@Query(value = "SELECT u.name, u.phone, u.picture " + "FROM user_table u "
+			+ "JOIN house_table h ON u.user_id = h.user_id " + "WHERE h.house_id = :houseId", nativeQuery = true)
+	Object[] getOwnerByHouseId(@Param("houseId") Long houseId);
 
-    /**
-     * 根據 userId 查找會員資料
-     *
-     * @param userId 使用者 ID
-     * @return 會員資料
-     */
-    Optional<UserTableBean> findById(Long userId);
+	boolean existsByName(String name); // 檢查名稱是否已存在
 
-    
-    @Query("SELECT u.coupon FROM UserTableBean u WHERE u.userId =:userId")
+	boolean existsByEmail(String email); // 檢查電子郵件是否已存在
+
+	boolean existsByPhone(String phone); // 檢查手機號碼是否已存在
+
+	/**
+	 * 根據 userId 查找會員資料
+	 *
+	 * @param userId 使用者 ID
+	 * @return 會員資料
+	 */
+	Optional<UserTableBean> findById(Long userId);
+
+	@Query("SELECT u FROM UserTableBean u WHERE u.email = :email")
+	Optional<UserTableBean> findByEmailForUpdatePassword(@Param("email") String email);
+
+	@Query("SELECT u.coupon FROM UserTableBean u WHERE u.userId =:userId")
 	public Byte getCouponNumber(Long userId);
-    
-    @Modifying
-    @Query("UPDATE UserTableBean u SET u.coupon = u.coupon - 1 WHERE u.userId = :userId AND u.coupon > 0")
-    public int removeOneCoupon(Long userId);
-    
-    @Query("FROM UserTableBean u WHERE u.createTime BETWEEN :currentDateStart AND :currentDateEnd")
-    public List<UserTableBean> findUsersByCreateTime(LocalDateTime currentDateStart, LocalDateTime currentDateEnd);
+
+	@Modifying
+	@Query("UPDATE UserTableBean u SET u.coupon = u.coupon - 1 WHERE u.userId = :userId AND u.coupon > 0")
+	public int removeOneCoupon(Long userId);
+
+	@Query("FROM UserTableBean u WHERE u.createTime BETWEEN :currentDateStart AND :currentDateEnd")
+	public List<UserTableBean> findUsersByCreateTime(LocalDateTime currentDateStart, LocalDateTime currentDateEnd);
+
+
+
+	@Modifying
+	@Transactional
+	@Query("UPDATE UserTableBean u SET u.picture = :picture WHERE u.email = :email")
+	int updatePictureByEmail(byte[] picture, String email);
 }

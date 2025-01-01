@@ -37,7 +37,7 @@ public class UserTableBean {
     private String phone;
 
     @Lob
-    @Column(name = "picture") // 使用者圖片，以二進制格式儲存
+    @Column(name = "picture", columnDefinition="varbinary(MAX)") // 使用者圖片，以二進制格式儲存
     private byte[] picture;
 
     @Column(name = "createtime") // 建立時間，資料庫自動生成，程式無需手動插入或更新
