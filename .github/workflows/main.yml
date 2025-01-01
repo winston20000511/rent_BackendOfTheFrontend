@@ -17,7 +17,8 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v3
       with:
-        java-version: '17' # 根據您的專案版本選擇
+        java-version: '21'
+        distribution: 'temurin' # 指定 Java 發行版為 Temurin
 
     - name: Build with Maven
       run: mvn clean package -DskipTests
