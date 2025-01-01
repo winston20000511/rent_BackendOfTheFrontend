@@ -14,6 +14,7 @@ import java.util.UUID;
 public class ForgotPasswordService {
 
     private final UserRepository userRepository;
+    private final EmailService emailService;;
 
     /**
      * 檢查電子郵件是否存在於資料庫
@@ -50,11 +51,12 @@ public class ForgotPasswordService {
         log.info("生成的密碼重置連結：{}", resetLink);
 
         // 發送重設密碼連結
-      sendResetLink(email, resetLink);
+      sendResetLink(email, resetLink,user.getName());
         log.info("已發送密碼重置信件給 {}, 電子郵件地址為 {}", user.getName(), email);
     }
 
-    private void sendResetLink(String email, String resetLink) {
+    private void sendResetLink(String email, String resetLink, String name) {
+        emailService.sendPasswordResetEmail(email,resetLink,name);
     }
 
     /**
