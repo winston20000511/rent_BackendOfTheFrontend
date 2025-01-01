@@ -1,19 +1,5 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.UserCenterDTO;
-import com.example.demo.dto.UserRegisterDTO;
-import com.example.demo.dto.UserUpdateDTO;
-import com.example.demo.helper.JwtUtil;
-import com.example.demo.model.UserTableBean;
-import com.example.demo.service.RecaptchaService;
-import com.example.demo.service.EmailService;
-import com.example.demo.service.UserService;
-
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -35,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.dto.UserCenterDTO;
 import com.example.demo.dto.UserRegisterDTO;
 import com.example.demo.dto.UserSimpleInfoDTO;
+import com.example.demo.dto.UserUpdateDTO;
 import com.example.demo.helper.JwtUtil;
 import com.example.demo.model.UserTableBean;
 import com.example.demo.service.EmailService;
@@ -138,6 +125,7 @@ public class UserController {
 			return ResponseEntity.status(401).body(e.getMessage());
 		}
 	}
+
 
 	/**
 	 * 使用者註冊 API
@@ -305,7 +293,7 @@ public class UserController {
 	@PostMapping("/update")
 	public ResponseEntity<String> updateUserProfile(
 			@RequestHeader("Authorization") String authorization,
-			@RequestBody UserUpdateDTO updateRequest) {
+			@RequestBody UserTableBean updateRequest) {
 		log.info("收到會員資料更新請求：{}", updateRequest);
 
 		try {

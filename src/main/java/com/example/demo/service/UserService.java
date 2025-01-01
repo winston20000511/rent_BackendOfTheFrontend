@@ -32,6 +32,7 @@ public class UserService {
 	@Autowired
 	private EmailService emailService;
 
+	
 	/**
 	 * 更新用户密码
 	 * 
@@ -319,8 +320,42 @@ public class UserService {
 	 */
 	@Transactional
 	public void deactivateAccount(String token) {
+		String email = JwtUtil.verify(token)[0];
 		if (email == null) {
 			throw new RuntimeException("無效的 Token");
 		}
+
+		log.info("解析 Token 成功，email: {}", email);
+
+		UserTableBean user = userRepository.findByEmail(email);
+		if (user == null) {
+			throw new RuntimeException("會員資料未找到");
+		}
+
+		if (user.getStatus() == 0) {
+			throw new RuntimeException("帳號已停權，無法重複停用");
+		}
+
+		user.setStatus((byte) 0); // 將狀態設為停權
+		userRepository.save(user);
+		log.info("會員帳號已自行停權，Email：{}", email);
 	}
+	/**
+	 * 處理 Google 登入邏輯
+	 *
+	 * @param email Google 提供的用戶 Email
+	 * @return JWT Token
+	 */
+	public String handleGoogleLogin(String email) {
+		UserTableBean user = userRepository.findByEmail(email);
+		if (user == null) {
+			log.warn("Google 登入失敗，Email 未註冊：{}", email);
+			throw new RuntimeException("帳號不存在，請先註冊");
+		}
+
+		log.info("Google 登入成功，用戶 ID：{}", user.getUserId());
+		return JwtUtil.sign(user.getEmail(), user.getUserId(), user.getName());
+	}
+	
+	
 }

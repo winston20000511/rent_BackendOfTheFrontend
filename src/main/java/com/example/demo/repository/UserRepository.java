@@ -55,7 +55,7 @@ public interface UserRepository extends JpaRepository<UserTableBean, Long> {
 	@Query("FROM UserTableBean u WHERE u.createTime BETWEEN :currentDateStart AND :currentDateEnd")
 	public List<UserTableBean> findUsersByCreateTime(LocalDateTime currentDateStart, LocalDateTime currentDateEnd);
 
-
+	UserTableBean findByResetToken(String token);
 
 	@Modifying
 	@Transactional
