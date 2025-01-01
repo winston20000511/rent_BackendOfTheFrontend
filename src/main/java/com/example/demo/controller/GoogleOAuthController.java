@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.TreeCodec;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -55,8 +56,9 @@ public class GoogleOAuthController {
     /**
      * Google OAuth 回調處理
      */
+    @ResponseBody
     @GetMapping("/google/callback")
-    public ResponseEntity<?> googleCallback(@RequestParam String code) throws JsonProcessingException {
+    public void googleCallback(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
         try {
             RestClient restClient=RestClient.create();
 
@@ -98,12 +100,13 @@ public class GoogleOAuthController {
             System.out.println("userEmail:" + userEmail);
             //驗證用戶是否存在
             String jwt = userService.handleGoogleLogin(userEmail);
-            return ResponseEntity.ok(jwt); // 返回 JWT 給前端
+
+            String frontendRedirectUrl = "http://localhost:5173/callback?token=" + jwt;
+            response.sendRedirect(frontendRedirectUrl);
+
         }catch (Exception e) {
             log.error("Google 登入失敗：{}", e.getMessage());
-            return ResponseEntity.status(400).body("Google 登入失敗，請重試");
         }
-
     }
 //        try {
 //            // 用 code 換取 Token
