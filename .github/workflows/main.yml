@@ -1,0 +1,39 @@
+name: Deploy Spring Boot to AWS EC2
+
+on:
+  push:
+    branches:
+      - dev-cicd
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17' # 根據您的專案版本選擇
+
+    - name: Build with Maven
+      run: mvn clean package -DskipTests
+
+    - name: log test
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: "us-east-1" # 修改為您的 AWS 區域
+      run: pwd
+       
+
+    # - name: Deploy to EC2
+    #   env:
+    #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #     AWS_REGION: "us-east-1" # 修改為您的 AWS 區域
+    #   run: |
+    #     scp -i "your-ec2-key.pem" target/*.jar ec2-user@your-ec2-instance:/home/ec2-user/app.jar
+    #     ssh -i "your-ec2-key.pem" ec2-user@your-ec2-instance "java -jar /home/ec2-user/app.jar"
