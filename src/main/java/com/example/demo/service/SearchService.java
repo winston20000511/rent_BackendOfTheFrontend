@@ -261,8 +261,14 @@ public class SearchService {
 		Optional<String> optionAddress = searchHelp.parseAddress(json);
 		if (optionAddress.isPresent()) {
 			address = optionAddress.get();
-
 		}
+		if (address.length()<=2 ) {
+			address = "";
+		}
+		else if (address.indexOf("台灣") > -1 && address.indexOf("台灣大道") == -1) {
+			address = address.split("台灣")[1];
+		}
+
 		origin.setAddress(address);
 		origin.setLat(drawDTO.getLat());
 		origin.setLng(drawDTO.getLng());
@@ -272,10 +278,9 @@ public class SearchService {
 		Integer placeAvgPrice = searchHelp.getPlaceAvgPrice(setAddressDTO);
 
 		origin.setPrice(placeAvgPrice);
-		setAddressDTO.add(origin);
+//		setAddressDTO.add(origin);
 		List<AddressDTO> listAddressDTO = new ArrayList<>(setAddressDTO);
 		return new ResponseMapPOJO(listAddressDTO,origin,placeAvgPrice);
-
 	}
 
 	public List<AddressDTO> getAdsMarker(){
