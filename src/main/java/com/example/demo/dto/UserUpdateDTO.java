@@ -11,5 +11,5 @@ public class UserUpdateDTO {
     private String phone;        // 手機號碼
     private Byte gender;         // 性別（0: 男, 1: 女）
     private String password;     // 密碼
-    private byte[] picture;      // 使用者圖片
+    private String picture;      // 使用者圖片（Base64 格式）
 }

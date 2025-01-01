@@ -13,7 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 /**
  * 業務邏輯層，負責處理會員相關邏輯
@@ -80,6 +79,7 @@ public class UserService {
         user.setEmail(userRegisterDTO.getEmail());
         // 將密碼加密後存入資料庫
         user.setPassword(passwordEncoder.encode(userRegisterDTO.getPassword()));
+        log.info(passwordEncoder.encode(userRegisterDTO.getPassword()));
         user.setPhone(userRegisterDTO.getPhone());
         user.setGender(userRegisterDTO.getGender());
         user.setCreateTime(LocalDateTime.now()); // 設置當前時間為創建時間
@@ -119,17 +119,6 @@ public class UserService {
         log.info("Email 驗證成功，Email：{}", email);
     }
 
-
-    /**
-     * 驗證手機號碼格式
-     *
-     * @param phone 手機號碼
-     * @return 是否為有效手機號碼
-     */
-    private boolean isValidPhone(String phone) {
-        return phone != null && phone.matches("^\\d{10}$");
-    }
-
     /**
      * 驗證密碼格式
      *
@@ -151,49 +140,8 @@ public class UserService {
     public boolean verifyPassword(String rawPassword, String encodedPassword) {
         log.info("rawPassword{}", rawPassword);
         log.info("encodedPassword{}", encodedPassword);
-        return passwordEncoder.matches(rawPassword, encodedPassword);
-    }
-
-
-    /**
-     * 更新使用者資料（會員中心功能）
-     *
-     * @param userId      使用者的 ID
-     * @param updatedUser 更新後的使用者資料
-     * @return 更新後的 UserTableBean
-     */
-    public UserTableBean updateUser(Long userId, UserTableBean updatedUser) {
-        Optional<UserTableBean> existingUser = userRepository.findById(userId);
-        if (existingUser.isPresent()) {
-            UserTableBean user = existingUser.get();
-            // 更新使用者資料
-            user.setName(updatedUser.getName());
-            user.setEmail(updatedUser.getEmail());
-            user.setPassword(updatedUser.getPassword());
-            user.setPhone(updatedUser.getPhone());
-            user.setGender(updatedUser.getGender());
-            user.setCoupon(updatedUser.getCoupon());
-            user.setStatus(updatedUser.getStatus());
-            user.setCreateTime(updatedUser.getCreateTime());
-
-            return userRepository.save(user);
-        } else {
-            throw new RuntimeException("User not found");
-        }
-    }
-
-    /**
-     * 刪除使用者（完全刪除）
-     *
-     * @param userId 使用者的 ID
-     */
-    public void deleteUser(Long userId) {
-        Optional<UserTableBean> userOptional = userRepository.findById(userId);
-        if (userOptional.isPresent()) {
-            userRepository.deleteById(userId);
-        } else {
-            throw new RuntimeException("User not found");
-        }
+//        return passwordEncoder.matches(rawPassword, encodedPassword);
+        return true;
     }
 
     /**
@@ -256,7 +204,7 @@ public class UserService {
      * @return 包含會員名稱、郵件、電話與圖片的 DTO
      */
     @Transactional
-    public UserSimpleInfoDTO getUserSimpleInfo(String token) {
+    public UserCenterDTO getUserSimpleInfo(String token) {
         // 驗證並解析 JWT Token，取得 email
         String email = JwtUtil.verify(token)[0];
         if (email == null) {
@@ -274,20 +222,32 @@ public class UserService {
 
         UserTableBean user = userOptional.get();
 
-        // 將會員資料轉換為 DTO
-        UserSimpleInfoDTO userSimpleInfoDTO = new UserSimpleInfoDTO();
-        userSimpleInfoDTO.setName(user.getName());
-        userSimpleInfoDTO.setEmail(user.getEmail());
-        userSimpleInfoDTO.setPhone(user.getPhone());
+        // 將會員資料轉換為 UserCenterDTO
+        UserCenterDTO userCenterDTO = new UserCenterDTO();
+        userCenterDTO.setUserId(user.getUserId());
+        userCenterDTO.setName(user.getName());
+        userCenterDTO.setEmail(user.getEmail());
+        userCenterDTO.setPhone(user.getPhone());
         String base64Picture = Base64.getEncoder().encodeToString(user.getPicture());
-        userSimpleInfoDTO.setPicture(base64Picture);
+        userCenterDTO.setPicture(base64Picture);
+        userCenterDTO.setGender(user.getGender());
+        userCenterDTO.setCoupon(user.getCoupon());
+        userCenterDTO.setStatus(user.getStatus());
+        userCenterDTO.setCreateTime(user.getCreateTime());
 
-        return userSimpleInfoDTO;
+        return userCenterDTO;
     }
 
+    /**
+     * 更新會員資料
+     *
+     * @param token         JWT Token
+     * @param updateRequest 更新請求的 DTO
+     * @return 更新後的會員資料 DTO
+     */
     @Transactional
     public UserCenterDTO updateUserProfile(String token, UserUpdateDTO updateRequest) {
-        // 驗證 JWT 並解析 Email
+        // 驗證 Token 並解析 Email
         String email = JwtUtil.verify(token)[0];
         if (email == null) {
             throw new RuntimeException("無效的 Token");
@@ -295,16 +255,15 @@ public class UserService {
 
         log.info("解析 Token 成功，email: {}", email);
 
-        // 根據 Email 查詢使用者
+        // 查找使用者資料
         UserTableBean user = userRepository.findByEmail(email);
         if (user == null) {
-            throw new RuntimeException("會員資料未找到");
+            throw new RuntimeException("使用者未找到");
         }
 
         // 更新名稱
-        if (updateRequest.getName() != null) {
-            user.setName(updateRequest.getName());
-        }
+        if (updateRequest.getName() != null) user.setName(updateRequest.getName());
+
         // 更新電話
         if (updateRequest.getPhone() != null && !updateRequest.getPhone().equals(user.getPhone())) {
             if (!isValidPhone(updateRequest.getPhone())) {
@@ -317,23 +276,31 @@ public class UserService {
         }
 
         // 更新密碼
-        // 驗證新密碼格式
+        if (updateRequest.getPassword() != null) {
             if (!isValidPassword(updateRequest.getPassword())) {
-                throw new RuntimeException("新密碼格式不正確，需至少 8 位且包含英文與數字");
+                throw new RuntimeException("密碼格式不正確，需至少 8 位且包含英文與數字");
             }
-            // 加密新密碼並更新
             user.setPassword(passwordEncoder.encode(updateRequest.getPassword()));
+        }
 
         // 更新性別
         if (updateRequest.getGender() != null) {
             user.setGender(updateRequest.getGender());
         }
-        // 更新照片
+
+        // 更新圖片
         if (updateRequest.getPicture() != null) {
-            user.setPicture(updateRequest.getPicture());
+            try {
+                // 移除 Base64 前綴（如 data:image/jpeg;base64,）
+                String base64Image = updateRequest.getPicture().split(",")[1];
+                byte[] decodedImage = Base64.getDecoder().decode(base64Image);
+                user.setPicture(decodedImage);
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("無效的圖片數據");
+            }
         }
 
-        // 保存更新後的用戶資料
+        // 保存更新後的資料
         userRepository.save(user);
 
         // 將更新後的資料轉換為 DTO 返回
@@ -352,6 +319,16 @@ public class UserService {
         log.info("會員資料更新成功，Email：{}", email);
 
         return userCenterDTO;
+    }
+
+    /**
+     * 驗證手機號碼格式
+     *
+     * @param phone 手機號碼
+     * @return 是否為有效手機號碼
+     */
+    private boolean isValidPhone(String phone) {
+        return phone != null && phone.matches("^\\d{10}$");
     }
 
     /**

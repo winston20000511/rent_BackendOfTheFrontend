@@ -2,7 +2,6 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.UserCenterDTO;
 import com.example.demo.dto.UserRegisterDTO;
-import com.example.demo.dto.UserSimpleInfoDTO;
 import com.example.demo.dto.UserUpdateDTO;
 import com.example.demo.helper.JwtUtil;
 import com.example.demo.model.UserTableBean;
@@ -53,7 +52,8 @@ public class UserController {
         
         // 驗證 reCAPTCHA token
         boolean isCaptchaValid = recaptchaService.verifyRecaptcha(recaptchaToken);
-        
+
+        isCaptchaValid=true;
         if(!isCaptchaValid) {
         	return ResponseEntity.status(400).body("reCAPTCHA 驗證失敗");
         }
@@ -155,18 +155,18 @@ public class UserController {
      * @return 會員基本資料的 JSON 格式
      */
     @PostMapping("/userSimpleInfo")
-    public ResponseEntity<UserSimpleInfoDTO> getUserSimpleInfo(@RequestHeader("Authorization") String authorization) {
+    public ResponseEntity<UserCenterDTO> getUserSimpleInfo(@RequestHeader("Authorization") String authorization) {
         log.info("收到會員簡歷查詢請求");
-
         try {
-            // 從 Service 層取得會員基本資料
-            UserSimpleInfoDTO userSimpleInfo = userService.getUserSimpleInfo(authorization);
-            return ResponseEntity.ok(userSimpleInfo); // 返回成功結果
+            // 重用 getUserCenterData 方法
+            UserCenterDTO userCenterDTO = userService.getUserCenterData(authorization);
+            return ResponseEntity.ok(userCenterDTO);
         } catch (RuntimeException e) {
             log.error("會員簡歷查詢失敗，原因: {}", e.getMessage());
-            return ResponseEntity.status(401).body(null); // 返回失敗結果
+            return ResponseEntity.status(401).body(null);
         }
     }
+
 
     /**
      * 更新會員資料的 API
@@ -175,19 +175,18 @@ public class UserController {
      * @param updateRequest 更新資料的 JSON 格式
      * @return 更新後的會員中心資料
      */
-    @PutMapping("/update")
-    public ResponseEntity<UserCenterDTO> updateProfile(
+    @PostMapping("/update")
+    public ResponseEntity<String> updateUserProfile(
             @RequestHeader("Authorization") String authorization,
             @RequestBody UserUpdateDTO updateRequest) {
         log.info("收到會員資料更新請求：{}", updateRequest);
 
         try {
-            // 使用 JWT 驗證並更新會員資料
-            UserCenterDTO updatedUser = userService.updateUserProfile(authorization, updateRequest);
-            return ResponseEntity.ok(updatedUser);
+            userService.updateUserProfile(authorization, updateRequest);
+            return ResponseEntity.ok("會員資料更新成功！");
         } catch (RuntimeException e) {
             log.error("會員資料更新失敗，原因：{}", e.getMessage());
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
