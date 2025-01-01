@@ -1,19 +1,20 @@
 package com.example.demo.config;
 
-import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Around;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
-import jakarta.servlet.http.HttpServletRequest;
-import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.example.demo.helper.JwtUtil;
 import com.example.demo.helper.UnTokenException;
 
-import java.util.*;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 
 @Component // 將此類別交由Spring容器管理
 @Aspect    // 標示這是一個切面類別，用於AOP（面向切面編程）
@@ -39,45 +40,25 @@ public class JwtAspect {
         EXCLUDED_URIS.add("/api/keyword"); //SearchController
         EXCLUDED_URIS.add("/api/ecpay/verify/checkvalue"); //EcpayController
         EXCLUDED_URIS.add("/api/linepay/request"); //LinepayController
-        EXCLUDED_URIS.add("/api/houses/getPhotos/{houseId}"); //houseController
+        EXCLUDED_URIS.add("/api/houses/getPhotos"); //houseController
     }
 
-    
-
-    //  除了排除在外的controller，其餘controller都需要進到JWT驗證
-    @Pointcut("execution(public * com.example.demo.controller..*(..))")
-    public void controllerMethods() {}
-
-    /**
-     * 環繞通知，對 Controller 方法進行攔截並添加 JWT 驗證邏輯
-     * @param joinPoint 方法的執行點
-     * @return 方法執行結果
-     * @throws Throwable 當 JWT 驗證失敗時拋出異常
-     */
     @Around("controllerMethods()")
     public Object doBefore(ProceedingJoinPoint joinPoint) throws Throwable {
         log.info("進入AOP");
-        // 取得 HTTP 請求屬性
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
-        // 從 Header 中取得 Token
-        Enumeration<String> headers = request.getHeaderNames();
-        while (headers.hasMoreElements()) {
-            String headerName = headers.nextElement();
-            String headerValue = request.getHeader(headerName);
-            log.info(headerName + ": " + headerValue);
-        }
-        List<String> x = new ArrayList<>();
-
+        
+        // 取得 Header 中的 Token
         String token = request.getHeader(JwtUtil.TOKEN);
-        // 取得當前請求的 URI
         String requestURI = request.getRequestURI();
-
-        // 如果請求的 URI 在排除列表中，直接放行
-        if (EXCLUDED_URIS.contains(requestURI)) {
+        
+        // 動態路徑白名單判斷
+        if (isExcluded(requestURI)) {
+            log.info("白名單請求，直接放行: " + requestURI);
             return joinPoint.proceed();
         }
-
+        
         // 驗證 Token 是否存在
         if (token != null) {
             String[] jwt = JwtUtil.verify(token);
@@ -90,7 +71,7 @@ public class JwtAspect {
             }
             // 檢查 Token 是否需要更新
             if (JwtUtil.isNeedUpdate(token)) {
-                String newToken = JwtUtil.sign(userEmail,userId,name);
+                String newToken = JwtUtil.sign(userEmail, userId, name);
                 attributes.getResponse().setHeader(JwtUtil.TOKEN, newToken);
             }
         } else {
@@ -102,5 +83,24 @@ public class JwtAspect {
         return joinPoint.proceed();
     }
 
-
+    // 動態路徑白名單判斷方法
+    private boolean isExcluded(String uri) {
+        // 靜態路徑判斷
+        if (EXCLUDED_URIS.contains(uri)) {
+            return true;
+        }
+        
+        // 動態路徑處理: 判斷 /api/houses/getPhotos/{houseId}
+        if (uri.startsWith("/api/houses/getPhotos/")) {
+            try {
+                String houseId = uri.substring("/api/houses/getPhotos/".length());
+                Long.parseLong(houseId); // 驗證 houseId 是否為數字
+                return true;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        }
+        
+        return false; // 非白名單
+    }
 }
