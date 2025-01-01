@@ -87,7 +87,7 @@ public class AdService {
 			ad.setAdtype(adtypeBean);
 			AdBean savedAd = adRepository.save(ad);
 			
-			return setAdDetailResponseDTO(savedAd);
+			return setAdDetailsResponseDTO(savedAd);
 			
 		}).orElse(null);
 
@@ -127,7 +127,7 @@ public class AdService {
 	 */
 	public AdDetailsResponseDTO findAdDetailsByAdId(Long userId, Long adId) {
 		AdDetailsResponseDTO responseDTO = adRepository.findById(adId).filter(ad -> ad.getUserId().equals(userId))
-				.map(this::setAdDetailResponseDTO).orElse(null);
+				.map(this::setAdDetailsResponseDTO).orElse(null);
 
 		return responseDTO;
 	}
@@ -149,7 +149,7 @@ public class AdService {
 		Page<AdBean> page = adRepository.findAll(spec, pageable);
 		logger.info("find all 找到的資料: " + page.getContent().toString());
 
-		List<AdDetailsResponseDTO> responseDTOs = setAdDetailsResponseDTO(page.getContent());
+		List<AdDetailsResponseDTO> responseDTOs = setAdDetailsResponseDTOs(page.getContent());
 
 		logger.info("取到的廣告資料: " + responseDTOs);
 		return new PageImpl<>(responseDTOs, pageable, page.getTotalElements());
@@ -182,43 +182,14 @@ public class AdService {
 	 * @param ads
 	 * @return
 	 */
-	private List<AdDetailsResponseDTO> setAdDetailsResponseDTO(List<AdBean> ads) {
+	private List<AdDetailsResponseDTO> setAdDetailsResponseDTOs(List<AdBean> ads) {
 		List<AdDetailsResponseDTO> responseDTOs = new ArrayList<>();
 		for (AdBean ad : ads) {
-			AdDetailsResponseDTO responseDTO = new AdDetailsResponseDTO();
-			responseDTO.setAdId(ad.getAdId());
-			responseDTO.setUserId(ad.getUserId());
-			responseDTO.setHouseId(ad.getHouseId());
-			responseDTO.setHouseTitle(ad.getHouse().getTitle());
-			responseDTO.setAdName(ad.getAdtype().getAdName());
-			responseDTO.setAdPrice(ad.getAdPrice());
-			responseDTO.setIsPaid(ad.getIsPaid());
-			responseDTO.setOrderId(ad.getOrderId());
-			responseDTO.setPaidDate(ad.getPaidDate());
-
-			LocalDateTime now = LocalDateTime.now();
-			LocalDateTime paidDate = ad.getPaidDate();
-			String adName = ad.getAdtype().getAdName();
-			String numericPart  = adName.replaceAll("\\D+","");
-			
-			int days = 0;
-			if(!numericPart.isEmpty()) {
-				days = Integer.parseInt(numericPart);
-				logger.info("天數: " + days);
-			}else {
-				logger.info("無法解析出數字");
-			}
-			
-			if (ad.getPaidDate() != null) {
-				LocalDateTime expiryDate = paidDate.plusDays(days);
-				Duration duration = Duration.between(now, expiryDate);
-				responseDTO.setRemainingDays(duration.toDays());
-			}
-
+			AdDetailsResponseDTO responseDTO = setAdDetailsResponseDTO(ad);
 			responseDTOs.add(responseDTO);
-			logger.severe("廣告詳細 response: " + responseDTO.toString());
 		}
 
+		logger.severe("廣告詳細 responses: " + responseDTOs.toString());
 		return responseDTOs;
 	}
 
@@ -228,24 +199,22 @@ public class AdService {
 	 * @param ad
 	 * @return
 	 */
-	private AdDetailsResponseDTO setAdDetailResponseDTO(AdBean ad) {
+	private AdDetailsResponseDTO setAdDetailsResponseDTO(AdBean ad) {
 		AdDetailsResponseDTO responseDTO = new AdDetailsResponseDTO();
 		responseDTO.setAdId(ad.getAdId());
 		responseDTO.setUserId(ad.getUserId());
 		responseDTO.setHouseTitle(ad.getHouse().getTitle());
 		responseDTO.setAdName(ad.getAdtype().getAdName());
 		responseDTO.setAdPrice(ad.getAdPrice());
+		responseDTO.setIsCounponApplied(ad.getIsCouponUsed());
 		responseDTO.setIsPaid(ad.getIsPaid());
 		responseDTO.setOrderId(ad.getOrderId());
 		responseDTO.setPaidDate(ad.getPaidDate());
 		
 		// 計算廣到剩餘時間
-		LocalDateTime now = LocalDateTime.now();
-		LocalDateTime paidDate = ad.getPaidDate();
 		if (ad.getPaidDate() != null) {
-			Duration duration = Duration.between(now, paidDate);
-			responseDTO.setRemainingDays(duration.toDays());
-			responseDTO.setRemainingDays(duration.toDays());
+			Long remainingDays = calculateRemainingDays(ad);
+			responseDTO.setRemainingDays(remainingDays);
 		}
 
 		logger.severe("廣告詳細 response: " + responseDTO.toString());
@@ -253,4 +222,24 @@ public class AdService {
 		return responseDTO;
 	}
 
+	private Long calculateRemainingDays(AdBean ad) {
+		
+		LocalDateTime paidDate = ad.getPaidDate();
+		LocalDateTime now = LocalDateTime.now();
+		String adName = ad.getAdtype().getAdName();
+		String numericPart  = adName.replaceAll("\\D+","");
+		
+		int days = 0;
+		if(!numericPart.isEmpty()) {
+			days = Integer.parseInt(numericPart);
+			logger.info("天數: " + days);
+		}else {
+			logger.info("無法解析出數字");
+		}
+		
+		LocalDateTime expiryDate = paidDate.plusDays(days);
+		Duration duration = Duration.between(now, expiryDate);
+		
+		return duration.toDays();
+	}
 }
