@@ -47,7 +47,7 @@ public class ForgotPasswordController {
         log.info("resetData {} {}", token, newPassword);
 
         if (forgotPasswordService.validateToken(token)) {
-            if (forgotPasswordService.resetNewPassword(newPassword)){
+            if (forgotPasswordService.resetNewPassword(token,newPassword)){
                 return ResponseEntity.ok("修改成功");
             }else {
                 return ResponseEntity.badRequest().body("密碼設定失敗：");

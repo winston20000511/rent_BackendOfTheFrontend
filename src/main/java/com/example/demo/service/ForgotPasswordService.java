@@ -4,6 +4,8 @@ import com.example.demo.model.UserTableBean;
 import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -15,6 +17,7 @@ public class ForgotPasswordService {
 
     private final UserRepository userRepository;
     private final EmailService emailService;;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * 檢查電子郵件是否存在於資料庫
@@ -89,8 +92,12 @@ public class ForgotPasswordService {
         return UUID.randomUUID().toString();
     }
 
-    public boolean resetNewPassword(String password) {
-
+    public boolean resetNewPassword(String token, String newPassword) {
+        UserTableBean byResetToken = userRepository.findByResetToken(token);
+        String encode = passwordEncoder.encode(newPassword);
+        byResetToken.setPassword(encode);
+        userRepository.save(byResetToken);
+        log.info("使用者{}密碼變動成功",byResetToken.getName());
         return true;
     }
 }
