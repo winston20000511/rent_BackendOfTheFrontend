@@ -38,6 +38,7 @@ public class GoogleOAuthController {
     @ResponseBody
     @GetMapping("/google/login")
     public Map<String, String> googleLogin() {
+    	
         String authUrl = "https://accounts.google.com/o/oauth2/v2/auth?" +
                 "client_id=" + googleConfig.getClientId() +
                 "&response_type=code" +
@@ -47,6 +48,7 @@ public class GoogleOAuthController {
 
         Map<String,String> response = new HashMap<>();
         response.put("authUrl", authUrl);
+        
         return response;
     }
 
@@ -57,6 +59,9 @@ public class GoogleOAuthController {
     @GetMapping("/google/callback")
     public void googleCallback(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
         try {
+        	
+        	System.out.println("收到google callback: " + response);
+        	
             RestClient restClient=RestClient.create();
 
             // 用backend 做一般form送出的request

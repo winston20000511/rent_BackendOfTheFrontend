@@ -7,7 +7,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SerialOrderNoUtil {
 	
 	public static String PREFIX = "EE189"; 
-	@SuppressWarnings("unused")
 	private static String currentDateStr; // 紀錄當前時間
 	
 	/**

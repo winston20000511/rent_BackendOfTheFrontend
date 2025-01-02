@@ -28,7 +28,7 @@ public class SerialOrderNoService {
     public SerialOrderNoService(OrderRepository orderRepository) {
     	this.serialNoUtil = new SerialOrderNoUtil();
     	this.orderRepository = orderRepository;
-//		loadLatestCounterFromDatabase(); // load拆字邏輯有問題，要修
+//		loadLatestCounterFromDatabase();
     	scheduler.initialize();
 //    	scheduleMidnightReset();
     	resetCounter();

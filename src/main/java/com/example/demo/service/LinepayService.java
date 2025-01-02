@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -103,9 +104,10 @@ public class LinepayService {
 		productPackageForm.setAmount(new BigDecimal(order.getTotalAmount().toString()));
 
 		// 有時間改用stream寫寫看
-		ProductForm productForm = new ProductForm();
+		List<ProductForm> productForms = new ArrayList<>();
 		List<AdBean> ads = order.getAds();
 		for (AdBean ad : ads) {
+			ProductForm productForm = new ProductForm();
 			productForm.setId(ad.getAdId().toString());
 			productForm.setName(ad.getAdtype().getAdName());
 			productForm.setQuantity(new BigDecimal("1"));
@@ -114,12 +116,18 @@ public class LinepayService {
 			if(isCouponApplied == 1) {
 				BigDecimal discountedPrice = originalAdPrice.multiply(new BigDecimal("0.9"));
 				productForm.setPrice(new BigDecimal(discountedPrice.intValueExact()));
+				productForms.add(productForm);
+				logger.info("有折價的AD 價格: " + productForm.getPrice() + "discounted price: " + discountedPrice);
 			}else {
 				productForm.setPrice(new BigDecimal(ad.getAdPrice()));
+				productForms.add(productForm);
+				logger.info("有折價的AD 價格: " + productForm.getPrice() + "原價 price: " + ad.getAdPrice());
 			}
+			
+			logger.info("productForms: " + productForms.toString());
 		}
 
-		productPackageForm.setProducts(Arrays.asList(productForm));
+		productPackageForm.setProducts(productForms);
 		form.setPackages(Arrays.asList(productPackageForm));
 
 		RedirectUrls redirectUrls = new RedirectUrls();

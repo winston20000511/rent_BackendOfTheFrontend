@@ -152,9 +152,8 @@ public class OrderService {
 	        	discountedPrice = originalAdPrice.multiply(new BigDecimal("0.9"));
 	        	totalAmount = totalAmount.add(discountedPrice);
 	        }else {
-	        	totalAmount = totalAmount.add(discountedPrice);        	
+	        	totalAmount = totalAmount.add(originalAdPrice);        	
 	        }
-	        logger.info("最後的總價格: " + totalAmount);
 
 	        ad.setIsCouponUsed(isCouponApplied ? 1 : 0);
 	        ad.setOrderId(newOrder.getMerchantTradNo());
@@ -169,6 +168,7 @@ public class OrderService {
 	        newOrder.setItemName(ad.getAdtype().getAdName());
 	    }
 	    
+	    logger.info("最後的總價格: " + totalAmount);
 	    adRepository.saveAll(ads);
 	    
 	    BigDecimal roundedValue = totalAmount.setScale(0, RoundingMode.CEILING);
