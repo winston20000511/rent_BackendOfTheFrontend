@@ -1,0 +1,171 @@
+name: Deploy to EC2
+# on是用來指定哪些會觸發CICD的
+
+on:
+# 當有內容push至main時觸發
+  push:
+    branches:
+      - main
+# 當有內容合併至 main時觸發
+#  pull_request:
+#     branches:
+#       - main
+#     types:
+#       - merged  # 當 PR 被合併時觸發
+
+# 加了  workflow_dispatch:才可以手動觸發CICD
+  workflow_dispatch:
+
+# 實際CICD執行的不同job
+
+jobs:
+  # SET_UP是JOB的名稱，下面的DEPLOY同理
+  SET_UP:
+  # runs-on 指定這個ci cd 要運行在什麼樣的環境
+    runs-on: ubuntu-latest
+    # 這個SET_UP job實際執行的steps
+
+    steps:
+    - name: log before checkout
+      run: |
+        echo "當前目錄 $(pwd)"
+        echo "checkout之前的檔案 $(ls)"
+        cd ..
+        echo "當前目錄 $(pwd)"
+        echo "checkout之前的檔案 $(ls)"
+    # 讓 GitHub Actions 執行工作流程時可以訪問並操作儲存庫中的代碼。
+    - name: Checkout Code
+    # uses 相當於github action 提供的api，裡面封裝了一些操作，比如說這個actions/checkout@v3 就是執行了git clone 當前ci cd的程式碼
+      uses: actions/checkout@v3
+    - name: log after checkout
+      run: |
+        echo "當前目錄 $(pwd)"
+        echo "checkout之後的檔案 $(ls)"
+    # 設定Java版本
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+    # 打包SpringBoot專案
+    - name: Build with Maven
+      run: mvn clean package -DskipTests
+    #  處理ec2 key
+    - name: Add EC2 private key
+      run: |
+        echo "${{ secrets.EC2_PRIVATE_KEY }}" > ec2-key.pem
+        chmod 600 ec2-key.pem
+    # github action不同JOB之間的檔案無法共享，需要上傳到artifact才能共享
+    - name: Upload private key as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ec2-key
+        path: ec2-key.pem
+    # github action不同JOB之間的檔案無法共享，需要上傳到artifact才能共享
+    - name: Upload JAR as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: jar-file
+        path: target/rentWeb-0.0.1-SNAPSHOT.jar  
+  # DEPLOY是JOB的名稱，上面的SET_UP同理
+  DEPLOY:
+    # runs-on 指定這個ci cd 要運行在什麼樣的環境
+    runs-on: ubuntu-latest
+    # 確保 DEPLOY 會在 SET_UP 完成後執行
+    needs: SET_UP 
+
+    # 這個DEPLOY job實際執行的steps
+    steps:
+    # 從artifact下載ec2
+    - name: Download EC2 private key
+      uses: actions/download-artifact@v3
+      with:
+        name: ec2-key
+    # 設定ec2-key-pem的權限
+    - name: Set correct permissions for private key
+      run: |
+          chmod 600 ec2-key.pem
+    # 從artifact下載JAR
+    - name: Download JAR file
+      uses: actions/download-artifact@v3
+      with:
+        name: jar-file
+
+    # 實際連線到EC2並且部屬
+    - name: Deploy to EC2
+    #  運行時所需的環境變數，詳細的會在secrets中設置
+      env:
+        AWS_IP: ${{ secrets.AWS_IP }}
+        AZURE_DB_HOST: ${{ secrets.AZURE_DB_HOST }}
+        AZURE_DB_PASSWORD: ${{ secrets.AZURE_DB_PASSWORD }}
+        AZURE_DB_USERNAME: ${{ secrets.AZURE_DB_USERNAME }}
+        CHANNEL_ID: ${{ secrets.CHANNEL_ID }}
+        CHANNEL_SECRET_KEY: ${{ secrets.CHANNEL_SECRET_KEY }}
+        CLIENT_ID: ${{ secrets.CLIENT_ID }}
+        CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+        GOOGLEAPIKEY: ${{ secrets.GOOGLEAPIKEY }}
+        HASH_IV: ${{ secrets.HASH_IV }}
+        HASH_KEY: ${{ secrets.HASH_KEY }}
+        MERCHANT_ID: ${{ secrets.MERCHANT_ID }}
+        RECAPTCHA_SECRET_KEY: ${{ secrets.RECAPTCHA_SECRET_KEY }}
+        RECAPTCHA_SITE_KEY: ${{ secrets.RECAPTCHA_SITE_KEY }}
+
+      run: |
+        echo "$(date):開始部屬..."
+
+        # 檢查 Java 版本
+        echo "檢查 Java 安裝情況..."
+        # StrictHostKeyChecking=no 避免跳出是否連線的畫面
+        # 
+        ssh -o StrictHostKeyChecking=no -i ec2-key.pem ec2-user@${AWS_IP} "java -version"
+
+        # 複製 JAR 檔案
+        echo "$(date): 複製 JAR 檔案..."
+        echo "目標的目錄 $(pwd)"
+        echo "複製前的內容 $(ls)"
+        # 把檔案放到/home/ec2-user/app/並命名為rentWeb-0.0.1-SNAPSHOT.jar
+        scp -o StrictHostKeyChecking=no -i ec2-key.pem rentWeb-0.0.1-SNAPSHOT.jar ec2-user@${AWS_IP}:/home/ec2-user/app/rentWeb-0.0.1-SNAPSHOT.jar
+        echo "複製後的內容 $(ls)"
+
+        # 執行部署命令
+        ssh -o StrictHostKeyChecking=no -i ec2-key.pem ec2-user@${AWS_IP} << 'EOF'
+          cd /home/ec2-user/app
+          echo "$(date): 準備停止當前運行的java程式..."
+          pkill -f 'java -jar' || true
+          sleep 5
+
+          # 檢查 JAR 檔案
+          echo "確認 JAR 檔案詳細內容..."
+          ls -l rentWeb-0.0.1-SNAPSHOT
+
+          echo "$(date): 開始部屬..."
+          # 直接執行以查看錯誤訊息
+            java -jar rentWeb-0.0.1-SNAPSHOT.jar \
+        --azure.db.host=${{ secrets.AZURE_DB_HOST }} \
+        --azure.db.password=${{ secrets.AZURE_DB_PASSWORD }} \
+        --azure.db.username=${{ secrets.AZURE_DB_USERNAME }} \
+        --channelid=${{ secrets.CHANNEL_ID }} \
+        --channelsecretkey=${{ secrets.CHANNEL_SECRET_KEY }} \
+        --client_id=${{ secrets.CLIENT_ID }} \
+        --client_secret=${{ secrets.CLIENT_SECRET }} \
+        --googleapikey=${{ secrets.GOOGLEAPIKEY }} \
+        --hashiv=${{ secrets.HASH_IV }} \
+        --hashkey=${{ secrets.HASH_KEY }} \
+        --merchantid=${{ secrets.MERCHANT_ID }} \
+        --reCaptchaSecretKey=${{ secrets.RECAPTCHA_SECRET_KEY }} \
+        --reCaptchaSiteKey=${{ secrets.RECAPTCHA_SITE_KEY }} \
+        --redirect_uris=http://localhost:5173/member-center \
+        --verifyurl=https://www.google.com/recaptcha/api/siteverify > rentWeb-0.0.1-SNAPSHOT.log 2>&1 &
+          sleep 5
+
+          # 檢查程序和日誌
+          if pgrep -f 'java -jar'; then
+            echo "部屬成功"
+            tail -n 50 rentWeb-0.0.1-SNAPSHOT.log
+          else
+            echo "部屬失敗"
+            echo "Last 50 lines of log:"
+            tail -n 50 rentWeb-0.0.1-SNAPSHOT.log
+            exit 1
+          fi
+    
