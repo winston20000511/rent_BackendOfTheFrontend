@@ -21,7 +21,7 @@ public interface SearchRepository extends JpaRepository<HouseTableBean, Long>{
 			"c.pet , c.parkingSpace , c.elevator , c.balcony, c.shortTerm , c.cooking , c.waterDispenser, " +
 			"c.managementFee , c.genderRestrictions , h.houseType) " +
 			"from HouseTableBean h " + "left join h.ads a " + "left join a.adtype t " + "Left join h.condition c " +
-			"where h.address like CONCAT('%',:n,'%')")
+			"where h.address like CONCAT('%',:n,'%') and h.status = 1")
 	List<AddressDTO> findByKeyWord(@Param("n") String name);
 
 //	@Query("select new com.example.demo.dto.KeyWordDTO(c.pet , c.parkingSpace , c.elevator , c.balcony, c.shortTerm , c.cooking , c.waterDispenser, c.managementFee , c.genderRestrictions , h.houseType)" + "from HouseTableBean h " + "Left join h.condition c " + "where h.houseId = :id")
@@ -32,7 +32,7 @@ public interface SearchRepository extends JpaRepository<HouseTableBean, Long>{
 			"c.pet , c.parkingSpace , c.elevator , c.balcony, c.shortTerm , c.cooking , c.waterDispenser, " +
 			"c.managementFee , c.genderRestrictions , h.houseType) " +
 			"from HouseTableBean h " + "left join h.ads a " + "left join a.adtype t " + "Left join h.condition c " +
-			"where h.address like CONCAT(:n,'%')")
+			"where h.address like CONCAT(:n,'%') and h.status = 1")
 	HashSet<AddressDTO> findByCityAndTownship(@Param("n") String name);
 
 	@Query("select new com.example.demo.dto.AddressDTO(h.houseId ,h.address , h.lat , h.lng , h.price , " +
@@ -40,7 +40,7 @@ public interface SearchRepository extends JpaRepository<HouseTableBean, Long>{
 			"c.pet , c.parkingSpace , c.elevator , c.balcony, c.shortTerm , c.cooking , c.waterDispenser, " +
 			"c.managementFee , c.genderRestrictions , h.houseType) " +
 			"from HouseTableBean h " + "left join h.ads a " + "left join a.adtype t " + "Left join h.condition c " +
-			"where h.address like CONCAT(:n,'%')")
+			"where h.address like CONCAT(:n,'%') ")
 	AddressDTO findByCityAndTownshipSingle(@Param("n") String name);
 
 	@Query("select new com.example.demo.dto.AddressDTO(h.houseId ,h.address , h.lat , h.lng , h.price , " +
