@@ -5,16 +5,31 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SerialOrderNoUtil {
-	
+
+	private static final SerialOrderNoUtil instance = new SerialOrderNoUtil();
+
 	public static String PREFIX = "EE189"; 
 	private static String currentDateStr; // 紀錄當前時間
-	
+	private final AtomicInteger counter = new AtomicInteger(0);
+
+	private SerialOrderNoUtil() {
+		currentDateStr = getCurrentDateTimeStr();
+	}
+
+	public static SerialOrderNoUtil getInstance() {
+		return instance;
+	}
+
 	/**
 	 *生成流水號：前綴 + 當前日期 + 當日計數器
 	 */
-	public String generateSerialNumber(AtomicInteger counter) {
+	public String generateSerialNumber() {
 		String today = getCurrentDateTimeStr();
-		int currentCount = counter.incrementAndGet(); // 遞增並返回新值
+		if(!today.startsWith(currentDateStr)){
+			resetCounter();
+		}
+
+		int currentCount = counter.incrementAndGet();
 		return PREFIX + today + String.format("%03d", currentCount);
 	}
 	
@@ -39,8 +54,19 @@ public class SerialOrderNoUtil {
 	/**
 	 * 重置計數器
 	 */
-	public void resetCounter(AtomicInteger counter) {
+	public void resetCounter() {
 		counter.set(0);
-		currentDateStr = getCurrentDateTimeStr();
 	}
+
+	/**
+	 * 重置計數器為當前最新值
+	 */
+	public void resetCounter(int counterValue) {
+		counter.set(counterValue);
+	}
+
+	public AtomicInteger getCurrentCounter() {
+		return this.counter;
+	}
+
 }

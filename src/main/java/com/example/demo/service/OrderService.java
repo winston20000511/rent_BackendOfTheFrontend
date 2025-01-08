@@ -41,23 +41,25 @@ public class OrderService {
 
 	private Logger logger = Logger.getLogger(OrderService.class.getName());
 
-	private OrderRepository orderRepository;
-	private AdRepository adRepository;
-	private CartRepository cartRepository;
-	private CartItemRepository cartItemRepository;
-	private UserRepository userRepository;
+	private final OrderRepository orderRepository;
+	private final AdRepository adRepository;
+	private final CartRepository cartRepository;
+	private final CartItemRepository cartItemRepository;
+	private final UserRepository userRepository;
+	private final CouponService couponService;
 
-	private SerialOrderNoService serialNoService;
+	private final SerialOrderNoService serialNoService;
 
 	public OrderService(OrderRepository orderRepository, AdRepository adRepository, CartRepository cartRepository,
 			CartItemRepository cartItemRepository, UserRepository userRepository,
-			SerialOrderNoService serialNoService) {
+			SerialOrderNoService serialNoService, CouponService couponService) {
 		this.orderRepository = orderRepository;
 		this.adRepository = adRepository;
 		this.cartRepository = cartRepository;
 		this.cartItemRepository = cartItemRepository;
 		this.userRepository = userRepository;
 		this.serialNoService = serialNoService;
+		this.couponService = couponService;
 	}
 
 	/**
@@ -105,8 +107,8 @@ public class OrderService {
 	 * 在資料庫建立新訂單，OrderBean 設定: userId, merchantTradNo, merchantTradDate,
 	 * totalAmount, itemName, orderStatus, choosePayment, checkMacValue
 	 * 
-	 * @param cartId
-	 * @param paymentMethod
+	 * @param userId
+	 * @param requestDTO
 	 * @return OrderResponseDTO 訂單詳細資料
 	 */
 	public OrderResponseDTO createOrder(Long userId, OrderCreationRequestDTO requestDTO) {
@@ -121,7 +123,12 @@ public class OrderService {
 
 	    OrderBean newOrder = new OrderBean();
 	    
-	    String merchantTradNo = serialNoService.generateSerialNumber();
+	    String merchantTradNo = "";
+		try{
+			merchantTradNo = serialNoService.generateSerialNumberAsync().get();
+		}catch(Exception exception){
+			logger.severe("生成訂單號碼異常: " + exception.getMessage());
+		}
 	    LocalDateTime date = LocalDateTime.now();
 	    newOrder.setMerchantTradNo(merchantTradNo);
 	    newOrder.setMerchantTradDate(date);
@@ -160,8 +167,8 @@ public class OrderService {
 
 	        if (isCouponApplied) {
 	            logger.info("再次確認有折價的AD: " + ad.getAdId());
-	            int result = userRepository.removeOneCoupon(userId);
-	    	    if(result > 0) logger.info("成功刪除" + ad.getUserId() +"的優惠券" + result + "張");
+	            boolean result = couponService.deleteOneCoupon(userId);
+	    	    if(result) logger.info("成功刪除" + ad.getUserId() +"的優惠券" + result + "張");
 	    	    else logger.info("沒有刪除優惠券");
 	        }
 
